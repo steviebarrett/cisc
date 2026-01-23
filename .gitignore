@@ -1,0 +1,18 @@
+/vendor/
+/.env
+/.env.local
+/node_modules/
+
+# OS / editor junk
+.DS_Store
+.idea/
+.vscode/
+
+# Logs
+*.log
+
+# Runtime
+/public/.htaccess.local
+
+# Database dumps
+*.sql

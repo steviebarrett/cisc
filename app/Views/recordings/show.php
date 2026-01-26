@@ -13,23 +13,26 @@
 
         <?php
         // Audio player (expects files/audio/mp3/{recording_id}.mp3)
-        $recId = (string)($rec['recording_id'] ?? '');
-        $audioFilename = $recId . '.mp3';
-        $audioDiskPath = rtrim(MP3_AUDIO_PATH, '/').'/'.$audioFilename;
+        $recId = trim((string)($rec['recording_id'] ?? ''));
+        $audioDiskPath = rtrim(MP3_AUDIO_PATH, '/') . '/' . $recId . '.mp3';
         $hasAudio = ($recId !== '') && is_file($audioDiskPath);
         $audioUrl = base_path(MP3_AUDIO_URL . '/' . rawurlencode($recId) . '.mp3');
+        $audioDownloadUrl = $audioUrl . '?download=1';
         ?>
 
         <?php if ($hasAudio): ?>
-            <div class="mb-3">
-                <audio class="w-100" controls preload="none">
-                    <source src="<?= e($audioUrl) ?>" type="audio/mpeg">
-                    Your browser does not support the audio element.
-                </audio>
-                <div class="small text-muted mt-1">
-                    <?= e($audioFilename) ?>
-                </div>
+        <div class="mb-3">
+            <audio class="w-100" controls preload="none">
+                <source src="<?= e($audioUrl) ?>" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+            <div class="mt-2">
+                <a class="btn btn-sm btn-outline-secondary" href="<?= e($audioDownloadUrl) ?>" download="<?= e($recId . '.mp3') ?>">
+                    Download song
+                </a>
             </div>
+            <div class="small text-muted mt-1"><?= e($recId) ?>.mp3</div>
+        </div>
         <?php endif; ?>
 
         <dl class="row mb-0">

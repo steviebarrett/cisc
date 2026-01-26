@@ -2,22 +2,23 @@
 declare(strict_types=1);
 
 // Media paths/URLs (guarded so config can be included multiple times)
+
 if (!defined('MP3_AUDIO_PATH')) {
-    define('MP3_AUDIO_PATH', __DIR__ . '/../files/audio/mp3');
+    define('MP3_AUDIO_PATH', __DIR__ . '/../app/files/audio/mp3');
 }
 if (!defined('MP3_AUDIO_URL')) {
     define('MP3_AUDIO_URL',  '/media/audio');
 }
 
 if (!defined('COMPOSER_IMAGE_PATH')) {
-    define('COMPOSER_IMAGE_PATH', __DIR__ . '/../files/images/people/composers');
+    define('COMPOSER_IMAGE_PATH', __DIR__ . '/../app/files/images/people/composers');
 }
 if (!defined('COMPOSER_IMAGE_URL')) {
     define('COMPOSER_IMAGE_URL',  '/files/images/people/composers');
 }
 
 if (!defined('INFORMANT_IMAGE_PATH')) {
-    define('INFORMANT_IMAGE_PATH', __DIR__ . '/../files/images/people/informants');
+    define('INFORMANT_IMAGE_PATH', __DIR__ . '/../app/files/images/people/informants');
 }
 if (!defined('INFORMANT_IMAGE_URL')) {
     define('INFORMANT_IMAGE_URL',  '/files/images/people/informants');

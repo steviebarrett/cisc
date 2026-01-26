@@ -3,6 +3,13 @@
 /.env.local
 /node_modules/
 
+/config/config.local.php
+
+# media
+# Media files
+/app/files/audio/
+/app/files/images/
+
 # OS / editor junk
 .DS_Store
 .idea/

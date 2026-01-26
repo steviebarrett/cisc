@@ -11,6 +11,27 @@
             <div class="text-muted mb-2">Alt: <?= e($rec['alt_title']) ?></div>
         <?php endif; ?>
 
+        <?php
+        // Audio player (expects files/audio/mp3/{recording_id}.mp3)
+        $recId = (string)($rec['recording_id'] ?? '');
+        $audioFilename = $recId . '.mp3';
+        $audioDiskPath = rtrim(MP3_AUDIO_PATH, '/').'/'.$audioFilename;
+        $hasAudio = ($recId !== '') && is_file($audioDiskPath);
+        $audioUrl = base_path(MP3_AUDIO_URL . '/' . rawurlencode($recId) . '.mp3');
+        ?>
+
+        <?php if ($hasAudio): ?>
+            <div class="mb-3">
+                <audio class="w-100" controls preload="none">
+                    <source src="<?= e($audioUrl) ?>" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+                <div class="small text-muted mt-1">
+                    <?= e($audioFilename) ?>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <dl class="row mb-0">
             <dt class="col-sm-3">Recording ID</dt><dd class="col-sm-9"><?= e($rec['recording_id']) ?></dd>
             <dt class="col-sm-3">Informant</dt>

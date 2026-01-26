@@ -6,7 +6,10 @@ function e(?string $s): string {
 }
 
 function base_path(string $path = ''): string {
-    $config = require __DIR__ . '/../../config/config.php';
+    static $config = null;
+    if ($config === null) {
+        $config = require __DIR__ . '/../../config/config.php';
+    }
     $bp = rtrim($config['app']['base_path'] ?? '', '/');
     $path = '/' . ltrim($path, '/');
     return $bp . $path;
@@ -26,3 +29,6 @@ function get_array(string $key): array {
     if (!is_array($v)) $v = [$v];
     return array_values(array_filter(array_map('trim', $v), fn($x) => $x !== ''));
 }
+
+
+?>

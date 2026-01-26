@@ -92,7 +92,11 @@
 
         <div class="list-group">
             <?php foreach ($result['rows'] as $row): ?>
-                <a class="list-group-item list-group-item-action" href="<?= e(base_path('/recordings/' . $row['recording_id'])) ?>">
+                <?php
+                $recId = trim((string)($row['recording_id'] ?? ''));
+                $recUrl = base_path('/recordings/' . rawurlencode($recId));
+                ?>
+                <a class="list-group-item list-group-item-action" href="<?= e($recUrl) ?>">
                     <div class="d-flex justify-content-between">
                         <div>
                             <div class="fw-semibold"><?= e($row['title'] ?: $row['recording_id']) ?></div>
@@ -121,7 +125,7 @@
                         </div>
 
                         <div class="text-end small text-muted">
-                            <?= e($row['recording_id']) ?>
+                            <?= e($recId) ?>
                         </div>
                     </div>
                 </a>

@@ -1,6 +1,5 @@
 RewriteEngine On
 
-# If your app is in /public, this is fine.
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^ index.php [QSA,L]

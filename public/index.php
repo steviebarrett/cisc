@@ -23,6 +23,70 @@ $config = require __DIR__ . '/../config/config.php';
 $base = rtrim($config['app']['base_path'] ?? '', '/');
 if ($base && str_starts_with($path, $base)) $path = substr($path, strlen($base)) ?: '/';
 
+function stream_informant_image(string $id, string $fileEnc, bool $headOnly = false): void
+{
+    // Informant ID must be simple
+    if (!preg_match('/^[A-Za-z0-9._-]+$/', $id)) {
+        http_response_code(400);
+        echo 'Bad informant id';
+        return;
+    }
+
+    // Decode URL filename (turn %20 into space, %2C into comma, etc.)
+    $file = rawurldecode($fileEnc);
+
+    // Allow spaces/commas/etc but block traversal / weirdness
+    if (
+        $file === '' ||
+        $file === '.' || $file === '..' ||
+        str_contains($file, '/') ||
+        str_contains($file, '\\') ||
+        str_contains($file, "\0") ||
+        $file !== basename($file)
+    ) {
+        http_response_code(400);
+        echo 'Bad filename: ' . $file;
+        return;
+    }
+
+    // Only allow image extensions
+    if (!preg_match('/\.(jpe?g|png|gif|webp)$/i', $file)) {
+        http_response_code(400);
+        echo 'Bad extension';
+        return;
+    }
+
+    $base = rtrim(INFORMANT_IMAGE_PATH, '/');
+    $dirs = glob($base . '/' . $id . '*', GLOB_ONLYDIR) ?: [];
+
+    foreach ($dirs as $dir) {
+        $candidate = $dir . '/' . $file;   // NOTE: decoded filename used here
+        if (is_file($candidate) && is_readable($candidate)) {
+
+            $ext = strtolower(pathinfo($candidate, PATHINFO_EXTENSION));
+            $mime = match ($ext) {
+                'jpg', 'jpeg' => 'image/jpeg',
+                'png' => 'image/png',
+                'gif' => 'image/gif',
+                'webp' => 'image/webp',
+                default => 'application/octet-stream',
+            };
+
+            header('Content-Type: ' . $mime);
+            header('Content-Length: ' . filesize($candidate));
+            header('Cache-Control: public, max-age=3600');
+
+            if (!$headOnly) {
+                readfile($candidate);
+            }
+            return;
+        }
+    }
+
+    http_response_code(404);
+    echo 'Image not found';
+}
+
 function stream_mp3(string $id, bool $headOnly = false): void
 {
     if (!preg_match('/^[A-Za-z0-9._-]+$/', $id)) {
@@ -114,6 +178,8 @@ $routes = [
     ['HEAD', '#^/media/audio/([^/]+)\.mp3$#', fn($id) => stream_mp3($id, true)],
     ['GET', '#^/informants/([^/]+)/?$#', fn($id) => (new InformantController())->show($id)],
     ['GET', '#^/composers/([^/]+)/?$#', fn($id) => (new ComposerController())->show($id)],
+    ['GET',  '#^/media/informants/([^/]+)/([^/]+)$#', fn($id, $file) => stream_informant_image($id, $file)],
+    ['HEAD', '#^/media/informants/([^/]+)/([^/]+)$#', fn($id, $file) => stream_informant_image($id, $file, true)],
 ];
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';

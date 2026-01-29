@@ -9,14 +9,14 @@ $activeNav = 'recordings';
 $headerTitle = 'Recordings';
 
 // Determine whether filters are active (controls auto-open state)
-$headerSearchOpen = false;
-if ($kw !== '') $headerSearchOpen = true;
-if (!empty($params['genre'])) $headerSearchOpen = true;
-if (!empty($params['subgenres'])) $headerSearchOpen = true;
-if (!empty($params['subjects'])) $headerSearchOpen = true;
-if (!empty($params['has_en'])) $headerSearchOpen = true;
-if (!empty($params['sort']) && $params['sort'] !== 'date_desc') $headerSearchOpen = true;
-if (!empty($params['per_page']) && (int)$params['per_page'] !== 20) $headerSearchOpen = true;
+$headerSearchOpen = header_filters_open($kw, $params, [
+    'genre'     => '',
+    'subgenres' => [],
+    'subjects'  => [],
+    'has_en'    => 0,
+    'sort'      => 'date_desc',
+    'per_page'  => 20,
+]);
 
 // Build the search form body for the header
 ob_start();

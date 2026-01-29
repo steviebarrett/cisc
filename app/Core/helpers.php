@@ -112,5 +112,32 @@ function get_array(string $key): array {
     return array_values(array_filter(array_map('trim', $v), fn($x) => $x !== ''));
 }
 
+function header_filters_open(string $kw, array $params, array $defaults = []): bool {
+    if (trim($kw) !== '') return true;
+
+    foreach ($defaults as $key => $default) {
+        $v = $params[$key] ?? null;
+
+        // Array defaults mean: open if there are any selections
+        if (is_array($default)) {
+            if (!empty($v)) return true;
+            continue;
+        }
+
+        // Treat null/empty string as “not set”
+        if ($v === null || $v === '') continue;
+
+        // Numeric defaults
+        if (is_int($default)) {
+            if ((int)$v !== $default) return true;
+            continue;
+        }
+
+        // String/bool-ish defaults
+        if ((string)$v !== (string)$default) return true;
+    }
+
+    return false;
+}
 
 ?>

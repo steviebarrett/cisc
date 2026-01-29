@@ -7,15 +7,27 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-        <a class="navbar-brand" href="<?= e(base_path('/recordings')) ?>">Recordings</a>
-    </div>
-</nav>
 
-<main class="container my-4">
+<?php require_once __DIR__ . '/../partials/header.php'; ?>
+
+
+<main class="container my-4 pt-3">
     <?= $content ?>
 </main>
+
+<script>
+    document.addEventListener('keydown', (e) => {
+        if (e.key === '/' && !e.metaKey && !e.ctrlKey && !e.altKey) {
+            const tag = (document.activeElement?.tagName || '').toLowerCase();
+            if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
+            e.preventDefault();
+            const el = document.getElementById('searchPanel');
+            if (!el) return; // page may not provide a search panel
+            bootstrap.Collapse.getOrCreateInstance(el).show();
+            setTimeout(() => el.querySelector('input[name="q"]')?.focus(), 50);
+        }
+    });
+</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

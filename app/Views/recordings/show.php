@@ -1,14 +1,14 @@
 <?php $title = $rec['title'] ?: $rec['recording_id']; ?>
 
 <div class="mb-3">
-    <a href="<?= e(base_path('/recordings')) ?>">&larr; Back to list</a>
+    <a href="<?= e(base_path('/recordings')) . "?q=" . rawurlencode($_GET["q"])  ?>">&larr; Back to list</a>
 </div>
 
 <div class="card">
     <div class="card-body">
         <h2 class="h4 mb-1"><?= e($rec['title'] ?: $rec['recording_id']) ?></h2>
         <?php if (!empty($rec['alt_title'])): ?>
-            <div class="text-muted mb-2">Alt: <?= e($rec['alt_title']) ?></div>
+        <div class="text-muted mb-2">Alt: <em><?= e($rec['alt_title']) ?></em></div>
         <?php endif; ?>
 
         <?php

@@ -28,7 +28,8 @@ final class RecordingSearch {
 
         if ($q !== '') {
             // Simple keyword search across a few text columns
-            $where[] = "(r.title LIKE :q OR r.alt_title LIKE :q OR r.first_line_chorus LIKE :q OR r.first_line_verse LIKE :q OR r.notes1_additional_info LIKE :q)";
+            // CONCAT_WS ignores NULLs, so this is safe
+            $where[] = "CONCAT_WS(' ', r.title, r.alt_title, r.first_line_chorus, r.first_line_verse, r.notes1_additional_info) LIKE :q";
             $bind[':q'] = '%' . $q . '%';
         }
 
@@ -90,7 +91,8 @@ final class RecordingSearch {
         $sql = "
       SELECT
         r.recording_id, r.title, r.alt_title, r.recording_date, r.includes_english_translation,
-        r.place_of_origin,
+        r.place_of_origin, 
+        r.first_line_chorus, r.first_line_verse, r.notes1_additional_info,
         i.informant_id, i.first_name AS informant_first, i.last_name AS informant_last,
         c.composer_id, c.first_name AS composer_first, c.last_name AS composer_last,
         g.name AS genre_name,

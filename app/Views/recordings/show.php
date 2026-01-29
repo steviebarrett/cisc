@@ -1,7 +1,8 @@
 <?php $title = $rec['title'] ?: $rec['recording_id']; ?>
 
 <div class="mb-3">
-    <a href="<?= e(base_path('/recordings')) . "?q=" . rawurlencode($_GET["q"])  ?>">&larr; Back to list</a>
+    <?php $backQs = (isset($_GET["q"]) && $_GET["q"] != null) ? "?q=" . rawurlencode($_GET["q"]) : ""; ?>
+    <a href="<?= e(base_path('/recordings')) . $backQs  ?>">&larr; Back to list</a>
 </div>
 
 <div class="card">

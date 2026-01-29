@@ -19,6 +19,77 @@ final class Informant {
         return $row;
     }
 
+    public static function search(array $params): array {
+        $pdo = DB::pdo();
+
+        $q = trim((string)($params['q'] ?? ''));
+        $page = max(1, (int)($params['page'] ?? 1));
+
+        $perPage = (int)($params['per_page'] ?? 20);
+        if (!in_array($perPage, [10,20,50,100], true)) $perPage = 20;
+
+        $sort = (string)($params['sort'] ?? 'name_asc');
+        $orderBy = match ($sort) {
+            'name_desc' => 'i.last_name DESC, i.first_name DESC, i.informant_id DESC',
+            default     => 'i.last_name ASC, i.first_name ASC, i.informant_id ASC',
+        };
+
+        $where = [];
+        $bind = [];
+
+        if ($q !== '') {
+            $where[] = "(i.informant_id LIKE :q
+                 OR i.first_name LIKE :q
+                 OR i.last_name LIKE :q
+                 OR i.ainm LIKE :q
+                 OR i.community_origin_canada LIKE :q
+                 OR i.county LIKE :q
+                 OR i.province_canada LIKE :q
+                 OR i.country LIKE :q
+                 OR i.tradition_scotland LIKE :q)";
+            $bind[':q'] = '%' . $q . '%';
+        }
+
+        $whereSql = $where ? ('WHERE ' . implode(' AND ', $where)) : '';
+
+        // Total
+        $stmt = $pdo->prepare("SELECT COUNT(*) FROM informant i {$whereSql}");
+        $stmt->execute($bind);
+        $total = (int)$stmt->fetchColumn();
+
+        $pages = max(1, (int)ceil($total / $perPage));
+        if ($page > $pages) $page = $pages;
+        $offset = ($page - 1) * $perPage;
+
+        $sql = "
+        SELECT
+            i.informant_id, i.first_name, i.last_name, i.ainm,
+            i.community_origin_canada, i.county, i.province_canada, i.country, i.tradition_scotland,
+            (SELECT COUNT(*) FROM recording r WHERE r.informant_id = i.informant_id) AS recording_count
+        FROM informant i
+        {$whereSql}
+        ORDER BY {$orderBy}
+        LIMIT :limit OFFSET :offset
+    ";
+
+        $stmt = $pdo->prepare($sql);
+        foreach ($bind as $k => $v) $stmt->bindValue($k, $v);
+        $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $rows = $stmt->fetchAll();
+
+        return [
+            'rows' => $rows,
+            'total' => $total,
+            'page' => $page,
+            'pages' => $pages,
+            'per_page' => $perPage,
+            'sort' => $sort,
+            'q' => $q,
+        ];
+    }
+
     private static function findFilesystemImages(string $id): array
     {
         $base = rtrim(INFORMANT_IMAGE_PATH, '/');

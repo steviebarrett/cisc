@@ -2,6 +2,24 @@
 declare(strict_types=1);
 
 final class InformantController extends Controller {
+
+    public function index(): void {
+        $params = [
+            'q' => trim((string)($_GET['q'] ?? '')),
+            'page' => (int)($_GET['page'] ?? 1),
+            'per_page' => (int)($_GET['per_page'] ?? 20),
+            'sort' => (string)($_GET['sort'] ?? 'name_asc'),
+        ];
+
+        $result = Informant::search($params);
+
+        $this->render('informants/index', [
+            'params' => $params,
+            'kw' => $params['q'],
+            'result' => $result,
+        ]);
+    }
+
     public function show(string $id): void {
         $inf = Informant::find($id);
         if (!$inf) {

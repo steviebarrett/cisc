@@ -1,10 +1,13 @@
 <?php
 declare(strict_types=1);
 
+use App\Services\RecordingSearch;
+
 final class RecordingController extends Controller {
     public function index(): void {
         $params = [
             'q' => trim((string)($_GET['q'] ?? '')),
+            'place' => trim((string)($_GET['place'] ?? '')),
             'genre' => trim((string)($_GET['genre'] ?? '')),
             'subgenres' => get_array('subgenre'),
             'subjects'  => get_array('subject'),

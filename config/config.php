@@ -26,7 +26,7 @@ if (!defined('INFORMANT_IMAGE_URL')) {
 
 $base = [
     'db' => [
-        'dsn'  => 'mysql:host=localhost;dbname=cisc;charset=utf8mb4',
+        'dsn'  => 'mysql:host=localhost;dbname=cisc_new;charset=utf8mb4',
         'user' => 'root',
         'pass' => '',
         'options' => [

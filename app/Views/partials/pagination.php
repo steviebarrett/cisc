@@ -1,6 +1,6 @@
 <?php
-$pages = (int)$result['pages'];
-$page  = (int)$result['page'];
+$pages = (int)($result['pages'] ?? 1);
+$page  = (int)($result['page'] ?? 1);
 if ($pages <= 1) return;
 ?>
 <nav class="mt-3">

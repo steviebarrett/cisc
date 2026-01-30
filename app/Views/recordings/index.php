@@ -34,7 +34,30 @@ ob_start();
 
         <div class="col-12 col-lg-6">
             <label class="form-label">Place</label>
-            <input class="form-control" name="place" value="<?= e($place) ?>" placeholder="Start typing a place…">
+            <div class="input-group">
+                <input class="form-control"
+                       name="place"
+                       value="<?= e($place) ?>"
+                       placeholder="Start typing a place…"
+                       list="placeOptions"
+                       id="place-input">
+
+                <button type="button"
+                        class="btn btn-outline-secondary"
+                        title="Clear place filter"
+                        <?= $place === '' ? 'disabled' : '' ?>
+                        onclick="document.getElementById('place-input').value=''; document.getElementById('place-input').focus();">
+                    ✕
+                </button>
+            </div>
+
+            <?php if (!empty($places_all)): ?>
+                <datalist id="placeOptions">
+                    <?php foreach ($places_all as $p): ?>
+                        <option value="<?= e($p) ?>"></option>
+                    <?php endforeach; ?>
+                </datalist>
+            <?php endif; ?>
         </div>
 
         <div class="col-12 col-lg-3">
@@ -78,7 +101,7 @@ ob_start();
         <div class="col-12 col-lg-6">
             <label class="form-label">Sub-genres</label>
             <div class="border rounded p-2" style="max-height: 220px; overflow:auto;">
-                <?php $selected = (array)($params['subgenres'] ?? []); ?>
+                <?php $selected = (array)($params['subgenre'] ?? ($params['subgenres'] ?? [])); ?>
                 <?php foreach ($subgenres_all as $sg): ?>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="subgenre[]" value="<?= e($sg) ?>" <?= in_array($sg, $selected, true) ? 'checked' : '' ?>>
@@ -91,7 +114,7 @@ ob_start();
         <div class="col-12 col-lg-6">
             <label class="form-label">Subjects</label>
             <div class="border rounded p-2" style="max-height: 220px; overflow:auto;">
-                <?php $selected = (array)($params['subjects'] ?? []); ?>
+                <?php $selected = (array)($params['subject'] ?? ($params['subjects'] ?? [])); ?>
                 <?php foreach ($subjects_all as $s): ?>
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" name="subject[]" value="<?= e($s) ?>" <?= in_array($s, $selected, true) ? 'checked' : '' ?>>

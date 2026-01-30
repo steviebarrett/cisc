@@ -10,38 +10,47 @@ final class RecordingSearch
 {
     public function search(array $params): array
     {
-        $q = trim((string)($params['q'] ?? ''));
+        $q     = trim((string)($params['q'] ?? ''));
         $place = trim((string)($params['place'] ?? ''));
 
         $genre = trim((string)($params['genre'] ?? ''));
+
         $subgenres = $params['subgenre'] ?? [];
         if (!is_array($subgenres)) {
             $subgenres = [];
         }
+
         $subjects = $params['subject'] ?? [];
         if (!is_array($subjects)) {
             $subjects = [];
         }
+
         $hasEn = (int)($params['has_en'] ?? 0);
-        $sort = $params['sort'] ?? 'date_desc';
+        $sort  = (string)($params['sort'] ?? 'date_desc');
+
+        // per-page whitelist
         $perPage = (int)($params['per_page'] ?? 20);
-        $page = (int)($params['page'] ?? 1);
-        $offset = max(0, $page - 1) * $perPage;
+        if (!in_array($perPage, [10, 20, 50, 100], true)) {
+            $perPage = 20;
+        }
+
+        $page = max(1, (int)($params['page'] ?? 1));
 
         $where = [];
-        $bind = [];
+        $bind  = [];
 
         if ($q !== '') {
-            // Simple keyword search across a few text columns
-            // CONCAT_WS ignores NULLs, so this is safe
             $where[] = "CONCAT_WS(' ', r.title, r.alt_title, r.first_line_chorus, r.first_line_verse, r.notes1_additional_info) LIKE :q";
             $bind[':q'] = '%' . $q . '%';
         }
 
         if ($place !== '') {
             $placeExpr = "TRIM(COALESCE(NULLIF(CONCAT_WS(', ', NULLIF(i.community_origin_canada,''), NULLIF(i.county,''), NULLIF(i.province_canada,'')), ''), NULLIF(i.tradition_scotland,''), NULLIF(CONCAT_WS(', ', NULLIF(i.province_canada,''), NULLIF(i.country,'')), ''), NULLIF(i.country,'')))";
-            $where[] = "(r.place_of_origin LIKE :place OR {$placeExpr} LIKE :place)";
-            $bind[':place'] = '%' . $place . '%';
+
+            // PDO MySQL native prepares: don't reuse a named placeholder twice (can throw HY093)
+            $where[] = "(r.place_of_origin LIKE :place1 OR {$placeExpr} LIKE :place2)";
+            $bind[':place1'] = '%' . $place . '%';
+            $bind[':place2'] = '%' . $place . '%';
         }
 
         if ($genre !== '') {
@@ -56,6 +65,7 @@ final class RecordingSearch
                 $placeholders[] = $ph;
                 $bind[$ph] = $sg;
             }
+
             $where[] = 'EXISTS (
                 SELECT 1
                 FROM recording_subgenre rs
@@ -72,6 +82,7 @@ final class RecordingSearch
                 $placeholders[] = $ph;
                 $bind[$ph] = $s;
             }
+
             $where[] = 'EXISTS (
                 SELECT 1
                 FROM recording_subject rs
@@ -85,31 +96,30 @@ final class RecordingSearch
             $where[] = 'r.includes_english_translation = 1';
         }
 
-        $whereSql = '';
-        if (count($where) > 0) {
-            $whereSql = 'WHERE ' . implode(' AND ', $where);
-        }
+        $whereSql = $where ? ('WHERE ' . implode(' AND ', $where)) : '';
 
         $orderBy = match ($sort) {
-            'date_asc' => 'r.recording_date ASC',
-            'date_desc' => 'r.recording_date DESC',
-            'title_asc' => 'r.title ASC',
+            'date_asc'   => 'r.recording_date ASC',
+            'date_desc'  => 'r.recording_date DESC',
+            'title_asc'  => 'r.title ASC',
             'title_desc' => 'r.title DESC',
-            default => 'r.recording_date DESC',
+            default      => 'r.recording_date DESC',
         };
 
         $sql = "
-            SELECT r.*, g.name AS genre_name,
+            SELECT r.*,
+                   TRIM(CONCAT_WS(' ', i.first_name, i.last_name)) AS informant_name,
+                   g.name AS genre_name,
                 (SELECT GROUP_CONCAT(sg.name ORDER BY sg.name SEPARATOR ', ')
                      FROM recording_subgenre rs
                      JOIN subgenre sg ON sg.subgenre_id = rs.subgenre_id
                      WHERE rs.recording_id = r.recording_id
-                    ) AS subgenres,
+                ) AS subgenres,
                 (SELECT GROUP_CONCAT(s.name ORDER BY s.name SEPARATOR ', ')
                      FROM recording_subject rs
                      JOIN subject s ON s.subject_id = rs.subject_id
                      WHERE rs.recording_id = r.recording_id
-                    ) AS subjects
+                ) AS subjects
             FROM recording r
             JOIN informant i ON i.informant_id = r.informant_id
             LEFT JOIN genre g ON g.genre_id = r.genre_id
@@ -126,44 +136,77 @@ final class RecordingSearch
             $whereSql
         ";
 
-        $bind[':limit'] = $perPage;
-        $bind[':offset'] = $offset;
+        $filterBindsForSql = function (string $sql, array $bind): array {
+            preg_match_all('/:[a-zA-Z_][a-zA-Z0-9_]*/', $sql, $m);
+            $needed = array_unique($m[0] ?? []);
+            $out = [];
+            foreach ($needed as $ph) {
+                if (array_key_exists($ph, $bind)) {
+                    $out[$ph] = $bind[$ph];
+                }
+            }
+            return $out;
+        };
 
         $db = DB::pdo();
 
-        $stmt = $db->prepare($countSql);
-        foreach ($bind as $k => $v) {
-            if ($k === ':limit' || $k === ':offset') {
-                continue;
-            }
+        // Keep COUNT bindings strictly to placeholders used in $countSql.
+        // Some drivers throw HY093 if you bind params not present in the statement.
+        $bindCount = $bind;
+        unset($bindCount[':limit'], $bindCount[':offset']);
+
+        // COUNT (no limit/offset)
+        $countStmt = $db->prepare($countSql);
+
+        $bindCount = $filterBindsForSql($countSql, $bind);
+
+        foreach ($bindCount as $k => $v) {
+            $countStmt->bindValue($k, $v);
+        }
+        $countStmt->execute();
+        $total = (int)($countStmt->fetchColumn() ?? 0);
+
+        // Compute pages and clamp page
+        $pages = max(1, (int)ceil($total / $perPage));
+        if ($page > $pages) {
+            $page = $pages;
+        }
+        $offset = ($page - 1) * $perPage;
+
+        // RESULTS
+        $stmt = $db->prepare($sql);
+
+        $bindRows = $filterBindsForSql($sql, $bind);
+
+        foreach ($bindRows as $k => $v) {
             $stmt->bindValue($k, $v);
         }
-        $stmt->execute();
-        $total = (int)($stmt->fetchColumn() ?? 0);
 
-        $stmt = $db->prepare($sql);
-        foreach ($bind as $k => $v) {
-            if ($k === ':limit' || $k === ':offset') {
-                $stmt->bindValue($k, $v, \PDO::PARAM_INT);
-            } else {
-                $stmt->bindValue($k, $v);
-            }
-        }
+        $stmt->bindValue(':limit', $perPage, \PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, \PDO::PARAM_INT);
+
         $stmt->execute();
         $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 
         return [
-            'total' => $total,
-            'rows' => $rows,
-            'page' => $page,
+            'total'    => $total,
+            'rows'     => $rows,
+            'page'     => $page,
+            'pages'    => $pages,
             'per_page' => $perPage,
-            'q' => $q,
+
+            'q'     => $q,
             'place' => $place,
             'genre' => $genre,
+
+            // return both singular + plural for robustness
+            'subgenre'  => $subgenres,
             'subgenres' => $subgenres,
-            'subjects' => $subjects,
+            'subject'   => $subjects,
+            'subjects'  => $subjects,
+
             'has_en' => $hasEn,
-            'sort' => $sort,
+            'sort'   => $sort,
         ];
     }
 }

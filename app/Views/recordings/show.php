@@ -1,8 +1,24 @@
-<?php $title = $rec['title'] ?: $rec['recording_id']; ?>
+<?php
+
+if (empty($rec) || empty($rec['recording_id'])): ?>
+    <div class="alert alert-danger">
+        Recording data missing in view. Check RecordingController::show() / Recording::find().
+    </div>
+<?php endif;
+
+
+$title = $rec['title'] ?: $rec['recording_id'];
+
+
+$backUrl = base_path('/recordings');
+$qs = clean_qs($_GET);
+if ($qs !== '') {
+    $backUrl .= '?' . $qs;
+}
+?>
 
 <div class="mb-3">
-    <?php $backQs = (isset($_GET["q"]) && $_GET["q"] != null) ? "?q=" . rawurlencode($_GET["q"]) : ""; ?>
-    <a href="<?= e(base_path('/recordings')) . $backQs  ?>">&larr; Back to list</a>
+    <a href="<?= e($backUrl) ?>">&larr; Back to list</a>
 </div>
 
 <div class="card">

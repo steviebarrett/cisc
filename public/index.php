@@ -18,7 +18,10 @@ require __DIR__ . '/../app/Controllers/RecordingController.php';
 require __DIR__ . '/../app/Controllers/InformantController.php';
 require __DIR__ . '/../app/Controllers/ComposerController.php';
 
-$path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+//$path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
+$uri  = $_SERVER['REQUEST_URI'] ?? '/';
+$path = parse_url($uri, PHP_URL_PATH) ?? '/';
+$path = rawurldecode($path);
 $config = require __DIR__ . '/../config/config.php';
 $base = rtrim($config['app']['base_path'] ?? '', '/');
 if ($base && str_starts_with($path, $base)) $path = substr($path, strlen($base)) ?: '/';

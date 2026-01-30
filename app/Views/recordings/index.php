@@ -135,6 +135,93 @@ $headerSearch = ob_get_clean();
 ?>
 
 <div class="container-fluid py-3">
+
+    <?php
+    // Build a convenient local view of active filters
+    $active = [];
+
+    $kw = trim((string)($params['q'] ?? ''));
+    if ($kw !== '') {
+        $active[] = [
+                'label' => 'Keyword: ' . $kw,
+                'qs'    => qs(['q' => '', 'page' => 1]),
+        ];
+    }
+
+    $place = trim((string)($params['place'] ?? ''));
+    if ($place !== '') {
+        $active[] = [
+                'label' => 'Place: ' . $place,
+                'qs'    => qs(['place' => '', 'page' => 1]),
+        ];
+    }
+
+    $genre = trim((string)($params['genre'] ?? ''));
+    if ($genre !== '') {
+        $active[] = [
+                'label' => 'Genre: ' . $genre,
+                'qs'    => qs(['genre' => '', 'page' => 1]),
+        ];
+    }
+
+    $hasEn = (int)($params['has_en'] ?? 0);
+    if ($hasEn === 1) {
+        $active[] = [
+                'label' => 'Has English',
+                'qs'    => qs(['has_en' => 0, 'page' => 1]),
+        ];
+    }
+
+    // Arrays can come in as subgenre[] / subject[]
+    $subgenre = $params['subgenre'] ?? [];
+    if (!is_array($subgenre)) $subgenre = [];
+    foreach ($subgenre as $sg) {
+        $sg = (string)$sg;
+        if ($sg === '') continue;
+
+        $remaining = array_values(array_filter($subgenre, fn($x) => (string)$x !== $sg));
+        $active[] = [
+                'label' => 'Sub-genre: ' . $sg,
+                'qs'    => qs(['subgenre' => $remaining, 'page' => 1]),
+        ];
+    }
+
+    $subject = $params['subject'] ?? [];
+    if (!is_array($subject)) $subject = [];
+    foreach ($subject as $s) {
+        $s = (string)$s;
+        if ($s === '') continue;
+
+        $remaining = array_values(array_filter($subject, fn($x) => (string)$x !== $s));
+        $active[] = [
+                'label' => 'Subject: ' . $s,
+                'qs'    => qs(['subject' => $remaining, 'page' => 1]),
+        ];
+    }
+    ?>
+
+    <?php if (!empty($active)): ?>
+        <div class="mb-2">
+            <div class="small text-muted mb-1">Active filters:</div>
+            <div class="d-flex flex-wrap gap-2">
+                <?php foreach ($active as $f): ?>
+                    <span class="badge text-bg-light border">
+                    <?= e($f['label']) ?>
+                    <a class="text-decoration-none ms-1"
+                       href="?<?= e($f['qs']) ?>"
+                       title="Remove filter"
+                       aria-label="Remove filter: <?= e($f['label']) ?>">✕</a>
+                </span>
+                <?php endforeach; ?>
+
+                <a class="btn btn-sm btn-outline-secondary ms-1"
+                   href="<?= e(base_path('/recordings')) ?>">
+                    Clear all
+                </a>
+            </div>
+        </div>
+    <?php endif; ?>
+
     <div class="d-flex justify-content-between align-items-center mb-2">
         <div class="text-muted"><?= (int)($result['total'] ?? 0) ?> results</div>
     </div>
@@ -144,7 +231,12 @@ $headerSearch = ob_get_clean();
             <?php
             $recId = trim((string)($row['recording_id'] ?? ''));
             $recUrl = base_path('/recordings/' . rawurlencode($recId));
-            if ($kw !== '') $recUrl .= '?q=' . rawurlencode($kw);
+
+            $qs = clean_qs($_GET);
+            if ($qs !== '') {
+                $recUrl .= '?' . $qs;
+            }
+
             ?>
             <a class="list-group-item list-group-item-action" href="<?= e($recUrl) ?>">
                 <div class="d-flex justify-content-between">

@@ -5,6 +5,31 @@ function e(?string $s): string {
     return htmlspecialchars((string)$s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
 
+/**
+ * Build a clean query string from $_GET-style arrays,
+ * removing empty values and empty array elements.
+ */
+function clean_qs(array $get): string
+{
+    $out = [];
+
+    foreach ($get as $k => $v) {
+        if (is_array($v)) {
+            $v = array_values(array_filter(
+                $v,
+                fn($x) => trim((string)$x) !== ''
+            ));
+            if ($v === []) continue;
+            $out[$k] = $v;
+        } else {
+            if (trim((string)$v) === '') continue;
+            $out[$k] = $v;
+        }
+    }
+
+    return http_build_query($out);
+}
+
 function ga_highlight_pattern(string $q): string {
     $q = trim($q);
     if ($q === '') return '';

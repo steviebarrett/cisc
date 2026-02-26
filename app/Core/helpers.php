@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 function e(?string $s): string {
-    return htmlspecialchars((string)$s, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    return htmlspecialchars($s, ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8');
 }
 
 /**

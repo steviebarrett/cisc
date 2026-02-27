@@ -4,6 +4,8 @@
 """
 Import DOCX transcriptions into the `recording` table.
 
+What it does
+------------
 - Recursively scans a root directory for .docx files (including subdirectories)
 - Extracts `recording_id` from the filename (supports:
     GF207i08
@@ -12,17 +14,30 @@ Import DOCX transcriptions into the `recording` table.
   and similar patterns)
 - Extracts:
     - transcription_text (plain text, best for searching)
-    - transcription_html (sanitised HTML generated from the DOCX: <p>, <br>, <strong>, <em>, <u>)
-- Updates DB:
-    - default: fill only blanks (won't overwrite existing transcription_text/html)
-    - --overwrite: always replace
+    - transcription_html (sanitised HTML generated from the DOCX)
 
-Usage:
+HTML output goal
+----------------
+To resemble Word for poetry, we:
+- Treat blank Word paragraphs as stanza separators
+- Group consecutive non-empty lines into a single HTML paragraph (<p>...</p>)
+- Within a stanza block, join lines with <br>
+
+So instead of one <p> per line, we get one <p> per stanza, which matches your desired layout.
+
+DB update behaviour
+-------------------
+- default: fill only blanks (won't overwrite existing transcription_text/html)
+- --overwrite: always replace
+
+Usage
+-----
   python3 import_transcriptions.py --root "/path/to/Transcriptions" --db "cisc" --user "YOURUSER" --password "YOURPASS"
   Add --dry-run to preview actions without writing.
   Add --overwrite to replace existing transcription fields.
 
-Deps:
+Deps
+----
   pip install python-docx pymysql
 """
 
@@ -36,6 +51,7 @@ from typing import Optional, Tuple, List
 
 import pymysql
 from docx import Document
+from docx.oxml.ns import qn
 
 
 # Matches:
@@ -63,51 +79,108 @@ def extract_recording_id(filename: str, id_regex: str) -> Optional[str]:
     return m.group(1).upper() if m else None
 
 
+def paragraph_to_html_lines(p) -> List[str]:
+    """
+    Return a list of HTML-safe 'lines' from a DOCX paragraph, splitting on Word line breaks.
+    Preserves <strong>, <em>, <u>, and escapes everything else.
+    """
+    lines: List[str] = [""]
+
+    for r in p.runs:
+        for child in r._r:
+            if child.tag in (qn("w:br"), qn("w:cr")):
+                lines.append("")
+                continue
+
+            if child.tag == qn("w:t"):
+                t = child.text or ""
+                if not t:
+                    continue
+
+                esc = html.escape(t, quote=False)
+
+                if r.bold:
+                    esc = f"<strong>{esc}</strong>"
+                if r.italic:
+                    esc = f"<em>{esc}</em>"
+                if r.underline:
+                    esc = f"<u>{esc}</u>"
+
+                lines[-1] += esc
+
+    # Fallback if XML traversal produced nothing (rare)
+    if len(lines) == 1 and lines[0] == "":
+        raw = p.text or ""
+        if raw:
+            return [html.escape(raw, quote=False)]
+        return [""]
+
+    return lines
+
+
 def docx_to_text_and_html(docx_path: Path) -> Tuple[str, str]:
     """
     Produce:
-      - plain text: paragraphs joined by '\n'
-      - sanitised html: only <p>, <br>, <strong>, <em>, <u> tags, with text escaped.
+      - plain text: stanza blocks separated by blank lines
+      - sanitised html: stanza blocks as <p> with <br> within stanza
+        + blank lines as <p><br></p>
     """
     doc = Document(str(docx_path))
 
-    plain_paras: List[str] = []
-    html_paras: List[str] = []
+    plain_blocks: List[str] = []
+    html_blocks: List[str] = []
+
+    current_plain_lines: List[str] = []
+    current_html_lines: List[str] = []
+
+    def flush_block():
+        nonlocal current_plain_lines, current_html_lines
+        if current_plain_lines or current_html_lines:
+            plain_blocks.append("\n".join(current_plain_lines).rstrip())
+            html_inner = "<br>".join(current_html_lines)
+            html_blocks.append(f"<p>{html_inner}</p>")
+            current_plain_lines = []
+            current_html_lines = []
 
     for p in doc.paragraphs:
         raw = p.text or ""
+
+        # Empty Word paragraph -> stanza separator
         if raw.strip() == "":
+            flush_block()
+            # Represent a visible blank line / stanza separation
+            html_blocks.append("<p><br></p>")
+            plain_blocks.append("")  # blank line block
             continue
 
-        plain_paras.append(raw)
+        # Split paragraph into html-safe lines on Word breaks
+        html_lines = paragraph_to_html_lines(p)
 
-        # Build sanitised HTML from runs, preserving bold/italic/underline.
-        run_bits: List[str] = []
-        for r in p.runs:
-            t = r.text or ""
-            if not t:
-                continue
+        # Plain text lines:
+        # python-docx sometimes includes '\n' for soft breaks, sometimes not.
+        raw_lines = raw.split("\n") if "\n" in raw else [raw]
 
-            esc = html.escape(t, quote=False)
+        # Add each line to the current stanza block
+        for idx, hline in enumerate(html_lines):
+            pline = raw_lines[idx] if idx < len(raw_lines) else ""
+            # If we encounter an internal blank line, treat it as a stanza break too
+            if (pline.strip() == "") and (hline.strip() == ""):
+                flush_block()
+                html_blocks.append("<p><br></p>")
+                plain_blocks.append("")
+            else:
+                current_plain_lines.append(pline)
+                current_html_lines.append(hline)
 
-            # Preserve basic emphasis as tags (nesting kept simple).
-            if r.bold:
-                esc = f"<strong>{esc}</strong>"
-            if r.italic:
-                esc = f"<em>{esc}</em>"
-            if r.underline:
-                esc = f"<u>{esc}</u>"
+    flush_block()
 
-            # Word sometimes includes soft line breaks; represent them as <br>
-            esc = esc.replace("\n", "<br>")
-            run_bits.append(esc)
+    # Build outputs:
+    # Plain text: blocks separated by blank line
+    text_out = "\n\n".join([b for b in plain_blocks if b is not None]).strip()
 
-        # If runs gave us nothing (rare), fall back to escaped paragraph text.
-        inner = "".join(run_bits) if run_bits else html.escape(raw, quote=False)
-        html_paras.append(f"<p>{inner}</p>")
+    # HTML: paragraphs already separated; we keep them as-is
+    html_out = "\n".join([b for b in html_blocks if b is not None]).strip()
 
-    text_out = "\n".join(plain_paras).strip()
-    html_out = "\n".join(html_paras).strip()
     return text_out, html_out
 
 
@@ -188,10 +261,16 @@ def main():
     ap.add_argument("--user", required=True)
     ap.add_argument("--password", required=True)
 
-    ap.add_argument("--overwrite", action="store_true",
-                    help="Overwrite existing transcription_text/html (default fills only blanks).")
-    ap.add_argument("--dry-run", action="store_true",
-                    help="Parse files and report actions, but do not update DB.")
+    ap.add_argument(
+        "--overwrite",
+        action="store_true",
+        help="Overwrite existing transcription_text/html (default fills only blanks).",
+    )
+    ap.add_argument(
+        "--dry-run",
+        action="store_true",
+        help="Parse files and report actions, but do not update DB.",
+    )
     ap.add_argument("--commit-every", type=int, default=50, help="Commit every N updated rows.")
     args = ap.parse_args()
 

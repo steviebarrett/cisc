@@ -10,7 +10,8 @@ final class Recording {
         g.name AS genre_name,
         ss.name AS structure_name,
         i.informant_id, i.first_name AS informant_first, i.last_name AS informant_last,
-        c.composer_id, c.first_name AS composer_first, c.last_name AS composer_last
+        c.composer_id, c.first_name AS composer_first, c.last_name AS composer_last,
+        r.transcription_text AS transcription_text, r.transcription_html AS transcription_html
       FROM recording r
       JOIN informant i ON i.informant_id = r.informant_id
       LEFT JOIN composer c ON c.composer_id = r.composer_id

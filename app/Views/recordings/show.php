@@ -117,6 +117,27 @@ if ($qs !== '') {
             <?php endif; ?>
         <?php endif; ?>
 
+        <!-- transcription -->
+        <?php
+        $transcriptionHtml = $rec['transcription_html'] ?? '';
+        $transcriptionText = $rec['transcription_text'] ?? '';
+        $hasTranscription  = (is_string($transcriptionHtml) && trim($transcriptionHtml) !== '')
+                || (is_string($transcriptionText) && trim($transcriptionText) !== '');
+        ?>
+
+        <?php if ($hasTranscription): ?>
+            <hr>
+            <details class="record-transcription" open>
+                <summary><strong>Transcription</strong></summary>
+
+                <?php if (trim($transcriptionHtml) !== ''): ?>
+                    <?= $transcriptionHtml ?>
+                <?php else: ?>
+                    <?= nl2br(Functions::e_text($transcriptionText)) ?>
+                <?php endif; ?>
+            </details>
+        <?php endif; ?>
+
         <?php
         $notes = [
             'Notes (fieldnotes)' => $rec['notes1_additional_info'] ?? null,

@@ -25,7 +25,7 @@ function nav_link(string $href, string $label, string $key, string $activeNav): 
     <div class="container-fluid py-2">
         <div class="d-flex align-items-center justify-content-between gap-2">
             <div class="d-flex align-items-center gap-3">
-                <a class="navbar-brand fw-semibold text-decoration-none" href="<?= e(base_path('/')) ?>">CISc</a>
+                <a class="navbar-brand fw-semibold text-decoration-none" href="<?= e(base_path('/')) ?>">Cainnt ‘is Ceathramhan </a>
 
                 <nav class="d-none d-md-flex gap-3">
                     <?= nav_link(base_path('/recordings'), 'Recordings', 'recordings', $activeNav) ?>

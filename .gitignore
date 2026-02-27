@@ -10,6 +10,10 @@
 /app/files/audio/
 /app/files/images/
 
+# source content
+/docs/sampleData.xlsx
+/docs/Transcriptions/
+
 # OS / editor junk
 .DS_Store
 .idea/

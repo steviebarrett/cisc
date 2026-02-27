@@ -1,4 +1,3 @@
-#!/usr/bin/env php
 <?php
 declare(strict_types=1);
 
@@ -175,8 +174,8 @@ function requireArg(array $o, string $k): string {
 
 function pdoConnect(string $dsn, string $user, string $pass): PDO {
     $pdo = new PDO($dsn, $user, $pass, [
-        PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
-        PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ]);
     // for good measure (dsn should already include charset)
     $pdo->exec("SET NAMES utf8mb4");
@@ -187,16 +186,16 @@ function truncateAll(PDO $pdo): void {
     $pdo->exec("SET FOREIGN_KEY_CHECKS=0");
     // order matters with FKs
     $tables = [
-        'recording_subject',
-        'recording_subgenre',
-        'recording',
-        'informant_image',
-        'informant',
-        'composer',
-        'subject',
-        'subgenre',
-        'song_structure',
-        'genre',
+            'recording_subject',
+            'recording_subgenre',
+            'recording',
+            'informant_image',
+            'informant',
+            'composer',
+            'subject',
+            'subgenre',
+            'song_structure',
+            'genre',
     ];
     foreach ($tables as $t) {
         $pdo->exec("TRUNCATE TABLE `$t`");
@@ -259,7 +258,7 @@ ON DUPLICATE KEY UPDATE
   last_name = COALESCE(VALUES(last_name), last_name),
   first_name = COALESCE(VALUES(first_name), first_name),
   maiden_name = COALESCE(VALUES(maiden_name), maiden_name),
-  title = COALESCE(VALUES(title), title),
+  title = CASE WHEN title IS NULL OR title = '' THEN VALUES(title) ELSE title END,
   nickname = COALESCE(VALUES(nickname), nickname),
   cinneadh = COALESCE(VALUES(cinneadh), cinneadh),
   sloinneadh_breithe = COALESCE(VALUES(sloinneadh_breithe), sloinneadh_breithe),
@@ -279,26 +278,26 @@ SQL;
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
-        ':informant_id' => $r['informant_id'],
-        ':last_name' => $r['last_name'] ?? null,
-        ':first_name' => $r['first_name'] ?? null,
-        ':maiden_name' => $r['maiden_name'] ?? null,
-        ':title' => $r['title'] ?? null,
-        ':nickname' => $r['nickname'] ?? null,
-        ':cinneadh' => $r['cinneadh'] ?? null,
-        ':sloinneadh_breithe' => $r['sloinneadh_breithe'] ?? null,
-        ':ainm' => $r['ainm'] ?? null,
-        ':tiotal_ga' => $r['tiotal_ga'] ?? null,
-        ':patronymic' => $r['patronymic'] ?? null,
-        ':gender' => $r['gender'] ?? null,
-        ':years_recorded' => $r['years_recorded'] ?? null,
-        ':community_origin_canada' => $r['community_origin_canada'] ?? null,
-        ':county' => $r['county'] ?? null,
-        ':province_canada' => $r['province_canada'] ?? null,
-        ':country' => $r['country'] ?? null,
-        ':tradition_scotland' => $r['tradition_scotland'] ?? null,
-        ':dates_raw' => $r['dates_raw'] ?? null,
-        ':bio_doc' => $r['bio_doc'] ?? null,
+            ':informant_id' => $r['informant_id'],
+            ':last_name' => $r['last_name'] ?? null,
+            ':first_name' => $r['first_name'] ?? null,
+            ':maiden_name' => $r['maiden_name'] ?? null,
+            ':title' => $r['title'] ?? null,
+            ':nickname' => $r['nickname'] ?? null,
+            ':cinneadh' => $r['cinneadh'] ?? null,
+            ':sloinneadh_breithe' => $r['sloinneadh_breithe'] ?? null,
+            ':ainm' => $r['ainm'] ?? null,
+            ':tiotal_ga' => $r['tiotal_ga'] ?? null,
+            ':patronymic' => $r['patronymic'] ?? null,
+            ':gender' => $r['gender'] ?? null,
+            ':years_recorded' => $r['years_recorded'] ?? null,
+            ':community_origin_canada' => $r['community_origin_canada'] ?? null,
+            ':county' => $r['county'] ?? null,
+            ':province_canada' => $r['province_canada'] ?? null,
+            ':country' => $r['country'] ?? null,
+            ':tradition_scotland' => $r['tradition_scotland'] ?? null,
+            ':dates_raw' => $r['dates_raw'] ?? null,
+            ':bio_doc' => $r['bio_doc'] ?? null,
     ]);
 }
 
@@ -314,10 +313,10 @@ ON DUPLICATE KEY UPDATE
 SQL;
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
-        ':iid' => $informantId,
-        ':slot' => $slot,
-        ':fn' => $filename,
-        ':cap' => $caption,
+            ':iid' => $informantId,
+            ':slot' => $slot,
+            ':fn' => $filename,
+            ':cap' => $caption,
     ]);
 }
 
@@ -341,7 +340,7 @@ INSERT INTO composer (
 ON DUPLICATE KEY UPDATE
   last_name = COALESCE(VALUES(last_name), last_name),
   first_name = COALESCE(VALUES(first_name), first_name),
-  title = COALESCE(VALUES(title), title),
+  title = CASE WHEN title IS NULL OR title = '' THEN VALUES(title) ELSE title END,
   nickname = COALESCE(VALUES(nickname), nickname),
   maiden_name = COALESCE(VALUES(maiden_name), maiden_name),
   cinneadh = COALESCE(VALUES(cinneadh), cinneadh),
@@ -361,25 +360,25 @@ SQL;
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
-        ':composer_id' => $r['composer_id'],
-        ':last_name' => $r['last_name'] ?? null,
-        ':first_name' => $r['first_name'] ?? null,
-        ':title' => $r['title'] ?? null,
-        ':nickname' => $r['nickname'] ?? null,
-        ':maiden_name' => $r['maiden_name'] ?? null,
-        ':cinneadh' => $r['cinneadh'] ?? null,
-        ':sloinneadh_breithe' => $r['sloinneadh_breithe'] ?? null,
-        ':ainm' => $r['ainm'] ?? null,
-        ':tiotal_ga' => $r['tiotal_ga'] ?? null,
-        ':patronymic' => $r['patronymic'] ?? null,
-        ':dates_raw' => $r['dates_raw'] ?? null,
-        ':gender' => $r['gender'] ?? null,
-        ':place_of_birth' => $r['place_of_birth'] ?? null,
-        ':location_community' => $r['location_community'] ?? null,
-        ':location_county' => $r['location_county'] ?? null,
-        ':tradition_scotland' => $r['tradition_scotland'] ?? null,
-        ':biography_doc' => $r['biography_doc'] ?? null,
-        ':image_filename' => $r['image_filename'] ?? null,
+            ':composer_id' => $r['composer_id'],
+            ':last_name' => $r['last_name'] ?? null,
+            ':first_name' => $r['first_name'] ?? null,
+            ':title' => $r['title'] ?? null,
+            ':nickname' => $r['nickname'] ?? null,
+            ':maiden_name' => $r['maiden_name'] ?? null,
+            ':cinneadh' => $r['cinneadh'] ?? null,
+            ':sloinneadh_breithe' => $r['sloinneadh_breithe'] ?? null,
+            ':ainm' => $r['ainm'] ?? null,
+            ':tiotal_ga' => $r['tiotal_ga'] ?? null,
+            ':patronymic' => $r['patronymic'] ?? null,
+            ':dates_raw' => $r['dates_raw'] ?? null,
+            ':gender' => $r['gender'] ?? null,
+            ':place_of_birth' => $r['place_of_birth'] ?? null,
+            ':location_community' => $r['location_community'] ?? null,
+            ':location_county' => $r['location_county'] ?? null,
+            ':tradition_scotland' => $r['tradition_scotland'] ?? null,
+            ':biography_doc' => $r['biography_doc'] ?? null,
+            ':image_filename' => $r['image_filename'] ?? null,
     ]);
 }
 
@@ -407,7 +406,7 @@ INSERT INTO recording (
 ON DUPLICATE KEY UPDATE
   informant_id = VALUES(informant_id),
   composer_id = VALUES(composer_id),
-  title = COALESCE(VALUES(title), title),
+  title = CASE WHEN title IS NULL OR title = '' THEN VALUES(title) ELSE title END,
   alt_title = COALESCE(VALUES(alt_title), alt_title),
   transcription_label = COALESCE(VALUES(transcription_label), transcription_label),
   place_of_origin = COALESCE(VALUES(place_of_origin), place_of_origin),
@@ -428,26 +427,26 @@ SQL;
 
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
-        ':recording_id' => $r['recording_id'],
-        ':informant_id' => $r['informant_id'],
-        ':composer_id' => $r['composer_id'] ?? null,
-        ':title' => $r['title'] ?? null,
-        ':alt_title' => $r['alt_title'] ?? null,
-        ':transcription_label' => $r['transcription_label'] ?? null,
-        ':place_of_origin' => $r['place_of_origin'] ?? null,
-        ':genre_id' => $r['genre_id'] ?? null,
-        ':song_structure_id' => $r['song_structure_id'] ?? null,
-        ':song_air' => $r['song_air'] ?? null,
-        ':first_line_chorus' => $r['first_line_chorus'] ?? null,
-        ':first_line_verse' => $r['first_line_verse'] ?? null,
-        ':original_tape_no' => $r['original_tape_no'] ?? null,
-        ':original_tape_item_no' => $r['original_tape_item_no'] ?? null,
-        ':recording_date' => $r['recording_date'] ?? null,
-        ':includes_english_translation' => $r['includes_english_translation'] ?? 0,
-        ':notes1' => $r['notes1'] ?? null,
-        ':notes2' => $r['notes2'] ?? null,
-        ':notes3' => $r['notes3'] ?? null,
-        ':notes4' => $r['notes4'] ?? null,
+            ':recording_id' => $r['recording_id'],
+            ':informant_id' => $r['informant_id'],
+            ':composer_id' => $r['composer_id'] ?? null,
+            ':title' => $r['title'] ?? null,
+            ':alt_title' => $r['alt_title'] ?? null,
+            ':transcription_label' => $r['transcription_label'] ?? null,
+            ':place_of_origin' => $r['place_of_origin'] ?? null,
+            ':genre_id' => $r['genre_id'] ?? null,
+            ':song_structure_id' => $r['song_structure_id'] ?? null,
+            ':song_air' => $r['song_air'] ?? null,
+            ':first_line_chorus' => $r['first_line_chorus'] ?? null,
+            ':first_line_verse' => $r['first_line_verse'] ?? null,
+            ':original_tape_no' => $r['original_tape_no'] ?? null,
+            ':original_tape_item_no' => $r['original_tape_item_no'] ?? null,
+            ':recording_date' => $r['recording_date'] ?? null,
+            ':includes_english_translation' => $r['includes_english_translation'] ?? 0,
+            ':notes1' => $r['notes1'] ?? null,
+            ':notes2' => $r['notes2'] ?? null,
+            ':notes3' => $r['notes3'] ?? null,
+            ':notes4' => $r['notes4'] ?? null,
     ]);
 }
 
@@ -525,26 +524,26 @@ try {
         if (!$informantId) continue;
 
         $payload = [
-            'informant_id' => $informantId,
-            'last_name' => $r['informant last name'] ?? null,
-            'first_name' => $r['informant first name'] ?? null,
-            'maiden_name' => $r['informant maiden name'] ?? null,
-            'title' => $r['title'] ?? null,
-            'nickname' => $r['nickname/familiar name'] ?? null,
-            'cinneadh' => $r['cinneadh'] ?? null,
-            'sloinneadh_breithe' => $r['sloinneadh-breithe'] ?? null,
-            'ainm' => $r['ainm'] ?? null,
-            'tiotal_ga' => $r['tiotal'] ?? null,
-            'patronymic' => $r['sloinneadh/patronymic'] ?? null,
-            'gender' => $r['gender'] ?? null,
-            'years_recorded' => $r['year(s) recorded'] ?? null,
-            'community_origin_canada' => $r["community of origin (canada)"] ?? null,
-            'county' => $r['county'] ?? null,
-            'province_canada' => $r['province (canada)'] ?? null,
-            'country' => $r['country'] ?? null,
-            'tradition_scotland' => $r['tradition (scotland)'] ?? null,
-            'dates_raw' => $r['dates'] ?? null,
-            'bio_doc' => $r['bio doc'] ?? null,
+                'informant_id' => $informantId,
+                'last_name' => $r['informant last name'] ?? null,
+                'first_name' => $r['informant first name'] ?? null,
+                'maiden_name' => $r['informant maiden name'] ?? null,
+                'title' => $r['title'] ?? null,
+                'nickname' => $r['nickname/familiar name'] ?? null,
+                'cinneadh' => $r['cinneadh'] ?? null,
+                'sloinneadh_breithe' => $r['sloinneadh-breithe'] ?? null,
+                'ainm' => $r['ainm'] ?? null,
+                'tiotal_ga' => $r['tiotal'] ?? null,
+                'patronymic' => $r['sloinneadh/patronymic'] ?? null,
+                'gender' => $r['gender'] ?? null,
+                'years_recorded' => $r['year(s) recorded'] ?? null,
+                'community_origin_canada' => $r["community of origin (canada)"] ?? null,
+                'county' => $r['county'] ?? null,
+                'province_canada' => $r['province (canada)'] ?? null,
+                'country' => $r['country'] ?? null,
+                'tradition_scotland' => $r['tradition (scotland)'] ?? null,
+                'dates_raw' => $r['dates'] ?? null,
+                'bio_doc' => $r['bio doc'] ?? null,
         ];
 
         if (!$dryRun) {
@@ -567,25 +566,25 @@ try {
         if (!$composerId) continue;
 
         $payload = [
-            'composer_id' => $composerId,
-            'last_name' => $r['bard last name'] ?? null,
-            'first_name' => $r['bard first name'] ?? null,
-            'title' => $r['title'] ?? null,
-            'nickname' => $r['nickname/familiar name'] ?? null,
-            'maiden_name' => $r['composer maiden name'] ?? null,
-            'cinneadh' => $r['cinneadh'] ?? null,
-            'sloinneadh_breithe' => $r['sloinneadh-breithe'] ?? null,
-            'ainm' => $r['ainm'] ?? null,
-            'tiotal_ga' => $r['tiotal'] ?? null,
-            'patronymic' => $r['composer patronymic'] ?? null,
-            'dates_raw' => $r['composer dates'] ?? null,
-            'gender' => $r['composer gender'] ?? null,
-            'place_of_birth' => $r['place of birth'] ?? null,
-            'location_community' => $r['composer location - associated community'] ?? null,
-            'location_county' => $r['composer location - associated county'] ?? null,
-            'tradition_scotland' => $r['tradition (scotland)'] ?? null,
-            'biography_doc' => $r['composer biography'] ?? null,
-            'image_filename' => $r['composer image'] ?? null,
+                'composer_id' => $composerId,
+                'last_name' => $r['bard last name'] ?? null,
+                'first_name' => $r['bard first name'] ?? null,
+                'title' => $r['title'] ?? null,
+                'nickname' => $r['nickname/familiar name'] ?? null,
+                'maiden_name' => $r['composer maiden name'] ?? null,
+                'cinneadh' => $r['cinneadh'] ?? null,
+                'sloinneadh_breithe' => $r['sloinneadh-breithe'] ?? null,
+                'ainm' => $r['ainm'] ?? null,
+                'tiotal_ga' => $r['tiotal'] ?? null,
+                'patronymic' => $r['composer patronymic'] ?? null,
+                'dates_raw' => $r['composer dates'] ?? null,
+                'gender' => $r['composer gender'] ?? null,
+                'place_of_birth' => $r['place of birth'] ?? null,
+                'location_community' => $r['composer location - associated community'] ?? null,
+                'location_county' => $r['composer location - associated county'] ?? null,
+                'tradition_scotland' => $r['tradition (scotland)'] ?? null,
+                'biography_doc' => $r['composer biography'] ?? null,
+                'image_filename' => $r['composer image'] ?? null,
         ];
 
         if (!$dryRun) upsertComposer($pdo, $payload);
@@ -613,10 +612,9 @@ try {
         // Ensure informant exists (recording sheet contains minimal name fields)
         if (!$dryRun) {
             upsertInformant($pdo, [
-                'informant_id' => $informantId,
-                'last_name' => $r['informantlast name'] ?? null,
-                'first_name' => $r['informant first name'] ?? null,
-                'title' => $r['title'] ?? null,
+                    'informant_id' => $informantId,
+                    'last_name' => $r['informantlast name'] ?? null,
+                    'first_name' => $r['informant first name'] ?? null,
             ]);
         }
 
@@ -644,36 +642,36 @@ try {
             $includesEnBool = in_array(mb_strtolower($includesEn), ['1', 'yes', 'y', 'true'], true) ? 1 : 0;
         }
 
-        // Transcription column in spreadsheet is the recording title/label; Alternative Title separate
+        // TITLE column in spreadsheet is the recording title; TRANSCRIPTION is a separate field/label
         $transcription = $r['transcription'] ?? null;
         $altTitle = $r['alternative title'] ?? null;
 
-        // Heuristic: use transcription as title if present
-        $title = $transcription;
+        // Use TITLE as primary title (always populated in the sheet)
+        $title = $r['title'] ?? null;
 
         $recordingDate = parseDateToYmd($r['recording date'] ?? null);
 
         $payload = [
-            'recording_id' => $recordingId,
-            'informant_id' => $informantId,
-            'composer_id' => $composerId,
-            'title' => $title,
-            'alt_title' => $altTitle,
-            'transcription_label' => $transcription,
-            'place_of_origin' => $r['place of origin'] ?? null,
-            'genre_id' => $genreId,
-            'song_structure_id' => $structureId,
-            'song_air' => $r['song air'] ?? null,
-            'first_line_chorus' => $r['song first line (chorus)'] ?? null,
-            'first_line_verse' => $r['song first line (verse)'] ?? null,
-            'original_tape_no' => $r['original tape no.'] !== null ? (int)$r['original tape no.'] : null,
-            'original_tape_item_no' => $r['original tape item no.'] ?? null,
-            'recording_date' => $recordingDate,
-            'includes_english_translation' => $includesEnBool,
-            'notes1' => $r['notes 1 additional information from collection fieldnotes not included in metadata'] ?? null,
-            'notes2' => $r['notes 2 reference source (published versions or articles that provide more context or actual lyrics/words to the song/story)'] ?? null,
-            'notes3' => $r['notes 3 publications - transcripts made from this specific recording (e.g. sgeul gu latha, na beanntaichean gorma, brìgh an òrain, etc.)'] ?? null,
-            'notes4' => $r['notes 4 additional notes from the language and lyrics team'] ?? null,
+                'recording_id' => $recordingId,
+                'informant_id' => $informantId,
+                'composer_id' => $composerId,
+                'title' => $title,
+                'alt_title' => $altTitle,
+                'transcription_label' => $transcription,
+                'place_of_origin' => $r['place of origin'] ?? null,
+                'genre_id' => $genreId,
+                'song_structure_id' => $structureId,
+                'song_air' => $r['song air'] ?? null,
+                'first_line_chorus' => $r['song first line (chorus)'] ?? null,
+                'first_line_verse' => $r['song first line (verse)'] ?? null,
+                'original_tape_no' => $r['original tape no.'] !== null ? (int)$r['original tape no.'] : null,
+                'original_tape_item_no' => $r['original tape item no.'] ?? null,
+                'recording_date' => $recordingDate,
+                'includes_english_translation' => $includesEnBool,
+                'notes1' => $r['notes 1 additional information from collection fieldnotes not included in metadata'] ?? null,
+                'notes2' => $r['notes 2 reference source (published versions or articles that provide more context or actual lyrics/words to the song/story)'] ?? null,
+                'notes3' => $r['notes 3 publications - transcripts made from this specific recording (e.g. sgeul gu latha, na beanntaichean gorma, brìgh an òrain, etc.)'] ?? null,
+                'notes4' => $r['notes 4 additional notes from the language and lyrics team'] ?? null,
         ];
 
         if (!$dryRun) {

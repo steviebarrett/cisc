@@ -1,14 +1,33 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+Import DOCX transcriptions into the `recording` table.
 
-# usage: python3 import_transcriptions.py --root "/path/to/Transcriptions" --db "cisc" --user "YOURUSER" --password "YOURPASS"
-# ... and add   --dry-run   at the end if desired
+- Recursively scans a root directory for .docx files (including subdirectories)
+- Extracts `recording_id` from the filename (supports:
+    GF207i08
+    GF014i08N
+    GF108i05_109i01
+  and similar patterns)
+- Extracts:
+    - transcription_text (plain text, best for searching)
+    - transcription_html (sanitised HTML generated from the DOCX: <p>, <br>, <strong>, <em>, <u>)
+- Updates DB:
+    - default: fill only blanks (won't overwrite existing transcription_text/html)
+    - --overwrite: always replace
 
+Usage:
+  python3 import_transcriptions.py --root "/path/to/Transcriptions" --db "cisc" --user "YOURUSER" --password "YOURPASS"
+  Add --dry-run to preview actions without writing.
+  Add --overwrite to replace existing transcription fields.
+
+Deps:
+  pip install python-docx pymysql
+"""
 
 import argparse
 import html
-import os
 import re
 import sys
 from dataclasses import dataclass
@@ -19,7 +38,12 @@ import pymysql
 from docx import Document
 
 
-DEFAULT_ID_REGEX = r"(GF\d{3}i\d{2})"  # matches GF207i08 anywhere in the filename
+# Matches:
+#   GF207i08
+#   GF014i08N
+#   GF108i05_109i01
+#   GF108i05N_109i01N
+DEFAULT_ID_REGEX = r"(GF\d{3}i\d{2}[A-Z]?(?:_\d{3}i\d{2}[A-Z]?)*)"
 
 
 @dataclass
@@ -31,11 +55,12 @@ class Extracted:
 
 
 def extract_recording_id(filename: str, id_regex: str) -> Optional[str]:
+    """
+    Find a recording_id anywhere in filename using the provided regex.
+    Returns canonical uppercase (to match DB IDs).
+    """
     m = re.search(id_regex, filename, flags=re.IGNORECASE)
-    if not m:
-        return None
-    # Normalize to canonical case (your IDs appear uppercase in DB)
-    return m.group(1).upper()
+    return m.group(1).upper() if m else None
 
 
 def docx_to_text_and_html(docx_path: Path) -> Tuple[str, str]:
@@ -50,16 +75,13 @@ def docx_to_text_and_html(docx_path: Path) -> Tuple[str, str]:
     html_paras: List[str] = []
 
     for p in doc.paragraphs:
-        # Skip completely empty paragraphs (but keep intentional blank lines in plain text modestly)
         raw = p.text or ""
         if raw.strip() == "":
-            # You can choose to keep blank paragraph markers if you want.
             continue
 
         plain_paras.append(raw)
 
         # Build sanitised HTML from runs, preserving bold/italic/underline.
-        # We escape text, and we only emit tags we explicitly choose.
         run_bits: List[str] = []
         for r in p.runs:
             t = r.text or ""
@@ -68,7 +90,7 @@ def docx_to_text_and_html(docx_path: Path) -> Tuple[str, str]:
 
             esc = html.escape(t, quote=False)
 
-            # Preserve basic emphasis as tags (nesting kept simple)
+            # Preserve basic emphasis as tags (nesting kept simple).
             if r.bold:
                 esc = f"<strong>{esc}</strong>"
             if r.italic:
@@ -80,7 +102,7 @@ def docx_to_text_and_html(docx_path: Path) -> Tuple[str, str]:
             esc = esc.replace("\n", "<br>")
             run_bits.append(esc)
 
-        # If runs gave us nothing (rare), fall back to escaped paragraph text
+        # If runs gave us nothing (rare), fall back to escaped paragraph text.
         inner = "".join(run_bits) if run_bits else html.escape(raw, quote=False)
         html_paras.append(f"<p>{inner}</p>")
 
@@ -154,7 +176,11 @@ def iter_docx_files(root: Path):
 def main():
     ap = argparse.ArgumentParser(description="Import DOCX transcriptions into recording table.")
     ap.add_argument("--root", required=True, help="Root Transcriptions directory (recursive).")
-    ap.add_argument("--id-regex", default=DEFAULT_ID_REGEX, help=f"Regex to extract recording_id (default: {DEFAULT_ID_REGEX})")
+    ap.add_argument(
+        "--id-regex",
+        default=DEFAULT_ID_REGEX,
+        help=f"Regex to extract recording_id (default: {DEFAULT_ID_REGEX})",
+    )
 
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--port", type=int, default=3306)
@@ -162,8 +188,10 @@ def main():
     ap.add_argument("--user", required=True)
     ap.add_argument("--password", required=True)
 
-    ap.add_argument("--overwrite", action="store_true", help="Overwrite existing transcription_text/html (default fills only blanks).")
-    ap.add_argument("--dry-run", action="store_true", help="Parse files and report actions, but do not update DB.")
+    ap.add_argument("--overwrite", action="store_true",
+                    help="Overwrite existing transcription_text/html (default fills only blanks).")
+    ap.add_argument("--dry-run", action="store_true",
+                    help="Parse files and report actions, but do not update DB.")
     ap.add_argument("--commit-every", type=int, default=50, help="Commit every N updated rows.")
     args = ap.parse_args()
 
@@ -177,16 +205,17 @@ def main():
         print(f"No .docx files found under: {root}")
         return
 
-    no_id = []
-    not_in_db = []
+    no_id: List[str] = []
+    not_in_db: List[Tuple[str, str]] = []
     parsed = 0
     updated = 0
+    would_update = 0
     skipped_empty = 0
 
     conn = connect_mysql(args.host, args.port, args.user, args.password, args.db)
     try:
         with conn.cursor() as cur:
-            for i, path in enumerate(docx_files, start=1):
+            for path in docx_files:
                 rid = extract_recording_id(path.name, args.id_regex)
                 if not rid:
                     no_id.append(str(path))
@@ -212,11 +241,13 @@ def main():
 
                 if args.dry_run:
                     print(f"[DRY] would update {rid} from {path}")
+                    would_update += 1
                 else:
                     update_recording(cur, ex, overwrite=args.overwrite)
-                    updated += cur.rowcount  # should be 1
+                    # Depending on MySQL settings, rowcount may be 0 if values are unchanged.
+                    updated += cur.rowcount
 
-                    if updated % args.commit_every == 0:
+                    if updated and (updated % args.commit_every == 0):
                         conn.commit()
 
             if args.dry_run:
@@ -231,7 +262,11 @@ def main():
     print(f"Root: {root}")
     print(f"DOCX files found: {len(docx_files)}")
     print(f"DOCX parsed (had recording_id): {parsed}")
-    print(f"Rows updated: {updated} {'(dry-run)' if args.dry_run else ''}")
+    if args.dry_run:
+        print("Rows updated: 0 (dry-run)")
+        print(f"Rows that WOULD update: {would_update}")
+    else:
+        print(f"Rows updated: {updated}")
     print(f"Skipped (empty transcription): {skipped_empty}")
     print(f"Files with no recording_id in filename: {len(no_id)}")
     print(f"recording_id not found in DB: {len(not_in_db)}")

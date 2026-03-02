@@ -1,5 +1,12 @@
 RewriteEngine On
 
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^ index.php [QSA,L]
+# Stop rewrite loops on the front controller
+RewriteRule ^index\.php$ - [L]
+
+# Serve real files/dirs directly
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Everything else -> front controller
+RewriteRule . index.php [QSA,L]

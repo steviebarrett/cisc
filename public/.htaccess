@@ -11,4 +11,4 @@ RewriteCond %{REQUEST_FILENAME} -d
 RewriteRule ^ - [L]
 
 # Everything else -> front controller
-RewriteRule . index.php [QSA,L]
+RewriteRule ^ index.php [QSA,L]

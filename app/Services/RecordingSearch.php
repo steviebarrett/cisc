@@ -15,6 +15,9 @@ final class RecordingSearch
 
         $genre = trim((string)($params['genre'] ?? ''));
 
+        $hasTranscription = (int)($params['has_transcription'] ?? 0);
+        $transcriptionQ = trim((string)($params['transcription_q'] ?? ''));
+
         $subgenres = $params['subgenre'] ?? [];
         if (!is_array($subgenres)) {
             $subgenres = [];
@@ -94,6 +97,15 @@ final class RecordingSearch
 
         if ($hasEn === 1) {
             $where[] = 'r.includes_english_translation = 1';
+        }
+
+        if ($hasTranscription === 1) {
+            $where[] = "r.transcription_html IS NOT NULL AND TRIM(r.transcription_html) <> ''";
+        }
+
+        if ($transcriptionQ !== '') {
+            $where[] = "COALESCE(r.transcription_text, '') LIKE :transcription_q";
+            $bind[':transcription_q'] = '%' . $transcriptionQ . '%';
         }
 
         $whereSql = $where ? ('WHERE ' . implode(' AND ', $where)) : '';

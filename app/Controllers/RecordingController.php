@@ -21,6 +21,8 @@ final class RecordingController extends Controller {
             'subject'   => $subjects,
             'subjects'  => $subjects,
             'has_en' => (int)($_GET['has_en'] ?? 0),
+            'has_transcription' => (int)($_GET['has_transcription'] ?? 0),
+            'transcription_q' => trim((string)($_GET['transcription_q'] ?? '')),
             'sort' => (string)($_GET['sort'] ?? 'date_desc'),
             'page' => (int)($_GET['page'] ?? 1),
             'per_page' => (int)($_GET['per_page'] ?? 20),

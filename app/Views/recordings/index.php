@@ -1,9 +1,4 @@
 <?php
-/** @var array $params */
-/** @var array $result */
-/** @var array $genres */
-/** @var array $subgenres_all */
-/** @var array $subjects_all */
 
 $title = 'Recordings';
 
@@ -20,6 +15,8 @@ $headerSearchOpen = !$searchClosed && header_filters_open($kw, $params, [
                 'genre'     => '',
                 'subgenres' => [],
                 'subjects'  => [],
+                'has_transcription' => 0,
+                'transcription_q'   => '',
                 'has_en'    => 0,
                 'sort'      => 'date_desc',
                 'per_page'  => 20,
@@ -32,6 +29,16 @@ ob_start();
         <div class="col-12 col-lg-6">
             <label class="form-label">Keyword</label>
             <input class="form-control" name="q" value="<?= e($kw) ?>" placeholder="Title, first line, notes...">
+        </div>
+
+        <div class="col-12 col-lg-6">
+            <label class="form-label" for="transcription_q"><i class="fa-regular fa-file"></i> Transcription Content</label>
+            <input class="form-control"
+                   type="text"
+                   name="transcription_q"
+                   id="transcription_q"
+                   value="<?= e((string)($params['transcription_q'] ?? '')) ?>"
+                   placeholder="Search within transcriptions...">
         </div>
 
         <div class="col-12 col-lg-6">
@@ -80,6 +87,21 @@ ob_start();
             </div>
         </div>
 
+        <div class="col-12">
+            <?php $hasTranscription = (int)($params['has_transcription'] ?? 0); ?>
+            <div class="form-check">
+                <input class="form-check-input"
+                       type="checkbox"
+                       name="has_transcription"
+                       value="1"
+                       id="has_transcription"
+                        <?= $hasTranscription === 1 ? 'checked' : '' ?>>
+                <label class="form-check-label" for="has_transcription">
+                    <i class="fa-regular fa-file"></i> Has transcription
+                </label>
+            </div>
+        </div>
+
         <div class="col-12 col-lg-6">
             <label class="form-label">Sub-genres</label>
             <div class="border rounded p-2" style="max-height: 220px; overflow:auto;">
@@ -94,7 +116,7 @@ ob_start();
         </div>
 
         <div class="col-12 col-lg-6">
-            <label class="form-label">Subjects</label>
+            <label class="form-label">Subject</label>
 
             <?php
             $selected = (array)($params['subject'] ?? ($params['subjects'] ?? []));
@@ -146,6 +168,22 @@ $headerSearch = ob_get_clean();
         $active[] = [
                 'label' => 'Keyword: ' . $kw,
                 'qs'    => qs(['q' => '', 'page' => 1]),
+        ];
+    }
+
+    $hasTranscription = (int)($params['has_transcription'] ?? 0);
+    if ($hasTranscription === 1) {
+        $active[] = [
+                'label' => 'Has transcription',
+                'qs'    => qs(['has_transcription' => 0, 'page' => 1]),
+        ];
+    }
+
+    $transcriptionQ = trim((string)($params['transcription_q'] ?? ''));
+    if ($transcriptionQ !== '') {
+        $active[] = [
+                'label' => 'Transcription: ' . $transcriptionQ,
+                'qs'    => qs(['transcription_q' => '', 'page' => 1]),
         ];
     }
 
@@ -236,6 +274,8 @@ $headerSearch = ob_get_clean();
             <input type="hidden" name="place" value="<?= e((string)($params['place'] ?? '')) ?>">
             <input type="hidden" name="genre" value="<?= e((string)($params['genre'] ?? '')) ?>">
             <input type="hidden" name="has_en" value="<?= (int)($params['has_en'] ?? 0) ?>">
+            <input type="hidden" name="has_transcription" value="<?= (int)($params['has_transcription'] ?? 0) ?>">
+            <input type="hidden" name="transcription_q" value="<?= e((string)($params['transcription_q'] ?? '')) ?>">
 
             <?php foreach ((array)($params['subgenre'] ?? []) as $sg): ?>
                 <input type="hidden" name="subgenre[]" value="<?= e((string)$sg) ?>">

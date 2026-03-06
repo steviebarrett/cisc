@@ -118,13 +118,17 @@ if ($qs !== '') {
         <?php endif; ?>
 
         <!-- transcription -->
-        <?php
-        $transcriptionHtml = $rec['transcription_html'] ?? '';
+        <?php $transcriptionQ = trim((string)($_GET['transcription_q'] ?? ''));     //transcription query
+
+        // highlight any searched for keyword in transcription context
+        $transcriptionHtml = $transcriptionQ !== ''
+                ? highlight_html_ga((string)$rec['transcription_html'], $transcriptionQ)
+                : (string)$rec['transcription_html'];
         $transcriptionText = $rec['transcription_text'] ?? '';
         $hasTranscription  = (is_string($transcriptionHtml) && trim($transcriptionHtml) !== '')
                 || (is_string($transcriptionText) && trim($transcriptionText) !== '');
 
-        //check notes3 field and use if no transcription
+        //check notes3 field and use if no transcription found
         $useNote = false;
         if (!$hasTranscription) {
             if (!empty($rec["notes3_publications"])) {

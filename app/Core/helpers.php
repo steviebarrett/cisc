@@ -112,6 +112,94 @@ function highlight_excerpt_ga(?string $text, string $q, int $radius = 80): strin
     return $prefix . highlight_ga($excerpt, $q) . $suffix;
 }
 
+/**
+ * Display a keyword in context using HTML
+ * Used, for example, when searching transcriptions for a keyword
+ *
+ * @param string|null $html
+ * @param string $q
+ * @return string
+ * @throws DOMException
+ */
+function highlight_html_ga(?string $html, string $q): string {
+    $html = (string)$html;
+    $q = trim($q);
+
+    if ($html === '' || $q === '') {
+        return $html;
+    }
+
+    $core = ga_highlight_pattern($q);
+    if ($core === '') {
+        return $html;
+    }
+
+    $pattern = '/(' . $core . ')/iu';
+
+    libxml_use_internal_errors(true);
+
+    $dom = new DOMDocument('1.0', 'UTF-8');
+    $wrapped = '<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body><div id="__root__">' . $html . '</div></body></html>';
+    $wrapped = '<?xml encoding="UTF-8">' . $wrapped;
+    $dom->loadHTML($wrapped, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+
+    $xpath = new DOMXPath($dom);
+    $textNodes = $xpath->query('//div[@id="__root__"]//text()[normalize-space(.) != ""]');
+
+    if ($textNodes !== false) {
+        $nodes = [];
+        foreach ($textNodes as $node) {
+            $nodes[] = $node;
+        }
+
+        foreach ($nodes as $textNode) {
+            $parentName = strtolower($textNode->parentNode->nodeName ?? '');
+            if (in_array($parentName, ['script', 'style', 'mark'], true)) {
+                continue;
+            }
+
+            $text = $textNode->nodeValue ?? '';
+            if ($text === '' || !preg_match($pattern, $text)) {
+                continue;
+            }
+
+            $parts = preg_split($pattern, $text, -1, PREG_SPLIT_DELIM_CAPTURE);
+            if ($parts === false) {
+                continue;
+            }
+
+            $frag = $dom->createDocumentFragment();
+
+            foreach ($parts as $part) {
+                if ($part === '') continue;
+
+                if (preg_match($pattern, $part)) {
+                    $mark = $dom->createElement('mark');
+                    $mark->appendChild($dom->createTextNode($part));
+                    $frag->appendChild($mark);
+                } else {
+                    $frag->appendChild($dom->createTextNode($part));
+                }
+            }
+
+            $textNode->parentNode->replaceChild($frag, $textNode);
+        }
+    }
+
+    $root = $dom->getElementById('__root__');
+    if (!$root) {
+        return $html;
+    }
+
+    $out = '';
+    foreach ($root->childNodes as $child) {
+        $out .= $dom->saveHTML($child);
+    }
+
+    libxml_clear_errors();
+    return $out;
+}
+
 function base_path(string $path = ''): string {
     static $config = null;
     if ($config === null) {

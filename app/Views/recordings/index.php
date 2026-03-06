@@ -304,6 +304,7 @@ $headerSearch = ob_get_clean();
         </form>
     </div>
 
+    <?php $transcriptionQ = trim((string)($params['transcription_q'] ?? '')); ?>
     <div class="list-group">
         <?php foreach (($result['rows'] ?? []) as $row): ?>
             <?php
@@ -332,6 +333,11 @@ $headerSearch = ob_get_clean();
                             <?php if (!empty($row['genre_name'])): ?> · <?= e((string)$row['genre_name']) ?><?php endif; ?>
                             <?php if (!empty($row['includes_english_translation'])): ?> · EN<?php endif; ?>
                         </div>
+                        <?php if ($transcriptionQ !== '' && !empty($row['transcription_text'])): ?>
+                            <div class="small mt-1 text-muted">
+                                <?= highlight_excerpt_ga((string)$row['transcription_text'], $transcriptionQ) ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <div class="text-end small text-muted"><?= e($recId) ?></div>
                 </div>

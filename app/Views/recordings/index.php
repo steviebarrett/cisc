@@ -13,19 +13,21 @@ $place = trim((string)($params['place'] ?? ''));
 $activeNav = 'recordings';
 $headerTitle = 'Recordings';
 
-$headerSearchOpen = header_filters_open($kw, $params, [
-    'place'     => '',
-    'genre'     => '',
-    'subgenres' => [],
-    'subjects'  => [],
-    'has_en'    => 0,
-    'sort'      => 'date_desc',
-    'per_page'  => 20,
-]);
+$searchClosed = (string)($_GET['search_closed'] ?? '') === '1';
+
+$headerSearchOpen = !$searchClosed && header_filters_open($kw, $params, [
+                'place'     => '',
+                'genre'     => '',
+                'subgenres' => [],
+                'subjects'  => [],
+                'has_en'    => 0,
+                'sort'      => 'date_desc',
+                'per_page'  => 20,
+        ]);
 
 ob_start();
 ?>
-<form method="get">
+<form method="get" onsubmit="document.getElementById('search-closed-input').value='1';">
     <div class="row g-3">
         <div class="col-12 col-lg-6">
             <label class="form-label">Keyword</label>
@@ -120,6 +122,9 @@ ob_start();
             </div-->
         </div>
     </div>
+
+
+    <input type="hidden" name="search_closed" value="0" id="search-closed-input">
 
     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
         <button class="btn btn-primary">Apply</button>
@@ -294,3 +299,11 @@ $headerSearch = ob_get_clean();
 
     <?php require __DIR__ . '/../partials/pagination.php'; ?>
 </div>
+
+
+<script>
+    function closeHeaderSearch() {
+        const el = document.getElementById('searchPanel');
+        if (el) el.classList.remove('show');
+    }
+</script>

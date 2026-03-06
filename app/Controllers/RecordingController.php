@@ -5,14 +5,21 @@ use App\Services\RecordingSearch;
 
 final class RecordingController extends Controller {
     public function index(): void {
+
+        $subjectInput = trim((string)($_GET['subject'] ?? ''));
+
+        $subjects = $subjectInput === ''
+            ? []
+            : array_map('trim', explode(',', $subjectInput));
+
         $params = [
             'q' => trim((string)($_GET['q'] ?? '')),
             'place' => trim((string)($_GET['place'] ?? '')),
             'genre' => trim((string)($_GET['genre'] ?? '')),
             'subgenre'  => get_array('subgenre'),
             'subgenres' => get_array('subgenre'),
-            'subject'   => get_array('subject'),
-            'subjects'  => get_array('subject'),
+            'subject'   => $subjects,
+            'subjects'  => $subjects,
             'has_en' => (int)($_GET['has_en'] ?? 0),
             'sort' => (string)($_GET['sort'] ?? 'date_desc'),
             'page' => (int)($_GET['page'] ?? 1),

@@ -113,16 +113,33 @@ ob_start();
 
         <div class="col-12 col-lg-6">
             <label class="form-label">Subjects</label>
-            <div class="border rounded p-2" style="max-height: 220px; overflow:auto;">
-                <?php $selected = (array)($params['subject'] ?? ($params['subjects'] ?? [])); ?>
-                <?php foreach ($subjects_all as $s): ?>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="subject[]" value="<?= e($s) ?>" <?= in_array($s, $selected, true) ? 'checked' : '' ?>>
-                        <label class="form-check-label"><?= e($s) ?></label>
-                    </div>
-                <?php endforeach; ?>
+
+            <?php
+            $selected = (array)($params['subject'] ?? ($params['subjects'] ?? []));
+            $value = implode(', ', $selected);
+            ?>
+
+            <input
+                    class="form-control"
+                    list="subjectOptions"
+                    name="subject"
+                    value="<?= e($value) ?>"
+                    placeholder="Start typing a subject..."
+            >
+
+            <?php if (!empty($subjects_all)): ?>
+                <datalist id="subjectOptions">
+                    <?php foreach ($subjects_all as $s): ?>
+                        <option value="<?= e($s) ?>"></option>
+                    <?php endforeach; ?>
+                </datalist>
+            <?php endif; ?>
+
+            <div class="form-text">
+                Separate multiple subjects with commas
             </div>
         </div>
+
     </div>
 
     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">

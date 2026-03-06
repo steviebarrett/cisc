@@ -123,6 +123,14 @@ if ($qs !== '') {
         $transcriptionText = $rec['transcription_text'] ?? '';
         $hasTranscription  = (is_string($transcriptionHtml) && trim($transcriptionHtml) !== '')
                 || (is_string($transcriptionText) && trim($transcriptionText) !== '');
+
+        //check notes_3 and add if no transcription
+        if (!$hasTranscription) {
+            if (!empty($rec["notes3_publications"])) {
+                $hasTranscription = true;
+                $transcriptionHtml = e($rec["notes3_publications"]);
+            }
+        }
         ?>
 
         <?php if ($hasTranscription): ?>
@@ -149,16 +157,15 @@ if ($qs !== '') {
         ?>
         <?php if ($hasNotes): ?>
             <hr>
-            <div class="accordion" id="notesAcc">
-                <?php $i=0; foreach ($notes as $label => $txt): $txt = trim((string)$txt); if ($txt==='') continue; $i++; ?>
-                    <div class="accordion-item">
-                        <h2 class="accordion-header" id="h<?= $i ?>">
-                            <button class="accordion-button <?= $i===1 ? '' : 'collapsed' ?>" type="button" data-bs-toggle="collapse" data-bs-target="#c<?= $i ?>">
-                                <?= e($label) ?>
-                            </button>
-                        </h2>
-                        <div id="c<?= $i ?>" class="accordion-collapse collapse <?= $i===1 ? 'show' : '' ?>" data-bs-parent="#notesAcc">
-                            <div class="accordion-body"><pre class="mb-0" style="white-space:pre-wrap;"><?= e($txt) ?></pre></div>
+            <div class="list-group">
+                <?php foreach ($notes as $label => $txt):
+                    $txt = trim((string)$txt);
+                    if ($txt === '') continue;
+                    ?>
+                    <div class="list-group-item">
+                        <strong><?= e($label) ?></strong>
+                        <div class="mt-1">
+                            <pre class="mb-0" style="white-space:pre-wrap;"><?= e($txt) ?></pre>
                         </div>
                     </div>
                 <?php endforeach; ?>

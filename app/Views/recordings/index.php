@@ -70,26 +70,6 @@ ob_start();
             </select>
         </div>
 
-        <div class="col-6 col-lg-2">
-            <label class="form-label">Per page</label>
-            <select class="form-select" name="per_page">
-                <?php foreach ([10,20,50,100] as $n): ?>
-                    <option value="<?= $n ?>" <?= ((int)($params['per_page'] ?? 20) === $n) ? 'selected' : '' ?>><?= $n ?></option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-
-        <div class="col-6 col-lg-1">
-            <label class="form-label">Sort</label>
-            <?php $sort = (string)($params['sort'] ?? 'date_desc'); ?>
-            <select class="form-select" name="sort">
-                <option value="date_asc"  <?= $sort==='date_asc' ? 'selected' : '' ?>>↑</option>
-                <option value="date_desc" <?= $sort==='date_desc' ? 'selected' : '' ?>>↓</option>
-                <option value="title_asc" <?= $sort==='title_asc' ? 'selected' : '' ?>>A→Z</option>
-                <option value="title_desc"<?= $sort==='title_desc' ? 'selected' : '' ?>>Z→A</option>
-            </select>
-        </div>
-
         <div class="col-12">
             <div class="form-check">
                 <?php $hasEn = (int)($params['has_en'] ?? 0); ?>
@@ -113,33 +93,16 @@ ob_start();
 
         <div class="col-12 col-lg-6">
             <label class="form-label">Subjects</label>
-
-            <?php
-            $selected = (array)($params['subject'] ?? ($params['subjects'] ?? []));
-            $value = implode(', ', $selected);
-            ?>
-
-            <input
-                    class="form-control"
-                    list="subjectOptions"
-                    name="subject"
-                    value="<?= e($value) ?>"
-                    placeholder="Start typing a subject..."
-            >
-
-            <?php if (!empty($subjects_all)): ?>
-                <datalist id="subjectOptions">
-                    <?php foreach ($subjects_all as $s): ?>
-                        <option value="<?= e($s) ?>"></option>
-                    <?php endforeach; ?>
-                </datalist>
-            <?php endif; ?>
-
-            <div class="form-text">
-                Separate multiple subjects with commas
+            <div class="border rounded p-2" style="max-height: 220px; overflow:auto;">
+                <?php $selected = (array)($params['subject'] ?? ($params['subjects'] ?? [])); ?>
+                <?php foreach ($subjects_all as $s): ?>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="subject[]" value="<?= e($s) ?>" <?= in_array($s, $selected, true) ? 'checked' : '' ?>>
+                        <label class="form-check-label"><?= e($s) ?></label>
+                    </div>
+                <?php endforeach; ?>
             </div>
         </div>
-
     </div>
 
     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
@@ -239,8 +202,45 @@ $headerSearch = ob_get_clean();
         </div>
     <?php endif; ?>
 
-    <div class="d-flex justify-content-between align-items-center mb-2">
-        <div class="text-muted"><?= (int)($result['total'] ?? 0) ?> results</div>
+    <?php $sort = (string)($params['sort'] ?? 'date_desc'); ?>
+    <?php $perPage = (int)($params['per_page'] ?? 20); ?>
+
+    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-2 mb-3">
+        <div class="text-muted">
+            <?= (int)($result['total'] ?? 0) ?> results
+        </div>
+
+        <form method="get" class="d-flex flex-wrap align-items-center gap-2">
+            <input type="hidden" name="q" value="<?= e((string)($params['q'] ?? '')) ?>">
+            <input type="hidden" name="place" value="<?= e((string)($params['place'] ?? '')) ?>">
+            <input type="hidden" name="genre" value="<?= e((string)($params['genre'] ?? '')) ?>">
+            <input type="hidden" name="has_en" value="<?= (int)($params['has_en'] ?? 0) ?>">
+
+            <?php foreach ((array)($params['subgenre'] ?? []) as $sg): ?>
+                <input type="hidden" name="subgenre[]" value="<?= e((string)$sg) ?>">
+            <?php endforeach; ?>
+
+            <?php foreach ((array)($params['subject'] ?? []) as $s): ?>
+                <input type="hidden" name="subject[]" value="<?= e((string)$s) ?>">
+            <?php endforeach; ?>
+
+            <input type="hidden" name="page" value="1">
+
+            <label class="small text-muted mb-0" for="sort-select">Sort</label>
+            <select class="form-select form-select-sm w-auto" name="sort" id="sort-select" onchange="this.form.submit()">
+                <option value="date_desc" <?= $sort === 'date_desc' ? 'selected' : '' ?>>Newest first</option>
+                <option value="date_asc" <?= $sort === 'date_asc' ? 'selected' : '' ?>>Oldest first</option>
+                <option value="title_asc" <?= $sort === 'title_asc' ? 'selected' : '' ?>>Title A–Z</option>
+                <option value="title_desc" <?= $sort === 'title_desc' ? 'selected' : '' ?>>Title Z–A</option>
+            </select>
+
+            <label class="small text-muted mb-0" for="per-page-select">Per page</label>
+            <select class="form-select form-select-sm w-auto" name="per_page" id="per-page-select" onchange="this.form.submit()">
+                <?php foreach ([10,20,50,100] as $n): ?>
+                    <option value="<?= $n ?>" <?= $perPage === $n ? 'selected' : '' ?>><?= $n ?></option>
+                <?php endforeach; ?>
+            </select>
+        </form>
     </div>
 
     <div class="list-group">

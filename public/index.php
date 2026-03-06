@@ -198,6 +198,7 @@ $routes = [
     ['GET',  '#^/media/informants/([^/]+\.(?:jpe?g|png|gif|webp))$#i', fn($file) => stream_informant_image($file)],
     ['HEAD', '#^/media/informants/([^/]+\.(?:jpe?g|png|gif|webp))$#i', fn($file) => stream_informant_image($file, true)],
 
+    // Canadian locations
     ['GET', '#^/places/?$#', function () {
         $pdo = DB::pdo();
         $params = [
@@ -221,7 +222,7 @@ $routes = [
         };
 
         // Prefer fine-grained informant locations (community/county/province/country) with fallbacks.
-        $placeExpr = "TRIM(COALESCE(NULLIF(CONCAT_WS(', ', NULLIF(i.community_origin_canada,''), NULLIF(i.county,''), NULLIF(i.province_canada,'')), ''), NULLIF(i.tradition_scotland,''), NULLIF(CONCAT_WS(', ', NULLIF(i.province_canada,''), NULLIF(i.country,'')), ''), NULLIF(i.country,'')))";
+        $placeExpr = "TRIM(COALESCE(NULLIF(CONCAT_WS(', ', NULLIF(i.community_origin_canada,''), NULLIF(i.county,''), NULLIF(i.province_canada,'')), ''), NULLIF(CONCAT_WS(', ', NULLIF(i.province_canada,''), NULLIF(i.country,'')), ''), NULLIF(i.country,'')))";
 
         $where = "WHERE {$placeExpr} IS NOT NULL AND {$placeExpr} <> ''";
         $bind = [];
@@ -268,6 +269,90 @@ $routes = [
             ],
         ]);
     }],
+
+    //Scotland locations ('tradition_scotland' in informant table)
+    ['GET', '#^/places/scotland/?$#', function () {
+        $pdo = DB::pdo();
+        $params = [
+            'q' => trim((string)($_GET['q'] ?? '')),
+            'page' => (int)($_GET['page'] ?? 1),
+            'per_page' => (int)($_GET['per_page'] ?? 20),
+            'sort' => (string)($_GET['sort'] ?? 'name_asc'),
+        ];
+
+        $q = $params['q'];
+        $page = max(1, (int)$params['page']);
+        $perPage = (int)$params['per_page'];
+        if (!in_array($perPage, [10,20,50,100], true)) $perPage = 20;
+
+        $sort = $params['sort'];
+        $orderBy = match ($sort) {
+            'count_desc' => 'rec_count DESC, place ASC',
+            'count_asc'  => 'rec_count ASC, place ASC',
+            'name_desc'  => 'LOWER(place) DESC',
+            default      => 'LOWER(place) ASC',
+        };
+
+        $placeExpr = "TRIM(NULLIF(i.tradition_scotland, ''))";
+
+        $where = "WHERE {$placeExpr} IS NOT NULL AND {$placeExpr} <> ''";
+        $bind = [];
+        if ($q !== '') {
+            $where .= " AND {$placeExpr} LIKE :q";
+            $bind[':q'] = '%' . $q . '%';
+        }
+
+        $stmt = $pdo->prepare("
+        SELECT COUNT(*)
+        FROM (
+            SELECT {$placeExpr} AS place
+            FROM recording r
+            JOIN informant i ON i.informant_id = r.informant_id
+            {$where}
+            GROUP BY {$placeExpr}
+        ) x
+    ");
+        $stmt->execute($bind);
+        $total = (int)$stmt->fetchColumn();
+
+        $pages = max(1, (int)ceil($total / $perPage));
+        if ($page > $pages) $page = $pages;
+        $offset = ($page - 1) * $perPage;
+
+        $sql = "
+        SELECT {$placeExpr} AS place, COUNT(*) AS rec_count
+        FROM recording r
+        JOIN informant i ON i.informant_id = r.informant_id
+        {$where}
+        GROUP BY {$placeExpr}
+        ORDER BY {$orderBy}
+        LIMIT :limit OFFSET :offset
+    ";
+        $stmt = $pdo->prepare($sql);
+        foreach ($bind as $k => $v) {
+            $stmt->bindValue($k, $v);
+        }
+        $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $rows = $stmt->fetchAll();
+
+        View::render('places/index', [
+            'params' => $params,
+            'kw' => $q,
+            'browse_type' => 'scotland',
+            'result' => [
+                'rows' => $rows,
+                'total' => $total,
+                'page' => $page,
+                'pages' => $pages,
+                'per_page' => $perPage,
+                'sort' => $sort,
+                'q' => $q,
+            ],
+        ]);
+    }],
+
 ];
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';

@@ -45,12 +45,12 @@ final class RecordingSearch
         }
 
         if ($place !== '') {
-            $placeExpr = "TRIM(COALESCE(NULLIF(CONCAT_WS(', ', NULLIF(i.community_origin_canada,''), NULLIF(i.county,''), NULLIF(i.province_canada,'')), ''), NULLIF(i.tradition_scotland,''), NULLIF(CONCAT_WS(', ', NULLIF(i.province_canada,''), NULLIF(i.country,'')), ''), NULLIF(i.country,'')))";
+            $placeExpr = "TRIM(COALESCE(NULLIF(CONCAT_WS(', ', NULLIF(i.community_origin_canada,''), NULLIF(i.county,''), NULLIF(i.province_canada,'')), ''), NULLIF(CONCAT_WS(', ', NULLIF(i.province_canada,''), NULLIF(i.country,'')), ''), NULLIF(i.country,'')))";
 
-            // PDO MySQL native prepares: don't reuse a named placeholder twice (can throw HY093)
-            $where[] = "(r.place_of_origin LIKE :place1 OR {$placeExpr} LIKE :place2)";
+            $where[] = "(r.place_of_origin LIKE :place1 OR {$placeExpr} LIKE :place2 OR i.tradition_scotland LIKE :place3)";
             $bind[':place1'] = '%' . $place . '%';
             $bind[':place2'] = '%' . $place . '%';
+            $bind[':place3'] = '%' . $place . '%';
         }
 
         if ($genre !== '') {

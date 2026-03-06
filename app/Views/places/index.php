@@ -1,10 +1,18 @@
 <?php
 $title = 'Places';
+$headerTitle = 'Places';
+
+$browseType = $browse_type ?? 'canada';
+
+$title = $browseType === 'scotland'
+        ? 'Scottish Places'
+        : 'Places';
+
+$headerTitle = $title;
 
 $kw = trim((string)($params['q'] ?? ''));
 
 $activeNav = 'places';
-$headerTitle = 'Places';
 
 $headerSearchOpen = header_filters_open($kw, $params, [
     'sort'     => 'name_asc',
@@ -13,7 +21,7 @@ $headerSearchOpen = header_filters_open($kw, $params, [
 
 ob_start();
 ?>
-<form method="get">
+<!--form method="get">
     <div class="row g-3">
         <div class="col-12 col-lg-7">
             <label class="form-label">Keyword</label>
@@ -44,10 +52,21 @@ ob_start();
         <button class="btn btn-primary">Apply</button>
         <a class="btn btn-outline-secondary" href="<?= e(base_path('/places')) ?>">Reset</a>
     </div>
-</form>
+</form-->
 <?php
 $headerSearch = ob_get_clean();
 ?>
+
+<div class="mb-3">
+    <a href="<?= e(base_path('/places')) ?>" class="btn btn-sm btn-outline-secondary">Canadian Places</a>
+    <a href="<?= e(base_path('/places/scotland')) ?>" class="btn btn-sm btn-outline-secondary">Scottish Places</a>
+</div>
+
+<?php if (($browse_type ?? '') === 'scotland'): ?>
+    <p class="text-muted small">Places in Scotland</p>
+<?php else: ?>
+    <p class="text-muted small">Places in Canada</p>
+<?php endif; ?>
 
 <div class="container-fluid py-3">
     <div class="text-muted mb-2"><?= (int)$result['total'] ?> places</div>

@@ -28,6 +28,13 @@ $title = trim(($inf['first_name'] ?? '') . ' ' . ($inf['last_name'] ?? '')) ?: $
                 <?= e(trim(($inf['community_origin_canada'] ?? '') . ' ' . ($inf['county'] ?? '') . ' ' . ($inf['province_canada'] ?? ''))) ?>
             </div>
         <?php endif; ?>
+
+        <?php if (!empty($inf['tradition_scotland'])): ?>
+            <div class="mt-2">
+                <strong>Scottish Tradition:</strong>
+                <?= e(trim(($inf['tradition_scotland']))) ?? ''; ?>
+            </div>
+        <?php endif; ?>
     </div>
 </div>
 

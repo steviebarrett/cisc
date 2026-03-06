@@ -124,16 +124,17 @@ if ($qs !== '') {
         $hasTranscription  = (is_string($transcriptionHtml) && trim($transcriptionHtml) !== '')
                 || (is_string($transcriptionText) && trim($transcriptionText) !== '');
 
-        //check notes_3 and add if no transcription
+        //check notes3 field and use if no transcription
+        $useNote = false;
         if (!$hasTranscription) {
             if (!empty($rec["notes3_publications"])) {
-                $hasTranscription = true;
+                $useNote = true;
                 $transcriptionHtml = e($rec["notes3_publications"]);
             }
         }
         ?>
 
-        <?php if ($hasTranscription): ?>
+        <?php if ($hasTranscription || $useNote): ?>
             <hr>
             <details class="record-transcription" open>
                 <summary><strong>Transcription</strong></summary>
@@ -143,6 +144,13 @@ if ($qs !== '') {
                 <?php else: ?>
                     <?= nl2br(Functions::e_text($transcriptionText)) ?>
                 <?php endif; ?>
+
+                <?php if ($useNote === false): ?>
+                    <a class="btn btn-outline-secondary btn-sm"
+                       href="/recordings/<?= rawurlencode((string)$rec['recording_id']) ?>/download-transcription">
+                        Download transcription
+                    </a>
+                <?php endif; ?>
             </details>
         <?php endif; ?>
 
@@ -150,7 +158,7 @@ if ($qs !== '') {
         $notes = [
             'Notes (fieldnotes)' => $rec['notes1_additional_info'] ?? null,
             'Reference sources'  => $rec['notes2_reference_sources'] ?? null,
-            'Publications'       => $rec['notes3_publications'] ?? null,
+            //'Publications'       => $rec['notes3_publications'] ?? null,
             'Team notes'         => $rec['notes4_team_notes'] ?? null,
         ];
         $hasNotes = array_filter($notes, fn($x) => trim((string)$x) !== '');

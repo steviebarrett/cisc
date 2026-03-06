@@ -42,4 +42,36 @@ final class RecordingController extends Controller {
 
         $this->render('recordings/show', ['rec' => $rec]);
     }
+
+    public function downloadTranscription(string $id): void {
+        if (!preg_match('/^[A-Za-z0-9._-]+$/', $id)) {
+            http_response_code(400);
+            echo 'Invalid recording ID';
+            return;
+        }
+
+        $rec = Recording::find($id);
+        if (!$rec) {
+            http_response_code(404);
+            echo 'Recording not found';
+            return;
+        }
+
+        $transcriptionText = trim((string)($rec['transcription_text'] ?? ''));
+        if ($transcriptionText === '') {
+            http_response_code(404);
+            echo 'No transcription available';
+            return;
+        }
+
+        $filename = $rec["title"] . '.txt';
+
+        header('Content-Type: text/plain; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+        header('X-Content-Type-Options: nosniff');
+        header('Content-Length: ' . strlen($transcriptionText));
+
+        echo $transcriptionText;
+        exit;
+    }
 }

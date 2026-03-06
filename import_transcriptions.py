@@ -16,15 +16,6 @@ What it does
     - transcription_text (plain text, best for searching)
     - transcription_html (sanitised HTML generated from the DOCX)
 
-HTML output goal
-----------------
-To resemble Word for poetry, we:
-- Treat blank Word paragraphs as stanza separators
-- Group consecutive non-empty lines into a single HTML paragraph (<p>...</p>)
-- Within a stanza block, join lines with <br>
-
-So instead of one <p> per line, we get one <p> per stanza, which matches your desired layout.
-
 DB update behaviour
 -------------------
 - default: fill only blanks (won't overwrite existing transcription_text/html)
@@ -32,9 +23,9 @@ DB update behaviour
 
 Usage
 -----
-  python3 import_transcriptions.py --root "/path/to/Transcriptions" --db "cisc" --user "YOURUSER" --password "YOURPASS"
-  Add --dry-run to preview actions without writing.
-  Add --overwrite to replace existing transcription fields.
+  python3 import_transcriptions.py --root "/path/to/Transcriptions" --db "cisc" --user "USER" --password "PASS"
+  option: --dry-run to preview actions without writing.
+  option: --overwrite to replace existing transcription fields.
 
 Deps
 ----

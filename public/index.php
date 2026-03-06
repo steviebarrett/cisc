@@ -185,6 +185,7 @@ $routes = [
     ['GET', '#^/$#', fn() => (new RecordingController())->index()],
     ['GET', '#^/recordings/?$#', fn() => (new RecordingController())->index()],
     ['GET', '#^/recordings/([^/]+)/?$#', fn($id) => (new RecordingController())->show($id)],
+    ['GET', '#^/recordings/([^/]+)/download-transcription/?$#', fn($id) => (new RecordingController())->downloadTranscription($id)],
 
     ['GET',  '#^/media/audio/([^/]+)\.mp3$#', fn($id) => stream_mp3($id)],
     ['HEAD', '#^/media/audio/([^/]+)\.mp3$#', fn($id) => stream_mp3($id, true)],

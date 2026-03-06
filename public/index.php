@@ -26,19 +26,12 @@ $config = require __DIR__ . '/../config/config.php';
 $base = rtrim($config['app']['base_path'] ?? '', '/');
 if ($base && str_starts_with($path, $base)) $path = substr($path, strlen($base)) ?: '/';
 
-function stream_informant_image(string $id, string $fileEnc, bool $headOnly = false): void
+function stream_informant_image(string $fileEnc, bool $headOnly = false): void
 {
-    // Informant ID must be simple
-    if (!preg_match('/^[A-Za-z0-9._-]+$/', $id)) {
-        http_response_code(400);
-        echo 'Bad informant id';
-        return;
-    }
-
-    // Decode URL filename (turn %20 into space, %2C into comma, etc.)
+    // Decode URL filename (turn %20 into space, etc.)
     $file = rawurldecode($fileEnc);
 
-    // Allow spaces/commas/etc but block traversal / weirdness
+    // Basic validation: must be a single filename (no paths), no nulls, no traversal.
     if (
         $file === '' ||
         $file === '.' || $file === '..' ||
@@ -48,11 +41,11 @@ function stream_informant_image(string $id, string $fileEnc, bool $headOnly = fa
         $file !== basename($file)
     ) {
         http_response_code(400);
-        echo 'Bad filename: ' . $file;
+        echo 'Bad filename';
         return;
     }
 
-    // Only allow image extensions
+    // Allow only image extensions
     if (!preg_match('/\.(jpe?g|png|gif|webp)$/i', $file)) {
         http_response_code(400);
         echo 'Bad extension';
@@ -60,34 +53,49 @@ function stream_informant_image(string $id, string $fileEnc, bool $headOnly = fa
     }
 
     $base = rtrim(INFORMANT_IMAGE_PATH, '/');
-    $dirs = glob($base . '/' . $id . '*', GLOB_ONLYDIR) ?: [];
+    $path = $base . '/' . $file;
 
-    foreach ($dirs as $dir) {
-        $candidate = $dir . '/' . $file;   // NOTE: decoded filename used here
-        if (is_file($candidate) && is_readable($candidate)) {
+    if (!is_file($path) || !is_readable($path)) {
+        http_response_code(404);
+        echo 'Image not found';
+        return;
+    }
 
-            $ext = strtolower(pathinfo($candidate, PATHINFO_EXTENSION));
-            $mime = match ($ext) {
-                'jpg', 'jpeg' => 'image/jpeg',
-                'png' => 'image/png',
-                'gif' => 'image/gif',
-                'webp' => 'image/webp',
-                default => 'application/octet-stream',
-            };
+    $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+    $mime = match ($ext) {
+        'jpg', 'jpeg' => 'image/jpeg',
+        'png'          => 'image/png',
+        'gif'          => 'image/gif',
+        'webp'         => 'image/webp',
+        default        => 'application/octet-stream',
+    };
 
-            header('Content-Type: ' . $mime);
-            header('Content-Length: ' . filesize($candidate));
-            header('Cache-Control: public, max-age=3600');
+    // Simple caching
+    $mtime = filemtime($path) ?: time();
+    $lastModified = gmdate('D, d M Y H:i:s', $mtime) . ' GMT';
 
-            if (!$headOnly) {
-                readfile($candidate);
-            }
+    // If-Modified-Since handling (optional but helps performance)
+    if (!empty($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
+        $ims = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']);
+        if ($ims !== false && $ims >= $mtime) {
+            header('Last-Modified: ' . $lastModified);
+            http_response_code(304);
             return;
         }
     }
 
-    http_response_code(404);
-    echo 'Image not found';
+    header('Content-Type: ' . $mime);
+    header('Content-Length: ' . filesize($path));
+    header('Last-Modified: ' . $lastModified);
+    header('Cache-Control: public, max-age=3600');
+
+    if (!$headOnly) {
+        // Clean output buffers to avoid corruption
+        while (ob_get_level() > 0) {
+            ob_end_clean();
+        }
+        readfile($path);
+    }
 }
 
 function stream_mp3(string $id, bool $headOnly = false): void
@@ -186,8 +194,8 @@ $routes = [
 
     ['GET', '#^/composers/([^/]+)/?$#', fn($id) => (new ComposerController())->show($id)],
 
-    ['GET',  '#^/media/informants/([^/]+)/([^/]+)$#', fn($id, $file) => stream_informant_image($id, $file)],
-    ['HEAD', '#^/media/informants/([^/]+)/([^/]+)$#', fn($id, $file) => stream_informant_image($id, $file, true)],
+    ['GET',  '#^/media/informants/([^/]+\.(?:jpe?g|png|gif|webp))$#i', fn($file) => stream_informant_image($file)],
+    ['HEAD', '#^/media/informants/([^/]+\.(?:jpe?g|png|gif|webp))$#i', fn($file) => stream_informant_image($file, true)],
 
     ['GET', '#^/places/?$#', function () {
         $pdo = DB::pdo();

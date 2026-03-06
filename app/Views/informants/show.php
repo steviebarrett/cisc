@@ -31,14 +31,15 @@ $title = trim(($inf['first_name'] ?? '') . ' ' . ($inf['last_name'] ?? '')) ?: $
     </div>
 </div>
 
-<?php if (!empty($inf['fs_images'])): ?>
+<?php if (!empty($inf['images'])): ?>
     <div class="mt-3">
         <div class="row g-2">
-            <?php foreach ($inf['fs_images'] as $i => $fn):
-                $caption = !empty($inf["images"][$i]["caption"]) ? e($inf["images"][$i]["caption"]) : "";
+            <?php foreach ($inf['images'] as $img):
+                $caption = $img["caption"] ?? "";
                 ?>
                 <?php
-                $imgUrl = base_path('/media/informants/' . rawurlencode($inf['informant_id']) . '/' . rawurlencode($fn));
+                $imgUrl = base_path('/media/informants/' . rawurlencode($img["filename"]));
+             //   $imgUrl = INFORMANT_IMAGE_PATH . '/' . rawurlencode($img["filename"]);
                 ?>
                 <figure class="col-6 col-md-4 col-lg-3">
                     <a href="<?= e($imgUrl) ?>" target="_blank" rel="noopener">

@@ -275,6 +275,7 @@ $headerSearch = ob_get_clean();
                 $recUrl .= '?' . $qs;
             }
 
+            $recTrans = (!empty($row["transcription_html"]) ? '<i class="fa-regular fa-file"></i>' : '');
             ?>
             <a class="list-group-item list-group-item-action" href="<?= e($recUrl) ?>">
                 <div class="d-flex justify-content-between">
@@ -283,6 +284,7 @@ $headerSearch = ob_get_clean();
                             <?= $kw !== ''
                                 ? highlight_ga(($row['title'] ?: $row['recording_id']), $kw)
                                 : e(($row['title'] ?: $row['recording_id'])) ?>
+                            <?= $recTrans ?>
                         </div>
                         <div class="small text-muted">
                             <?= e(trim((string)($row['informant_name'] ?? ''))) ?>

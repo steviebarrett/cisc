@@ -10,6 +10,7 @@ $headerTitle = 'Recordings';
 
 $searchClosed = (string)($_GET['search_closed'] ?? '') === '1';
 
+// TODO: think about using this logic once navigation is better understood - or remove
 $headerSearchOpen = !$searchClosed && header_filters_open($kw, $params, [
                 'place'     => '',
                 'genre'     => '',
@@ -21,6 +22,9 @@ $headerSearchOpen = !$searchClosed && header_filters_open($kw, $params, [
                 'sort'      => 'date_desc',
                 'per_page'  => 20,
         ]);
+
+// TODO: as above, revisit – coded in just now for user sanity
+$headerSearchOpen = false;
 
 ob_start();
 ?>

@@ -59,39 +59,11 @@ $headerSearch = ob_get_clean();
 
 
 <div style="height:600px;" id="map"></div>
-<script>
-  var map = L.map('map').setView([46.2000, -60.7500], 7);
 
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    maxZoom: 19,
-    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-  }).addTo(map);
-
-
-  let num_records = 3;
-  var marker = L.marker([46.020763, -61.137168]).addTo(map);
-
-  marker.bindPopup("<b>"+num_records+"</b> recordings").openPopup();
-
-  var popup = L.popup();
-
-  function onMapClick(e) {
-    popup
-      .setLatLng(e.latlng)
-      .setContent("You clicked the map at " + e.latlng.toString())
-      .openOn(map);
-  }
-
-  marker.on('click', onMapClick);
-
-  /*
-  var popup = L.popup()
-    .setLatLng([46.020763, -61.137168])
-    .setContent("<b>"+num_records+"</b> recordings")
-    .openOn(map);
-  */
-
+<script id="recordings-map-data" type="application/json">
+  <?= json_encode($mapData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>
 </script>
+<script type="module" src="<?= e(base_path('/assets/js/map-recordings.js')) ?>"></script>
 
 <div class="mb-3">
     <a href="<?= e(base_path('/places')) ?>" class="btn btn-sm btn-outline-secondary">Canadian Places</a>

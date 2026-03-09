@@ -240,9 +240,11 @@ $routes = [
         $offset = ($page - 1) * $perPage;
 
         $sql = "
-            SELECT {$placeExpr} AS place, COUNT(*) AS rec_count
+            SELECT {$placeExpr} AS place, COUNT(*) AS rec_count, pc.latitude AS cn_lat, pc.longitude AS cn_lng, ps.latitude AS sc_lat, ps.longitude AS sc_lng 
             FROM recording r
             JOIN informant i ON i.informant_id = r.informant_id
+            LEFT JOIN place_canada pc ON pc.id = i.place_canada_id
+            LEFT JOIN place_scotland ps ON ps.id = i.place_scotland_id
             {$where}
             GROUP BY {$placeExpr}
             ORDER BY {$orderBy}
@@ -255,9 +257,21 @@ $routes = [
         $stmt->execute();
         $rows = $stmt->fetchAll();
 
+        $mapData = array_map(static function(array $rows): array {
+            return [
+                'place' => (string)$rows['place'],
+                'rec_count' => (int)$rows['rec_count'],
+                'cn_lat' => isset($rows['cn_lat']) ? (float)$rows['cn_lat'] : null,
+                'cn_lng' => isset($rows['cn_lng']) ? (float)$rows['cn_lng'] : null,
+                'sc_lat' => isset($rows['sc_lat']) ? (float)$rows['sc_lat'] : null,
+                'sc_lng' => isset($rows['sc_lng']) ? (float)$rows['sc_lng'] : null,
+            ];
+        }, $rows);
+
         View::render('places/index', [
             'params' => $params,
             'kw' => $q,
+            'mapData' => $mapData,
             'result' => [
                 'rows' => $rows,
                 'total' => $total,

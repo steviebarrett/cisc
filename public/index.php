@@ -378,6 +378,10 @@ foreach ($routes as [$m, $re, $handler]) {
         try {
             $handler(...$matches);
         } catch (Throwable $e) {
+            error_log('CISC ERROR: ' . $e->getMessage());
+            error_log('CISC ERROR: ' . $e->getFile() . ':' . $e->getLine());
+            error_log('CISC ERROR: ' . $e->getTraceAsString());
+
             http_response_code(500);
             header('Content-Type: text/plain; charset=utf-8');
 

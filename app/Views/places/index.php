@@ -60,6 +60,7 @@ $headerSearch = ob_get_clean();
 
 <div style="height:600px;" id="map"></div>
 
+<script>window.BASE_PATH = <?= json_encode(base_path('')) ?>;</script>
 <script id="recordings-map-data" type="application/json">
   <?= json_encode($mapData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>
 </script>

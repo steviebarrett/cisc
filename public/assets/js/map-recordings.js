@@ -25,8 +25,8 @@ for (const item of data) {
 
     // create Canadian place marker
     const marker = L.marker([item.cn_lat, item.cn_lng]).addTo(map);
-
-    const url = encodeURI('/recordings?place='+item.place);
+console.log('base:' + window.BASE_PATH);
+    const url = window.BASE_PATH + encodeURI('recordings?place='+item.place);
     const popupHtml = `
         <div>
             <div><strong>${item.place || 'Untitled'}</strong></div>

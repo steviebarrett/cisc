@@ -246,7 +246,7 @@ $routes = [
             LEFT JOIN place_canada pc ON pc.id = i.place_canada_id
             LEFT JOIN place_scotland ps ON ps.id = i.place_scotland_id
             {$where}
-            GROUP BY {$placeExpr}
+            GROUP BY {$placeExpr}, pc.latitude, pc.longitude, ps.latitude, ps.longitude
             ORDER BY {$orderBy}
             LIMIT :limit OFFSET :offset
         ";

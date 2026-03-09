@@ -23,6 +23,7 @@ for (const item of data) {
         continue;
     }
 
+    // create Canadian place marker
     const marker = L.marker([item.cn_lat, item.cn_lng]).addTo(map);
 
     const url = encodeURI('/recordings?place='+item.place);

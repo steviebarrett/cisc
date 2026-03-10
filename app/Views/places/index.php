@@ -55,6 +55,7 @@ ob_start();
 </form-->
 <?php
 $headerSearch = ob_get_clean();
+print_r($params); 
 ?>
 
 

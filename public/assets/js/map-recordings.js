@@ -17,15 +17,13 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 for (const item of data) {
 
-   console.log(item.cn_lat);
     if (typeof item.cn_lat !== 'number' || typeof item.cn_lng !== 'number') {
-        console.log('NaN');
         continue;
     }
 
     // create Canadian place marker
     const marker = L.marker([item.cn_lat, item.cn_lng]).addTo(map);
-console.log('base:' + window.BASE_PATH);
+
     const url = window.BASE_PATH + encodeURI('recordings?place='+item.place);
     const popupHtml = `
         <div>
@@ -35,17 +33,24 @@ console.log('base:' + window.BASE_PATH);
         </div>
     `;
 
-    /*
+    marker.bindPopup(popupHtml);
+
+  // create Scottish place marker
+  if (item.sc_lat) {
+    const marker_sc = L.marker([item.sc_lat, item.sc_lng]).addTo(map);
+
+    const url = window.BASE_PATH + encodeURI('recordings?place=' + item.place_sc);
     const popupHtml = `
         <div>
-            <div><strong>${escapeHtml(item.title || item.id || 'Untitled')}</strong></div>
-            ${item.informant_name ? `<div>${escapeHtml(item.informant_name)}</div>` : ''}
-            ${item.url ? `<div><a href="${encodeURI(item.url)}">View record</a></div>` : ''}
+            <div><strong>${item.place_sc || 'Untitled'}</strong></div>
+            <div><a href="${url}" title="${item.place_sc}">${item.rec_count} recordings</div>
+            
         </div>
     `;
-    */
+
+    marker_sc.bindPopup(popupHtml);
+  }
 
 
-    marker.bindPopup(popupHtml);
  //   bounds.extend([item.lat, item.lng]);
 }

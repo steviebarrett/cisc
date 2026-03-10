@@ -240,13 +240,13 @@ $routes = [
         $offset = ($page - 1) * $perPage;
 
         $sql = "
-            SELECT {$placeExpr} AS place, COUNT(*) AS rec_count, pc.latitude AS cn_lat, pc.longitude AS cn_lng, ps.latitude AS sc_lat, ps.longitude AS sc_lng 
+            SELECT {$placeExpr} AS place, tradition_scotland AS place_sc, COUNT(*) AS rec_count, pc.latitude AS cn_lat, pc.longitude AS cn_lng, ps.latitude AS sc_lat, ps.longitude AS sc_lng 
             FROM recording r
             JOIN informant i ON i.informant_id = r.informant_id
             LEFT JOIN place_canada pc ON pc.id = i.place_canada_id
             LEFT JOIN place_scotland ps ON ps.id = i.place_scotland_id
             {$where}
-            GROUP BY {$placeExpr}, pc.latitude, pc.longitude, ps.latitude, ps.longitude
+            GROUP BY {$placeExpr}, place_sc, pc.latitude, pc.longitude, ps.latitude, ps.longitude
             ORDER BY {$orderBy}
             LIMIT :limit OFFSET :offset
         ";
@@ -260,6 +260,7 @@ $routes = [
         $mapData = array_map(static function(array $rows): array {
             return [
                 'place' => (string)$rows['place'],
+                'place_sc' => (string)$rows['place_sc'],
                 'rec_count' => (int)$rows['rec_count'],
                 'cn_lat' => isset($rows['cn_lat']) ? (float)$rows['cn_lat'] : null,
                 'cn_lng' => isset($rows['cn_lng']) ? (float)$rows['cn_lng'] : null,

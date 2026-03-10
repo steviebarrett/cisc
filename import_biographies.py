@@ -3,21 +3,25 @@
 
 """
 Import DOCX biographies into the `composer` and `informant` tables.
-------------
-- Recursively scans:
-    - composers DOCX root
-    - informants DOCX root
-- Extracts:
-    - biography_text
-    - biography_html
-- Updates:
-    - composer.biography_text / composer.biography_html
-    - informant.biography_text / informant.biography_html
 
-DB update behaviour
--------------------
-- default: fill only blanks (won't overwrite existing biography_text/html)
-- --overwrite: always replace
+Behaviour
+---------
+For each composer/informant row in the DB:
+1. Prefer the filename stored in biography_doc
+2. Look for that file under the relevant root folder
+3. If not found, fall back to matching files by ID regex
+4. Extract biography_text + biography_html
+5. Update the row
+
+Updates
+-------
+- composer.biography_text / composer.biography_html
+- informant.biography_text / informant.biography_html
+
+Default write behaviour
+-----------------------
+- fills blanks only
+- use --overwrite to replace existing values
 
 Usage
 -----
@@ -28,11 +32,13 @@ python3 import_biographies.py \
   --user "USER" \
   --password "PASS"
 
-Optional:
+Optional
+--------
   --dry-run
   --overwrite
   --composer-id-regex "..."
   --informant-id-regex "..."
+  --no-fallback-by-id
 
 Deps
 ----
@@ -45,14 +51,13 @@ import re
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional, Tuple, List
+from typing import Optional, Tuple, List, Dict
 
 import pymysql
 from docx import Document
 from docx.oxml.ns import qn
 
 
-# Broad defaults; adjust if your filename patterns are stricter.
 DEFAULT_COMPOSER_ID_REGEX = r"([A-Z][A-Z0-9_-]{2,})"
 DEFAULT_INFORMANT_ID_REGEX = r"([A-Z][A-Z0-9_-]{2,})"
 
@@ -66,19 +71,11 @@ class Extracted:
 
 
 def extract_entity_id(filename: str, id_regex: str) -> Optional[str]:
-    """
-    Find an entity ID anywhere in filename using the provided regex.
-    Returns canonical uppercase for DB matching.
-    """
     m = re.search(id_regex, filename, flags=re.IGNORECASE)
     return m.group(1).upper() if m else None
 
 
 def paragraph_to_html_lines(p) -> List[str]:
-    """
-    Return a list of HTML-safe 'lines' from a DOCX paragraph, splitting on Word line breaks.
-    Preserves <strong>, <em>, <u>, and escapes everything else.
-    """
     lines: List[str] = [""]
 
     for r in p.runs:
@@ -113,12 +110,6 @@ def paragraph_to_html_lines(p) -> List[str]:
 
 
 def docx_to_text_and_html(docx_path: Path) -> Tuple[str, str]:
-    """
-    Produce:
-      - plain text: blocks separated by blank lines
-      - sanitised html: blocks as <p> with <br> within block
-        + blank lines as <p><br></p>
-    """
     doc = Document(str(docx_path))
 
     plain_blocks: List[str] = []
@@ -179,12 +170,6 @@ def connect_mysql(host: str, port: int, user: str, password: str, db: str):
     )
 
 
-def ensure_entity_exists(cur, table: str, id_col: str, entity_id: str) -> bool:
-    sql = f"SELECT 1 FROM {table} WHERE {id_col}=%s LIMIT 1"
-    cur.execute(sql, (entity_id,))
-    return cur.fetchone() is not None
-
-
 def update_entity(cur, table: str, id_col: str, ex: Extracted, overwrite: bool):
     if overwrite:
         sql = f"""
@@ -217,7 +202,81 @@ def iter_docx_files(root: Path):
         yield p
 
 
-def process_folder(
+def normalise_filename(name: str) -> str:
+    return Path(name).name.strip().lower()
+
+
+def build_file_indexes(root: Path):
+    files = list(iter_docx_files(root))
+
+    by_basename: Dict[str, Path] = {}
+    by_stem: Dict[str, Path] = {}
+    all_files = files[:]
+
+    for p in files:
+        by_basename[p.name.lower()] = p
+        by_stem[p.stem.lower()] = p
+
+    return all_files, by_basename, by_stem
+
+
+def resolve_doc_path(
+    biography_doc: Optional[str],
+    entity_id: str,
+    all_files: List[Path],
+    by_basename: Dict[str, Path],
+    by_stem: Dict[str, Path],
+    id_regex: str,
+    fallback_by_id: bool,
+) -> Tuple[Optional[Path], str]:
+    """
+    Resolution order:
+    1. exact basename match against biography_doc
+    2. stem match against biography_doc without extension
+    3. fallback scan by entity_id in filename
+    """
+    if biography_doc:
+        doc_name = biography_doc.strip()
+        if doc_name:
+            key = normalise_filename(doc_name)
+            if key in by_basename:
+                return by_basename[key], "biography_doc basename"
+
+            stem_key = Path(doc_name).stem.strip().lower()
+            if stem_key in by_stem:
+                return by_stem[stem_key], "biography_doc stem"
+
+    if fallback_by_id:
+        matches = []
+        for p in all_files:
+            found_id = extract_entity_id(p.name, id_regex)
+            if found_id == entity_id:
+                matches.append(p)
+
+        if len(matches) == 1:
+            return matches[0], "fallback id match"
+
+        if len(matches) > 1:
+            matches.sort(key=lambda p: len(p.name))
+            return matches[0], "fallback id match (multiple candidates, shortest name chosen)"
+
+    return None, "not found"
+
+
+def fetch_entities(cur, table: str, id_col: str):
+    sql = f"""
+        SELECT {id_col} AS entity_id,
+               biography_doc,
+               biography_text,
+               biography_html
+        FROM {table}
+        ORDER BY {id_col}
+    """
+    cur.execute(sql)
+    return cur.fetchall()
+
+
+def process_table(
     conn,
     root: Path,
     table: str,
@@ -226,40 +285,56 @@ def process_folder(
     overwrite: bool,
     dry_run: bool,
     commit_every: int,
+    fallback_by_id: bool,
 ):
-    docx_files = list(iter_docx_files(root))
+    all_files, by_basename, by_stem = build_file_indexes(root)
 
     summary = {
         "root": str(root),
         "table": table,
-        "files_found": len(docx_files),
+        "files_found": len(all_files),
+        "db_rows_seen": 0,
         "parsed": 0,
         "updated": 0,
         "would_update": 0,
         "skipped_empty": 0,
-        "no_id": [],
-        "not_in_db": [],
+        "missing_doc": [],
+        "resolved_by_fallback": [],
     }
 
-    if not docx_files:
-        return summary
-
     with conn.cursor() as cur:
-        for path in docx_files:
-            entity_id = extract_entity_id(path.name, id_regex)
+        rows = fetch_entities(cur, table, id_col)
+
+        for row in rows:
+            entity_id = (row.get("entity_id") or "").strip()
+            biography_doc = row.get("biography_doc")
+            summary["db_rows_seen"] += 1
+
             if not entity_id:
-                summary["no_id"].append(str(path))
                 continue
+
+            path, how = resolve_doc_path(
+                biography_doc=biography_doc,
+                entity_id=entity_id,
+                all_files=all_files,
+                by_basename=by_basename,
+                by_stem=by_stem,
+                id_regex=id_regex,
+                fallback_by_id=fallback_by_id,
+            )
+
+            if path is None:
+                summary["missing_doc"].append((entity_id, biography_doc))
+                continue
+
+            if how.startswith("fallback"):
+                summary["resolved_by_fallback"].append((entity_id, str(path)))
 
             text, html_out = docx_to_text_and_html(path)
             summary["parsed"] += 1
 
             if not text.strip():
                 summary["skipped_empty"] += 1
-                continue
-
-            if not ensure_entity_exists(cur, table, id_col, entity_id):
-                summary["not_in_db"].append((entity_id, str(path)))
                 continue
 
             ex = Extracted(
@@ -270,7 +345,7 @@ def process_folder(
             )
 
             if dry_run:
-                print(f"[DRY] would update {table}.{entity_id} from {path}")
+                print(f"[DRY] would update {table}.{entity_id} from {path} ({how})")
                 summary["would_update"] += 1
             else:
                 update_entity(cur, table, id_col, ex, overwrite=overwrite)
@@ -287,22 +362,23 @@ def print_summary(summary):
     print(f"Table: {summary['table']}")
     print(f"Root: {summary['root']}")
     print(f"DOCX files found: {summary['files_found']}")
-    print(f"DOCX parsed (had ID): {summary['parsed']}")
+    print(f"DB rows seen: {summary['db_rows_seen']}")
+    print(f"DOCX parsed: {summary['parsed']}")
     print(f"Rows updated: {summary['updated']}")
     print(f"Rows that WOULD update: {summary['would_update']}")
     print(f"Skipped (empty biography): {summary['skipped_empty']}")
-    print(f"Files with no ID match: {len(summary['no_id'])}")
-    print(f"IDs not found in DB: {len(summary['not_in_db'])}")
+    print(f"Missing/unresolved docs: {len(summary['missing_doc'])}")
+    print(f"Resolved by fallback ID matching: {len(summary['resolved_by_fallback'])}")
 
-    if summary["no_id"]:
-        print("\nFirst 20 files with no ID match:")
-        for p in summary["no_id"][:20]:
-            print("  -", p)
+    if summary["missing_doc"]:
+        print("\nFirst 20 missing/unresolved docs:")
+        for entity_id, doc in summary["missing_doc"][:20]:
+            print(f"  - {entity_id}: biography_doc={doc!r}")
 
-    if summary["not_in_db"]:
-        print("\nFirst 20 IDs not found in DB:")
-        for entity_id, p in summary["not_in_db"][:20]:
-            print(f"  - {entity_id}: {p}")
+    if summary["resolved_by_fallback"]:
+        print("\nFirst 20 rows resolved by fallback ID matching:")
+        for entity_id, path in summary["resolved_by_fallback"][:20]:
+            print(f"  - {entity_id}: {path}")
 
 
 def main():
@@ -338,6 +414,11 @@ def main():
         action="store_true",
         help="Parse files and report actions, but do not update DB.",
     )
+    ap.add_argument(
+        "--no-fallback-by-id",
+        action="store_true",
+        help="Disable fallback matching by ID when biography_doc does not resolve.",
+    )
     ap.add_argument("--commit-every", type=int, default=50, help="Commit every N updated rows.")
     args = ap.parse_args()
 
@@ -351,7 +432,7 @@ def main():
 
     conn = connect_mysql(args.host, args.port, args.user, args.password, args.db)
     try:
-        composer_summary = process_folder(
+        composer_summary = process_table(
             conn=conn,
             root=composer_root,
             table="composer",
@@ -360,9 +441,10 @@ def main():
             overwrite=args.overwrite,
             dry_run=args.dry_run,
             commit_every=args.commit_every,
+            fallback_by_id=not args.no_fallback_by_id,
         )
 
-        informant_summary = process_folder(
+        informant_summary = process_table(
             conn=conn,
             root=informant_root,
             table="informant",
@@ -371,6 +453,7 @@ def main():
             overwrite=args.overwrite,
             dry_run=args.dry_run,
             commit_every=args.commit_every,
+            fallback_by_id=not args.no_fallback_by_id,
         )
 
         if args.dry_run:

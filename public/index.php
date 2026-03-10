@@ -8,6 +8,7 @@ require __DIR__ . '/../app/Core/View.php';
 require __DIR__ . '/../app/Core/Controller.php';
 
 require __DIR__ . '/../app/Services/RecordingSearch.php';
+require __DIR__ . '/../app/Services/PlaceSearch.php';
 
 require __DIR__ . '/../app/Models/Taxonomy.php';
 require __DIR__ . '/../app/Models/Recording.php';
@@ -17,6 +18,7 @@ require __DIR__ . '/../app/Models/Composer.php';
 require __DIR__ . '/../app/Controllers/RecordingController.php';
 require __DIR__ . '/../app/Controllers/InformantController.php';
 require __DIR__ . '/../app/Controllers/ComposerController.php';
+require __DIR__ . '/../app/Controllers/PlaceController.php';
 
 //$path = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH) ?: '/';
 $uri  = $_SERVER['REQUEST_URI'] ?? '/';
@@ -198,92 +200,7 @@ $routes = [
     ['GET',  '#^/media/informants/([^/]+\.(?:jpe?g|png|gif|webp))$#i', fn($file) => stream_informant_image($file)],
     ['HEAD', '#^/media/informants/([^/]+\.(?:jpe?g|png|gif|webp))$#i', fn($file) => stream_informant_image($file, true)],
 
-    // Canadian locations
-    ['GET', '#^/places/?$#', function () {
-        $pdo = DB::pdo();
-        $params = [
-            'q' => trim((string)($_GET['q'] ?? '')),
-            'page' => (int)($_GET['page'] ?? 1),
-            'per_page' => (int)($_GET['per_page'] ?? 20),
-            'sort' => (string)($_GET['sort'] ?? 'name_asc'),
-        ];
-
-        $q = $params['q'];
-        $page = max(1, (int)$params['page']);
-        $perPage = (int)$params['per_page'];
-        if (!in_array($perPage, [10,20,50,100], true)) $perPage = 20;
-
-        $sort = $params['sort'];
-        $orderBy = match ($sort) {
-            'count_desc' => 'rec_count DESC, place ASC',
-            'count_asc'  => 'rec_count ASC, place ASC',
-            'name_desc'  => 'LOWER(place) DESC',
-            default      => 'LOWER(place) ASC',
-        };
-
-        // Prefer fine-grained informant locations (community/county/province/country) with fallbacks.
-        $placeExpr = "TRIM(COALESCE(NULLIF(CONCAT_WS(', ', NULLIF(i.community_origin_canada,''), NULLIF(i.county,''), NULLIF(i.province_canada,'')), ''), NULLIF(CONCAT_WS(', ', NULLIF(i.province_canada,''), NULLIF(i.country,'')), ''), NULLIF(i.country,'')))";
-
-        $where = "WHERE {$placeExpr} IS NOT NULL AND {$placeExpr} <> ''";
-        $bind = [];
-        if ($q !== '') {
-            $where .= " AND {$placeExpr} LIKE :q";
-            $bind[':q'] = '%' . $q . '%';
-        }
-
-        $stmt = $pdo->prepare("SELECT COUNT(*) FROM (SELECT {$placeExpr} AS place FROM recording r JOIN informant i ON i.informant_id = r.informant_id {$where} GROUP BY {$placeExpr}) x");
-        $stmt->execute($bind);
-        $total = (int)$stmt->fetchColumn();
-
-        $pages = max(1, (int)ceil($total / $perPage));
-        if ($page > $pages) $page = $pages;
-        $offset = ($page - 1) * $perPage;
-
-        $sql = "
-            SELECT pc.name AS place, ps.name AS place_scotland, COUNT(*) AS rec_count, pc.latitude AS cn_lat, pc.longitude AS cn_lng, ps.latitude AS sc_lat, ps.longitude AS sc_lng 
-            FROM recording r
-            JOIN informant i ON i.informant_id = r.informant_id
-            LEFT JOIN place pc ON pc.id = i.place_canada_id
-            LEFT JOIN place ps ON ps.id = i.place_scotland_id
-            {$where}
-            GROUP BY place, place_scotland, pc.latitude, pc.longitude, ps.latitude, ps.longitude
-            ORDER BY {$orderBy}
-            LIMIT :limit OFFSET :offset
-        ";
-        $stmt = $pdo->prepare($sql);
-        foreach ($bind as $k => $v) $stmt->bindValue($k, $v);
-        $stmt->bindValue(':limit', $perPage, PDO::PARAM_INT);
-        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
-        $stmt->execute();
-        $rows = $stmt->fetchAll();
-
-        $mapData = array_map(static function(array $rows): array {
-            return [
-                'place' => (string)$rows['place'],
-                'place_scotland' => (string)$rows['place_scotland'],
-                'rec_count' => (int)$rows['rec_count'],
-                'cn_lat' => isset($rows['cn_lat']) ? (float)$rows['cn_lat'] : null,
-                'cn_lng' => isset($rows['cn_lng']) ? (float)$rows['cn_lng'] : null,
-                'sc_lat' => isset($rows['sc_lat']) ? (float)$rows['sc_lat'] : null,
-                'sc_lng' => isset($rows['sc_lng']) ? (float)$rows['sc_lng'] : null,
-            ];
-        }, $rows);
-
-        View::render('places/index', [
-            'params' => $params,
-            'kw' => $q,
-            'mapData' => $mapData,
-            'result' => [
-                'rows' => $rows,
-                'total' => $total,
-                'page' => $page,
-                'pages' => $pages,
-                'per_page' => $perPage,
-                'sort' => $sort,
-                'q' => $q,
-            ],
-        ]);
-    }],
+    ['GET', '#^/places/?$#', fn() => (new PlaceController())->index()],
 
     //Scotland locations ('tradition_scotland' in informant table)
     ['GET', '#^/places/scotland/?$#', function () {

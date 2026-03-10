@@ -13,6 +13,7 @@
 # source content
 /docs/sampleData.xlsx
 /docs/Transcriptions/
+/docs/Bios/
 
 # OS / editor junk
 .DS_Store

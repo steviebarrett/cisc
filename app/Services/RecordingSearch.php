@@ -120,7 +120,7 @@ final class RecordingSearch
         };
 
         $sql = "
-            SELECT r.*,
+            SELECT r.*, i.biography_text as inf_biography_text, c.biography_text as cmp_biography_text,
                    TRIM(CONCAT_WS(' ', i.first_name, i.last_name)) AS informant_name,
                    g.name AS genre_name,
                 (SELECT GROUP_CONCAT(sg.name ORDER BY sg.name SEPARATOR ', ')

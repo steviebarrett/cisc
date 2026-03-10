@@ -342,6 +342,20 @@ $headerSearch = ob_get_clean();
                                 <?= highlight_excerpt_ga((string)$row['transcription_text'], $transcriptionQ) ?>
                             </div>
                         <?php endif; ?>
+                        <!-- highlight keyword in informant bio -->
+                        <?php if ($kw !== '' && mb_stristr($row['inf_biography_text'], $kw) !== false): ?>
+                            <div class="small mt-1 text-muted">
+                                <strong><em>Informant Bio: </em></strong>
+                                <?= highlight_excerpt_ga((string)$row['inf_biography_text'], $kw) ?>
+                            </div>
+                        <?php endif; ?>
+                        <!-- highlight keyword in composer bio -->
+                        <?php if (!empty($row['cmp_biography_text']) && $kw !== '' && mb_stristr($row['cmp_biography_text'], $kw) !== false): ?>
+                            <div class="small mt-1 text-muted">
+                                <strong><em>Composer Bio: </em></strong>
+                                <?= highlight_excerpt_ga((string)$row['cmp_biography_text'], $kw) ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
                     <div class="text-end small text-muted"><?= e($recId) ?></div>
                 </div>

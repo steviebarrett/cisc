@@ -18,8 +18,28 @@ $title = trim(($composer['first_name'] ?? '') . ' ' . ($composer['last_name'] ??
         <?php if (!empty($composer['place_of_birth'])): ?>
             <div class="mt-2"><strong>Place of birth:</strong> <?= e($composer['place_of_birth']) ?></div>
         <?php endif; ?>
+
+        <?php if (!empty($composer['biography_html'])): ?>
+        <?php
+            $q = trim((string)e($_GET['q'] ?? ''));
+
+            $biographyHtml = $q !== ''
+            ? highlight_html_ga((string)$composer['biography_html'], $q)
+            : (string)$composer['biography_html'];
+        ?>
+            <hr>
+            <details class="record-transcription" open>
+                <summary><strong>Biography</strong></summary>
+
+                <?= $composer['biography_html'] ?>
+
+            </details>
+        <?php endif; ?>
+
     </div>
 </div>
+
+
 
 <h3 class="h5">Recordings</h3>
 <div class="list-group">

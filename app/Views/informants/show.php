@@ -45,8 +45,7 @@ $title = trim(($inf['first_name'] ?? '') . ' ' . ($inf['last_name'] ?? '')) ?: $
                 $caption = $img["caption"] ?? "";
                 ?>
                 <?php
-                $imgUrl = base_path('/media/informants/' . rawurlencode($img["filename"]));
-             //   $imgUrl = INFORMANT_IMAGE_PATH . '/' . rawurlencode($img["filename"]);
+                    $imgUrl = base_path('/media/informants/' . rawurlencode($img["filename"]));
                 ?>
                 <figure class="col-6 col-md-4 col-lg-3">
                     <a href="<?= e($imgUrl) ?>" target="_blank" rel="noopener">
@@ -64,6 +63,26 @@ $title = trim(($inf['first_name'] ?? '') . ' ' . ($inf['last_name'] ?? '')) ?: $
         </div>
     </div>
 <?php endif; ?>
+
+<?php if (!empty($inf['biography_html'])): ?>
+<div class="card mb-3">
+    <div class="card-body">
+        <?php
+        $q = trim((string)e($_GET['q'] ?? ''));
+
+        $biographyHtml = $q !== ''
+                ? highlight_html_ga((string)$inf['biography_html'], $q)
+                : (string)$inf['biography_html'];
+        ?>
+        <details class="record-transcription" open>
+            <summary><strong>Biography</strong></summary>
+
+            <?= $inf['biography_html'] ?>
+        </details>
+    </div>
+</div>
+<?php endif; ?>
+
 
 <h3 class="h5">Recordings</h3>
 <div class="list-group">

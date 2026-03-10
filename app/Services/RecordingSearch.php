@@ -43,7 +43,8 @@ final class RecordingSearch
         $bind  = [];
 
         if ($q !== '') {
-            $where[] = "CONCAT_WS(' ', r.title, r.alt_title, r.first_line_chorus, r.first_line_verse, r.notes1_additional_info) LIKE :q";
+            $where[] = "CONCAT_WS(' ', r.title, r.alt_title, r.first_line_chorus, r.first_line_verse, r.notes1_additional_info,
+                i.biography_text, c.biography_text) LIKE :q";
             $bind[':q'] = '%' . $q . '%';
         }
 
@@ -134,6 +135,7 @@ final class RecordingSearch
                 ) AS subjects
             FROM recording r
             JOIN informant i ON i.informant_id = r.informant_id
+            LEFT JOIN composer c ON r.composer_id = c.composer_id
             LEFT JOIN genre g ON g.genre_id = r.genre_id
             $whereSql
             ORDER BY $orderBy
@@ -144,6 +146,7 @@ final class RecordingSearch
             SELECT COUNT(*) AS c
             FROM recording r
             JOIN informant i ON i.informant_id = r.informant_id
+            LEFT JOIN composer c ON r.composer_id = c.composer_id
             LEFT JOIN genre g ON g.genre_id = r.genre_id
             $whereSql
         ";

@@ -39,11 +39,11 @@ for (const item of data) {
   if (item.sc_lat) {
     const marker_sc = L.marker([item.sc_lat, item.sc_lng]).addTo(map);
 
-    const url = window.BASE_PATH + encodeURI('recordings?place=' + item.place_sc);
+    const url = window.BASE_PATH + encodeURI('recordings?place=' + item.place_scotland);
     const popupHtml = `
         <div>
-            <div><strong>${item.place_sc || 'Untitled'}</strong></div>
-            <div><a href="${url}" title="${item.place_sc}">${item.rec_count} recordings</div>
+            <div><strong>${item.place_scotland || 'Untitled'}</strong></div>
+            <div><a href="${url}" title="${item.place_scotland}">${item.rec_count} recordings</div>
             
         </div>
     `;

@@ -21,11 +21,11 @@ for (const item of data) {
 
     const inf_count = item.inf_count;
     // create Canadian place marker
-    const markerStyle = {radius: 8*inf_count,
+    const markerStyle = {radius: 20 * (.2 * inf_count),
       color: '#009',
       weight: 1,
       fillColor: '#009',
-      fillOpacity: 0.5*inf_count};
+      fillOpacity: 0.3 * inf_count};
     const marker = L.circleMarker([item.lat, item.lng], markerStyle).addTo(map);
 
     const url = window.BASE_PATH + encodeURI('recordings?place='+item.place);

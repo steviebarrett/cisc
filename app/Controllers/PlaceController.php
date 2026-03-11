@@ -20,12 +20,10 @@ final class PlaceController extends Controller
         $mapData = array_map(static function (array $row): array {
             return [
                 'place' => (string)($row['name'] ?? ''),
-               // 'place_scotland' => (string)($row['place_scotland'] ?? ''),
                 'inf_count' => (int)($row['inf_count'] ?? 0),
+                'informants' => $row['informants'] ?? [],
                 'lat' => isset($row['latitude']) ? (float)$row['latitude'] : null,
                 'lng' => isset($row['longitude']) ? (float)$row['longitude'] : null,
-                //'sc_lat' => isset($row['sc_lat']) ? (float)$row['sc_lat'] : null,
-                //'sc_lng' => isset($row['sc_lng']) ? (float)$row['sc_lng'] : null,
             ];
         }, $result['rows']);
 

@@ -52,12 +52,7 @@ final class PlaceSearch
                 p.longitude,
                 COUNT(DISTINCT CASE WHEN i.place_canada_id = p.id THEN i.informant_id END) AS canada_count,
                 COUNT(DISTINCT CASE WHEN i.place_scotland_id = p.id THEN i.informant_id END) AS scotland_count,
-                COUNT(DISTINCT i.informant_id) AS inf_count,
-                GROUP_CONCAT(
-                    DISTINCT TRIM(CONCAT_WS(' ', i.first_name, i.last_name))
-                    ORDER BY i.last_name, i.first_name
-                    SEPARATOR ', '
-                ) AS inf_name
+                COUNT(DISTINCT i.informant_id) AS inf_count
             FROM place p
             LEFT JOIN informant i
                 ON i.place_canada_id = p.id
@@ -94,6 +89,38 @@ final class PlaceSearch
 
         $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+        // Attach informants for the returned places only
+        $placeIds = array_map(
+            static fn(array $row): int => (int)$row['id'],
+            $rows
+        );
+
+        $informantsByPlace = $this->fetchInformantsByPlaceIds($placeIds);
+
+        foreach ($rows as &$row) {
+            $placeId = (int)$row['id'];
+            $row['informants'] = $informantsByPlace[$placeId] ?? [];
+        }
+        unset($row);
+
+        $informantIds = [];
+        foreach ($rows as $row) {
+            foreach (($row['informants'] ?? []) as $inf) {
+                $informantIds[] = (string)$inf['informant_id'];
+            }
+        }
+
+        $recordingsByInformant = $this->fetchRecordingsByInformantIds($informantIds);
+
+        foreach ($rows as &$row) {
+            foreach ($row['informants'] as &$inf) {
+                $iid = (string)$inf['informant_id'];
+                $inf['recordings'] = $recordingsByInformant[$iid] ?? [];
+            }
+            unset($inf);
+        }
+        unset($row);
+
         return [
             'rows' => $rows,
             'total' => $total,
@@ -103,5 +130,143 @@ final class PlaceSearch
             'sort' => $sort,
             'q' => $q,
         ];
+    }
+
+    /**
+     * @param int[] $placeIds
+     * @return array<int, array<int, array<string, mixed>>>
+     */
+    private function fetchInformantsByPlaceIds(array $placeIds): array
+    {
+        if ($placeIds === []) {
+            return [];
+        }
+
+        $db = DB::pdo();
+
+        $placeIds = array_values(array_unique(array_map('intval', $placeIds)));
+
+        $phCanada = [];
+        $phScotland = [];
+        $bind = [];
+
+        foreach ($placeIds as $idx => $id) {
+            $k1 = ':pc' . $idx;
+            $k2 = ':ps' . $idx;
+
+            $phCanada[] = $k1;
+            $phScotland[] = $k2;
+
+            $bind[$k1] = $id;
+            $bind[$k2] = $id;
+        }
+
+        $sql = "
+        SELECT
+            i.informant_id,
+            CONCAT(i.first_name, ' ', i.last_name) AS name_en,
+            CONCAT(i.ainm, ' ', i.cinneadh) AS name_gd,
+            i.tradition_scotland,
+            i.place_canada_id,
+            i.place_scotland_id
+        FROM informant i
+        WHERE i.place_canada_id IN (" . implode(',', $phCanada) . ")
+           OR i.place_scotland_id IN (" . implode(',', $phScotland) . ")
+        ORDER BY i.last_name, i.first_name, i.informant_id
+    ";
+
+        $stmt = $db->prepare($sql);
+        foreach ($bind as $k => $v) {
+            $stmt->bindValue($k, $v, PDO::PARAM_INT);
+        }
+        $stmt->execute();
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $out = [];
+
+        foreach ($rows as $row) {
+            $base = [
+                'informant_id' => (string)$row['informant_id'],
+                'name_en' => (string)($row['name_en'] ?? ''),
+                'name_gd' => (string)($row['name_gd'] ?? ''),
+                'tradition_scotland' => $row['tradition_scotland'],
+                'place_canada_id' => (int)$row['place_canada_id'] ?? null,
+                'place_scotland_id' => (int)$row['place_scotland_id'] ?? null
+
+            ];
+
+            $canadaId = isset($row['place_canada_id']) ? (int)$row['place_canada_id'] : null;
+            $scotlandId = isset($row['place_scotland_id']) ? (int)$row['place_scotland_id'] : null;
+
+            if ($canadaId !== null && in_array($canadaId, $placeIds, true)) {
+                $entry = $base;
+                $entry['relation'] = 'canada';
+                $out[$canadaId][] = $entry;
+            }
+
+            if ($scotlandId !== null && in_array($scotlandId, $placeIds, true)) {
+                $entry = $base;
+                $entry['relation'] = 'scotland';
+                $out[$scotlandId][] = $entry;
+            }
+        }
+
+        return $out;
+    }
+
+
+    /**
+     * @param string[] $informantIds
+     * @return array<string, array<int, array<string, mixed>>>
+     */
+    private function fetchRecordingsByInformantIds(array $informantIds): array
+    {
+        if ($informantIds === []) {
+            return [];
+        }
+
+        $db = DB::pdo();
+
+        $informantIds = array_values(array_unique(array_filter(array_map('strval', $informantIds))));
+        $ph = [];
+        $bind = [];
+
+        foreach ($informantIds as $idx => $id) {
+            $key = ':i' . $idx;
+            $ph[] = $key;
+            $bind[$key] = $id;
+        }
+
+        $sql = "
+        SELECT
+            r.informant_id,
+            r.recording_id,
+            r.title,
+            r.recording_date
+        FROM recording r
+        WHERE r.informant_id IN (" . implode(',', $ph) . ")
+        ORDER BY r.informant_id, r.recording_date DESC, r.title ASC, r.recording_id ASC
+    ";
+
+        $stmt = $db->prepare($sql);
+        foreach ($bind as $k => $v) {
+            $stmt->bindValue($k, $v);
+        }
+        $stmt->execute();
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $out = [];
+        foreach ($rows as $row) {
+            $iid = (string)$row['informant_id'];
+            $out[$iid][] = [
+                'recording_id' => (string)$row['recording_id'],
+                'title' => (string)($row['title'] ?? ''),
+                'recording_date' => $row['recording_date'],
+            ];
+        }
+
+        return $out;
     }
 }

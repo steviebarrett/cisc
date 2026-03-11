@@ -168,7 +168,8 @@ final class PlaceSearch
             CONCAT(i.ainm, ' ', i.cinneadh) AS name_gd,
             i.tradition_scotland,
             i.place_canada_id,
-            i.place_scotland_id
+            i.place_scotland_id,
+            i.dates_raw
         FROM informant i
         WHERE i.place_canada_id IN (" . implode(',', $phCanada) . ")
            OR i.place_scotland_id IN (" . implode(',', $phScotland) . ")
@@ -192,7 +193,8 @@ final class PlaceSearch
                 'name_gd' => (string)($row['name_gd'] ?? ''),
                 'tradition_scotland' => $row['tradition_scotland'],
                 'place_canada_id' => (int)$row['place_canada_id'] ?? null,
-                'place_scotland_id' => (int)$row['place_scotland_id'] ?? null
+                'place_scotland_id' => (int)$row['place_scotland_id'] ?? null,
+                'dates_raw' => (string)$row['dates_raw'] ?? null,
 
             ];
 

@@ -20,7 +20,8 @@ for (const item of data) {
     console.log('hit');
 
     const inf_count = item.inf_count;
-    // create Canadian place marker
+
+    // create place marker
     const markerStyle = {radius: 20 * (.2 * inf_count),
       color: '#009',
       weight: 1,
@@ -37,31 +38,35 @@ for (const item of data) {
         </div>
     `;
 
+    let sidebar_html = '<div class="map-sidebar">';
+    sidebar_html += '<h3>' + item.place + '</h3>';
+
+    for (const informant of item.informants) {
+        sidebar_html += '<div class="mb-3"><details>';
+        sidebar_html += '<summary>' + informant.name_en + ' <em>' + informant.name_gd + '</em></summary>';
+        sidebar_html += '<div class="card"><div class="card-body">';
+
+        sidebar_html += 'ID: ' + informant.informant_id;
+
+        if (informant.dates_raw) {
+            sidebar_html += '<p>' + informant.dates_raw + '</p>';
+        }
+
+        if (informant.recordings && informant.recordings.length > 0) {
+            sidebar_html += '<h5>Recordings</h5><ul>';
+            for (const recording of informant.recordings) {
+                sidebar_html += '<li>' + recording.title + '</li>';
+            }
+            sidebar_html += '</ul>';
+        }
+
+        sidebar_html += '</div></div></details></div>';
+    }
+
+    sidebar_html += '</div>';
+
     marker.bindPopup(popupHtml)
       .on('mouseover', function () { this.openPopup(); })
       .on('click', function () {
-        let html = '<b>' + item.place + '</b>';
-        document.getElementById('map-results').innerHTML = html;});
-
-
-
-
-  // create Scottish place marker
- /* if (item.sc_lat) {
-    const marker_sc = L.marker([item.sc_lat, item.sc_lng]).addTo(map);
-
-    const url = window.BASE_PATH + encodeURI('recordings?place=' + item.place_scotland);
-    const popupHtml = `
-        <div>
-            <div><strong>${item.place_scotland || 'Untitled'}</strong></div>
-            <div><a href="${url}" title="${item.place_scotland}">${item.inf_count} informants</div>
-            
-        </div>
-    `;
-
-    marker_sc.bindPopup(popupHtml);
-  }
-*/
-
- //   bounds.extend([item.lat, item.lng]);
+          document.getElementById('map-results').innerHTML = sidebar_html;});
 }

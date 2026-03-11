@@ -52,7 +52,7 @@ if ($qs !== '') {
         </div>
         <?php endif; ?>
 
-        <dl class="row mb-0">
+        <dd class="row mb-0">
             <dt class="col-sm-3">Recording ID</dt><dd class="col-sm-9"><?= e($rec['recording_id']) ?></dd>
             <dt class="col-sm-3">Informant</dt>
             <dd class="col-sm-9">
@@ -75,6 +75,19 @@ if ($qs !== '') {
             <dt class="col-sm-3">Date</dt><dd class="col-sm-9"><?= e($rec['recording_date'] ?? '') ?></dd>
             <dt class="col-sm-3">Place of origin</dt><dd class="col-sm-9"><?= e($rec['place_of_origin'] ?? '') ?></dd>
             <dt class="col-sm-3">Genre</dt><dd class="col-sm-9"><?= e($rec['genre_name'] ?? '') ?></dd>
+
+            <?php if (!empty($rec['subgenres'])): ?>
+                <dt class="col-sm-3">Sub-genres</dt>
+                    <dd class="col-sm-9">
+                        <?php foreach ($rec['subgenres'] as $sg): ?>
+                            <a class="badge text-bg-secondary text-decoration-none" href="<?= e(base_path('/recordings?' . http_build_query(['subgenre' => [$sg]]))) ?>">
+                                <?= e($sg) ?>
+                            </a>
+                    <?php endforeach; ?>
+                    </dd>
+                </dt>
+            <?php endif; ?>
+
             <dt class="col-sm-3">Structure</dt><dd class="col-sm-9"><?= e($rec['structure_name'] ?? '') ?></dd>
             <dt class="col-sm-3">Song air</dt><dd class="col-sm-9"><?= e($rec['song_air'] ?? '') ?></dd>
             <dt class="col-sm-3">English translation</dt>
@@ -92,30 +105,18 @@ if ($qs !== '') {
             <?php endif; ?>
         <?php endif; ?>
 
-        <?php if (!empty($rec['subgenres']) || !empty($rec['subjects'])): ?>
-            <hr>
-            <?php if (!empty($rec['subgenres'])): ?>
-                <div class="mb-2">
-                    <strong>Sub-genres:</strong>
-                    <?php foreach ($rec['subgenres'] as $sg): ?>
-                        <a class="badge text-bg-secondary text-decoration-none" href="<?= e(base_path('/recordings?' . http_build_query(['subgenre' => [$sg]]))) ?>">
-                            <?= e($sg) ?>
-                        </a>
-                    <?php endforeach; ?>
-                </div>
-            <?php endif; ?>
+        <hr>
 
-            <?php if (!empty($rec['subjects'])): ?>
-                <div>
-                    <strong>Subjects:</strong>
-                    <?php foreach ($rec['subjects'] as $s): ?>
-                        <a class="badge text-bg-light border text-decoration-none" href="<?= e(base_path('/recordings?' . http_build_query(['subject' => [$s]]))) ?>">
-                            <?= e($s) ?>
-                        </a>
-                    <?php endforeach; ?>
-                </div>
+        <?php if (!empty($rec['subjects'])): ?>
+            <div>
+                <strong>Subjects:</strong>
+                <?php foreach ($rec['subjects'] as $s): ?>
+                    <a class="badge text-bg-light border text-decoration-none" href="<?= e(base_path('/recordings?' . http_build_query(['subject' => [$s]]))) ?>">
+                        <?= e($s) ?>
+                    </a>
+                <?php endforeach; ?>
+            </div>
             <?php endif; ?>
-        <?php endif; ?>
 
         <!-- transcription -->
         <?php $transcriptionQ = trim((string)($_GET['transcription_q'] ?? ''));     //transcription query

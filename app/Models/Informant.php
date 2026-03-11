@@ -42,6 +42,7 @@ final class Informant {
                  OR i.first_name LIKE :q
                  OR i.last_name LIKE :q
                  OR i.ainm LIKE :q
+                 OR i.cinneadh LIKE :q
                  OR i.community_origin_canada LIKE :q
                  OR i.county LIKE :q
                  OR i.province_canada LIKE :q
@@ -63,7 +64,7 @@ final class Informant {
 
         $sql = "
         SELECT
-            i.informant_id, i.first_name, i.last_name, i.ainm,
+            i.informant_id, i.first_name, i.last_name, i.ainm, i.cinneadh,
             i.community_origin_canada, i.county, i.province_canada, i.country, i.tradition_scotland,
             (SELECT COUNT(*) FROM recording r WHERE r.informant_id = i.informant_id) AS recording_count
         FROM informant i

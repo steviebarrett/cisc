@@ -333,7 +333,6 @@ $headerSearch = ob_get_clean();
                         </div>
                         <div class="small text-muted">
                             <?= e(trim((string)($row['informant_name'] ?? ''))) ?>
-                            <?php if (!empty($row['recording_date'])): ?> · <?= e((string)$row['recording_date']) ?><?php endif; ?>
                             <?php if (!empty($row['genre_name'])): ?> · <?= e((string)$row['genre_name']) ?><?php endif; ?>
                             <?php if (!empty($row['includes_english_translation'])): ?> · EN<?php endif; ?>
                         </div>

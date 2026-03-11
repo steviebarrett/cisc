@@ -55,12 +55,10 @@ $headerSearch = ob_get_clean();
             <?php
             $id = (string)$row['informant_id'];
             $name = trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''));
-            $ga = trim((string)($row['ainm'] ?? ''));
+            $ga = trim((string)($row['ainm'] ?? '') . ' ' . $row["cinneadh"]) ;
             $loc = trim(implode(' · ', array_filter([
                 $row['community_origin_canada'] ?? '',
                 $row['county'] ?? '',
-                $row['province_canada'] ?? '',
-                $row['country'] ?? '',
                 $row['tradition_scotland'] ?? '',
             ])));
             ?>

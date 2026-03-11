@@ -21,19 +21,32 @@ for (const item of data) {
         continue;
     }
 
+    const inf_count = item.inf_count;
     // create Canadian place marker
-    const marker = L.marker([item.cn_lat, item.cn_lng]).addTo(map);
+    const markerStyle = {radius: 8*inf_count,
+      color: '#009',
+      weight: 1,
+      fillColor: '#009',
+      fillOpacity: 0.5*inf_count};
+    const marker = L.circleMarker([item.cn_lat, item.cn_lng], markerStyle).addTo(map);
 
     const url = window.BASE_PATH + encodeURI('recordings?place='+item.place);
     const popupHtml = `
         <div>
             <div><strong>${item.place || 'Untitled'}</strong></div>
-            <div><a href="${url}" title="${item.place}">${item.inf_count} informants</div>
+            <div>Informants: ${item.inf_count}</div>
             
         </div>
     `;
 
-    marker.bindPopup(popupHtml);
+    marker.bindPopup(popupHtml)
+      .on('mouseover', function () { this.openPopup(); })
+      .on('click', function () {
+        let html = '<b>' + item.place + '</b>';
+        document.getElementById('map-results').innerHTML = html;});
+
+
+
 
   // create Scottish place marker
   if (item.sc_lat) {

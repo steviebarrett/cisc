@@ -68,7 +68,7 @@ $headerSearch = ob_get_clean();
 <script id="recordings-map-data" type="application/json">
   <?= json_encode($mapData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>
 </script>
-<script type="module" src="<?= e(base_path('/assets/js/map-recordings.js')) ?>"></script>
+<script type="module" src="<?= e(base_path('/assets/js/map-informants.js')) ?>"></script>
 
 <div class="mb-3">
     <a href="<?= e(base_path('/places')) ?>" class="btn btn-sm btn-outline-secondary">Canadian Places</a>

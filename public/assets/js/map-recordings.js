@@ -28,7 +28,7 @@ for (const item of data) {
     const popupHtml = `
         <div>
             <div><strong>${item.place || 'Untitled'}</strong></div>
-            <div><a href="${url}" title="${item.place}">${item.rec_count} recordings</div>
+            <div><a href="${url}" title="${item.place}">${item.inf_count} informants</div>
             
         </div>
     `;
@@ -43,7 +43,7 @@ for (const item of data) {
     const popupHtml = `
         <div>
             <div><strong>${item.place_scotland || 'Untitled'}</strong></div>
-            <div><a href="${url}" title="${item.place_scotland}">${item.rec_count} recordings</div>
+            <div><a href="${url}" title="${item.place_scotland}">${item.inf_count} informants</div>
             
         </div>
     `;

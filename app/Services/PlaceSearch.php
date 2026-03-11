@@ -46,8 +46,7 @@ final class PlaceSearch
                 SELECT
                     pc.name AS place,
                     ps.name AS place_scotland
-                FROM recording r
-                JOIN informant i ON i.informant_id = r.informant_id
+                FROM informant i
                 LEFT JOIN place pc ON pc.id = i.place_canada_id
                 LEFT JOIN place ps ON ps.id = i.place_scotland_id
                 {$whereSql}
@@ -61,13 +60,13 @@ final class PlaceSearch
             SELECT
                 pc.name AS place,
                 ps.name AS place_scotland,
-                COUNT(*) AS rec_count,
+                COUNT(*) AS inf_count,
                 MAX(pc.latitude) AS cn_lat,
                 MAX(pc.longitude) AS cn_lng,
                 MAX(ps.latitude) AS sc_lat,
-                MAX(ps.longitude) AS sc_lng
-            FROM recording r
-            JOIN informant i ON i.informant_id = r.informant_id
+                MAX(ps.longitude) AS sc_lng,
+                CONCAT(i.first_name, ' ', i.last_name) AS inf_name
+            FROM informant i 
             LEFT JOIN place pc ON pc.id = i.place_canada_id
             LEFT JOIN place ps ON ps.id = i.place_scotland_id
             {$whereSql}

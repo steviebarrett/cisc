@@ -56,7 +56,7 @@ final class PlaceSearch
             ) x
         ";
 
-        $sql = "
+      $sql = "
             SELECT
                 pc.name AS place,
                 ps.name AS place_scotland,
@@ -65,7 +65,11 @@ final class PlaceSearch
                 MAX(pc.longitude) AS cn_lng,
                 MAX(ps.latitude) AS sc_lat,
                 MAX(ps.longitude) AS sc_lng,
-                CONCAT(i.first_name, ' ', i.last_name) AS inf_name
+                GROUP_CONCAT(
+                    DISTINCT CONCAT(i.first_name, ' ', i.last_name)
+                    ORDER BY i.last_name, i.first_name
+                    SEPARATOR ', '
+                ) AS inf_name
             FROM informant i 
             LEFT JOIN place pc ON pc.id = i.place_canada_id
             LEFT JOIN place ps ON ps.id = i.place_scotland_id
@@ -76,7 +80,6 @@ final class PlaceSearch
             ORDER BY {$orderBy}
             LIMIT :limit OFFSET :offset
         ";
-
         $db = DB::pdo();
 
         $countStmt = $db->prepare($countSql);

@@ -65,7 +65,7 @@ $headerSearch = ob_get_clean();
 </div>
 
 <script>window.BASE_PATH = <?= json_encode(base_path('')) ?>;</script>
-<script id="recordings-map-data" type="application/json">
+<script id="informants-map-data" type="application/json">
   <?= json_encode($mapData, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>
 </script>
 <script type="module" src="<?= e(base_path('/assets/js/map-informants.js')) ?>"></script>

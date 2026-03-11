@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace app\Services;
+namespace App\Services;
 
 use DB;
 use PDO;
@@ -21,65 +21,54 @@ final class PlaceSearch
         $sort = (string)($params['sort'] ?? 'name_asc');
 
         $orderBy = match ($sort) {
-            'count_desc' => 'rec_count DESC, place ASC, place_scotland ASC',
-            'count_asc'  => 'rec_count ASC, place ASC, place_scotland ASC',
-            'name_desc'  => 'LOWER(COALESCE(place, \'\')) DESC, LOWER(COALESCE(place_scotland, \'\')) DESC',
-            default      => 'LOWER(COALESCE(place, \'\')) ASC, LOWER(COALESCE(place_scotland, \'\')) ASC',
+            'count_desc' => 'inf_count DESC, LOWER(p.name) ASC',
+            'count_asc'  => 'inf_count ASC, LOWER(p.name) ASC',
+            'name_desc'  => 'LOWER(p.name) DESC',
+            default      => 'LOWER(p.name) ASC',
         };
 
         $where = [];
         $bind = [];
 
-        // Only include rows where at least one linked place exists
-        $where[] = '(pc.name IS NOT NULL OR ps.name IS NOT NULL)';
-
         if ($q !== '') {
-            $where[] = '(pc.name LIKE :q OR ps.name LIKE :q)';
+            $where[] = '(p.name LIKE :q OR p.county LIKE :q)';
             $bind[':q'] = '%' . $q . '%';
         }
 
-        $whereSql = 'WHERE ' . implode(' AND ', $where);
+        $whereSql = $where ? ('WHERE ' . implode(' AND ', $where)) : '';
 
         $countSql = "
             SELECT COUNT(*) AS c
-            FROM (
-                SELECT
-                    pc.name AS place,
-                    ps.name AS place_scotland
-                FROM informant i
-                LEFT JOIN place pc ON pc.id = i.place_canada_id
-                LEFT JOIN place ps ON ps.id = i.place_scotland_id
-                {$whereSql}
-                GROUP BY
-                    pc.name,
-                    ps.name
-            ) x
+            FROM place p
+            {$whereSql}
         ";
 
-      $sql = "
+        $sql = "
             SELECT
-                pc.name AS place,
-                ps.name AS place_scotland,
-                COUNT(*) AS inf_count,
-                MAX(pc.latitude) AS cn_lat,
-                MAX(pc.longitude) AS cn_lng,
-                MAX(ps.latitude) AS sc_lat,
-                MAX(ps.longitude) AS sc_lng,
+                p.id,
+                p.name,
+                p.county,
+                p.latitude,
+                p.longitude,
+                COUNT(DISTINCT CASE WHEN i.place_canada_id = p.id THEN i.informant_id END) AS canada_count,
+                COUNT(DISTINCT CASE WHEN i.place_scotland_id = p.id THEN i.informant_id END) AS scotland_count,
+                COUNT(DISTINCT i.informant_id) AS inf_count,
                 GROUP_CONCAT(
-                    DISTINCT CONCAT(i.first_name, ' ', i.last_name)
+                    DISTINCT TRIM(CONCAT_WS(' ', i.first_name, i.last_name))
                     ORDER BY i.last_name, i.first_name
                     SEPARATOR ', '
                 ) AS inf_name
-            FROM informant i 
-            LEFT JOIN place pc ON pc.id = i.place_canada_id
-            LEFT JOIN place ps ON ps.id = i.place_scotland_id
+            FROM place p
+            LEFT JOIN informant i
+                ON i.place_canada_id = p.id
+                OR i.place_scotland_id = p.id
             {$whereSql}
             GROUP BY
-                pc.name,
-                ps.name
+                p.id, p.name, p.county, p.latitude, p.longitude
             ORDER BY {$orderBy}
             LIMIT :limit OFFSET :offset
         ";
+
         $db = DB::pdo();
 
         $countStmt = $db->prepare($countSql);

@@ -3,7 +3,7 @@
 import { getJsonScript } from './utils.js';
 
 
-const data = getJsonScript('recordings-map-data') || [];
+const data = getJsonScript('informants-map-data') || [];
 
 console.log(data);
 
@@ -17,9 +17,7 @@ L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
 
 for (const item of data) {
 
-    if (typeof item.cn_lat !== 'number' || typeof item.cn_lng !== 'number') {
-        continue;
-    }
+    console.log('hit');
 
     const inf_count = item.inf_count;
     // create Canadian place marker
@@ -28,7 +26,7 @@ for (const item of data) {
       weight: 1,
       fillColor: '#009',
       fillOpacity: 0.5*inf_count};
-    const marker = L.circleMarker([item.cn_lat, item.cn_lng], markerStyle).addTo(map);
+    const marker = L.circleMarker([item.lat, item.lng], markerStyle).addTo(map);
 
     const url = window.BASE_PATH + encodeURI('recordings?place='+item.place);
     const popupHtml = `
@@ -49,7 +47,7 @@ for (const item of data) {
 
 
   // create Scottish place marker
-  if (item.sc_lat) {
+ /* if (item.sc_lat) {
     const marker_sc = L.marker([item.sc_lat, item.sc_lng]).addTo(map);
 
     const url = window.BASE_PATH + encodeURI('recordings?place=' + item.place_scotland);
@@ -63,7 +61,7 @@ for (const item of data) {
 
     marker_sc.bindPopup(popupHtml);
   }
-
+*/
 
  //   bounds.extend([item.lat, item.lng]);
 }

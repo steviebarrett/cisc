@@ -84,7 +84,7 @@ $title = trim(($inf['first_name'] ?? '') . ' ' . ($inf['last_name'] ?? '')) ?: $
 <?php endif; ?>
 
 
-<h3 class="h5">Recordings</h3>
+<h3 class="h5" id="informant-recordings">Recordings</h3>
 <div class="list-group">
     <?php foreach ($recs as $r): ?>
         <a class="list-group-item list-group-item-action" href="<?= e(base_path('/recordings/' . $r['recording_id'])) ?>">

@@ -30,7 +30,8 @@ function nav_link(string $href, string $label, string $key, string $activeNav): 
                 <nav class="d-none d-md-flex gap-3">
                     <?= nav_link(base_path('/recordings'), 'Recordings', 'recordings', $activeNav) ?>
                     <?= nav_link(base_path('/informants'), 'Informants', 'informants', $activeNav) ?>
-                    <?= nav_link(base_path('/places'), 'Places', 'places', $activeNav) ?>
+                    <!--?= nav_link(base_path('/places'), 'Map', 'places', $activeNav) ?-->
+                    <?= nav_link(base_path('/map'), 'Map', 'map', $activeNav) ?>
                 </nav>
 
                 <?php if ($headerTitle !== ''): ?>

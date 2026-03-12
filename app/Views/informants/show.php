@@ -84,6 +84,7 @@ $title = trim(($inf['first_name'] ?? '') . ' ' . ($inf['last_name'] ?? '')) ?: $
 <?php endif; ?>
 
 
+<?php if (!empty($recs)): ?>
 <h3 class="h5" id="informant-recordings">Recordings</h3>
 <div class="list-group">
     <?php foreach ($recs as $r): ?>
@@ -97,3 +98,4 @@ $title = trim(($inf['first_name'] ?? '') . ' ' . ($inf['last_name'] ?? '')) ?: $
         </a>
     <?php endforeach; ?>
 </div>
+<?php endif; ?>

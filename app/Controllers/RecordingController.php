@@ -38,6 +38,9 @@ final class RecordingController extends Controller {
             'subgenres_all' => Taxonomy::subgenres(),
             'subjects_all'  => Taxonomy::subjects(),
             'places_all' => Taxonomy::places(1500),
+            'enableSearchPanel' => true,
+            'searchPanelType' => 'recordings',
+            'headerSearchOpen' => false,
         ]);
     }
 

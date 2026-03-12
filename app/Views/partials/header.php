@@ -12,7 +12,8 @@
 
 $activeNav = $activeNav ?? '';
 $headerTitle = $headerTitle ?? '';
-$headerSearch = $headerSearch ?? '';
+$enableSearchPanel = !empty($enableSearchPanel);
+$searchPanelType = $searchPanelType ?? '';
 $headerSearchOpen = (bool)($headerSearchOpen ?? false);
 
 function nav_link(string $href, string $label, string $key, string $activeNav): string {
@@ -38,7 +39,7 @@ function nav_link(string $href, string $label, string $key, string $activeNav): 
             </div>
 
             <div class="d-flex align-items-center gap-2">
-                <?php if ($headerSearch !== ''): ?>
+                <?php if ($enableSearchPanel): ?>
                     <button class="btn btn-outline-primary" type="button"
                             data-bs-toggle="collapse" data-bs-target="#searchPanel"
                             aria-expanded="<?= $headerSearchOpen ? 'true' : 'false' ?>"
@@ -52,17 +53,6 @@ function nav_link(string $href, string $label, string $key, string $activeNav): 
                 </button>
             </div>
         </div>
-
-        <?php if ($headerSearch !== ''): ?>
-            <div class="collapse mt-2 <?= $headerSearchOpen ? 'show' : '' ?>" id="searchPanel">
-                <div class="card">
-                    <div class="card-header">Search & Filters</div>
-                    <div class="card-body">
-                        <?= $headerSearch ?>
-                    </div>
-                </div>
-            </div>
-        <?php endif; ?>
     </div>
 </header>
 
@@ -75,7 +65,7 @@ function nav_link(string $href, string $label, string $key, string $activeNav): 
         <div class="d-grid gap-2">
             <a class="btn btn-outline-secondary" href="<?= e(base_path('/recordings')) ?>">Recordings</a>
             <a class="btn btn-outline-secondary" href="<?= e(base_path('/informants')) ?>">Informants</a>
-            <a class="btn btn-outline-secondary" href="<?= e(base_path('/places')) ?>">Places</a>
+            <a class="btn btn-outline-secondary" href="<?= e(base_path('/map')) ?>">Map</a>
         </div>
     </div>
 </div>

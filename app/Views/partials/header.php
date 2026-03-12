@@ -35,10 +35,6 @@ function nav_link(string $href, string $label, string $key, string $activeNav): 
                     <?= nav_link(base_path('/map'), 'Map', 'map', $activeNav) ?>
                 </nav>
 
-                <?php if ($headerTitle !== ''): ?>
-                    <span class="d-none d-lg-inline text-muted">/</span>
-                    <span class="d-none d-lg-inline text-muted"><?= e($headerTitle) ?></span>
-                <?php endif; ?>
             </div>
 
             <div class="d-flex align-items-center gap-2">

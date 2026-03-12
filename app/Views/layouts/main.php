@@ -23,13 +23,7 @@
 
 <?php require_once __DIR__ . '/../partials/header.php'; ?>
 
-<?php if (!empty($enableSearchPanel) && ($searchPanelType ?? '') === 'recordings'): ?>
-    <section id="searchPanel" class="search-panel<?= !empty($headerSearchOpen) ? ' is-open' : '' ?>">
-        <div class="container py-3">
-            <?php require __DIR__ . '/../partials/search/recording-search-panel.php'; ?>
-        </div>
-    </section>
-<?php endif; ?>
+
 
 
 <main class="container my-4 pt-3">

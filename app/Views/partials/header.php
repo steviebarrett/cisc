@@ -1,4 +1,3 @@
-
 <?php
 /**
  * Shared site header.
@@ -6,8 +5,9 @@
  * Variables you can pass in from a page/controller:
  * - $activeNav: 'recordings' | 'informants' | 'places' | ''
  * - $headerTitle: string (optional)
- * - $headerSearch: string (optional) HTML for the search/filter form body
- * - $headerSearchOpen: bool (optional) whether the search panel should start open
+ * - $enableSearchPanel: bool (optional)
+ * - $searchPanelType: string (optional), e.g. 'recordings'
+ * - $headerSearchOpen: bool (optional)
  */
 
 $activeNav = $activeNav ?? '';
@@ -32,16 +32,15 @@ function nav_link(string $href, string $label, string $key, string $activeNav): 
                     <?= nav_link(base_path('/'), 'Home', 'home', $activeNav) ?>
                     <?= nav_link(base_path('/recordings'), 'Recordings', 'recordings', $activeNav) ?>
                     <?= nav_link(base_path('/informants'), 'Informants', 'informants', $activeNav) ?>
-                    <!--?= nav_link(base_path('/places'), 'Map', 'places', $activeNav) ?-->
                     <?= nav_link(base_path('/map'), 'Map', 'map', $activeNav) ?>
                 </nav>
-
             </div>
 
             <div class="d-flex align-items-center gap-2">
                 <?php if ($enableSearchPanel): ?>
                     <button class="btn btn-outline-primary" type="button"
-                            data-bs-toggle="collapse" data-bs-target="#searchPanel"
+                            data-bs-toggle="collapse"
+                            data-bs-target="#searchPanel"
                             aria-expanded="<?= $headerSearchOpen ? 'true' : 'false' ?>"
                             aria-controls="searchPanel">
                         Search / Filters
@@ -53,6 +52,19 @@ function nav_link(string $href, string $label, string $key, string $activeNav): 
                 </button>
             </div>
         </div>
+
+        <?php if ($enableSearchPanel): ?>
+            <div class="collapse mt-2 <?= $headerSearchOpen ? 'show' : '' ?>" id="searchPanel">
+                <div class="card">
+                    <div class="card-header">Search & Filters</div>
+                    <div class="card-body">
+                        <?php if ($searchPanelType === 'recordings'): ?>
+                            <?php require __DIR__ . '/search/recording-search-panel.php'; ?>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
     </div>
 </header>
 

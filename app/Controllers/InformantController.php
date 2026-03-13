@@ -17,6 +17,9 @@ final class InformantController extends Controller {
             'params' => $params,
             'kw' => $params['q'],
             'result' => $result,
+          'enableSearchPanel' => true,
+          'searchPanelType' => 'recordings',
+          'headerSearchOpen' => false,
         ]);
     }
 

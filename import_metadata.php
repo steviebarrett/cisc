@@ -270,7 +270,7 @@ INSERT INTO informant (
   :cinneadh, :sloinneadh_breithe, :ainm, :tiotal_ga, :patronymic,
   :gender, :years_recorded,
   :community_origin_canada, :county, :province_canada, :country, :tradition_scotland,
-  :dates_raw, :bio_doc
+  :dates_raw, :biography_doc
 )
 ON DUPLICATE KEY UPDATE
   last_name = COALESCE(VALUES(last_name), last_name),
@@ -291,7 +291,7 @@ ON DUPLICATE KEY UPDATE
   country = COALESCE(VALUES(country), country),
   tradition_scotland = COALESCE(VALUES(tradition_scotland), tradition_scotland),
   dates_raw = COALESCE(VALUES(dates_raw), dates_raw),
-  bio_doc = COALESCE(VALUES(bio_doc), bio_doc)
+  biography_doc = COALESCE(VALUES(biography_doc), biography_doc)
 SQL;
 
     $stmt = $pdo->prepare($sql);
@@ -315,7 +315,7 @@ SQL;
         ':country' => $r['country'] ?? null,
         ':tradition_scotland' => $r['tradition_scotland'] ?? null,
         ':dates_raw' => $r['dates_raw'] ?? null,
-        ':bio_doc' => $r['bio_doc'] ?? null,
+        ':biography_doc' => $r['bio_doc'] ?? null,
     ]);
 }
 

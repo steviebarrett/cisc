@@ -263,7 +263,7 @@ INSERT INTO informant (
   cinneadh, sloinneadh_breithe, ainm, tiotal_ga, patronymic,
   gender, years_recorded,
   community_origin_canada, county, province_canada, country, tradition_scotland,
-  dates_raw, bio_doc
+  dates_raw, biography_doc
 ) VALUES (
   :informant_id,
   :last_name, :first_name, :maiden_name, :title, :nickname,

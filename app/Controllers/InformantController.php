@@ -4,6 +4,8 @@ declare(strict_types=1);
 final class InformantController extends Controller {
 
     public function index(): void {
+        $searchPanel = SearchPanel::recordings();
+
         $params = [
             'q' => trim((string)($_GET['q'] ?? '')),
             'page' => (int)($_GET['page'] ?? 1),
@@ -17,9 +19,10 @@ final class InformantController extends Controller {
             'params' => $params,
             'kw' => $params['q'],
             'result' => $result,
-          'enableSearchPanel' => true,
-          'searchPanelType' => 'recordings',
-          'headerSearchOpen' => false,
+            'enableSearchPanel' => true,
+            'searchPanelType' => 'recordings',
+            'headerSearchOpen' => false,
+            'searchPanel' => $searchPanel,
         ]);
     }
 
@@ -34,18 +37,20 @@ final class InformantController extends Controller {
         // List recordings by this informant (simple)
         $pdo = DB::pdo();
         $stmt = $pdo->prepare("
-      SELECT r.recording_id, r.title, r.recording_date, g.name AS genre_name
-      FROM recording r
-      LEFT JOIN genre g ON g.genre_id = r.genre_id
-      WHERE r.informant_id = :id
-      ORDER BY r.recording_date ASC, r.recording_id ASC
-    ");
+          SELECT r.recording_id, r.title, r.recording_date, g.name AS genre_name
+          FROM recording r
+          LEFT JOIN genre g ON g.genre_id = r.genre_id
+          WHERE r.informant_id = :id
+          ORDER BY r.recording_date ASC, r.recording_id ASC
+        ");
         $stmt->execute([':id' => $id]);
         $recs = $stmt->fetchAll();
 
+        $searchPanel = SearchPanel::recordings();
         $this->render('informants/show', [
             'inf' => $inf,
             'recs' => $recs,
+            'searchPanel' => $searchPanel,
         ]);
     }
 }

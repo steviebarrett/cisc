@@ -130,4 +130,109 @@ $subjectValue = is_array($params['subject'] ?? null)
         <button class="btn btn-primary">Apply</button>
         <a class="btn btn-outline-secondary" href="<?= e(base_path('/recordings')) ?>">Reset</a>
     </div>
+
+    <div class="container-fluid py-3">
+
+        <?php
+        // Build a convenient local view of active filters
+        $active = [];
+
+        $kw = trim((string)($params['q'] ?? ''));
+        if ($kw !== '') {
+            $active[] = [
+                    'label' => 'Keyword: ' . $kw,
+                    'qs'    => qs(['q' => '', 'page' => 1]),
+            ];
+        }
+
+        $hasTranscription = (int)($params['has_transcription'] ?? 0);
+        if ($hasTranscription === 1) {
+            $active[] = [
+                    'label' => 'Has transcription',
+                    'qs'    => qs(['has_transcription' => 0, 'page' => 1]),
+            ];
+        }
+
+        $transcriptionQ = trim((string)($params['transcription_q'] ?? ''));
+        if ($transcriptionQ !== '') {
+            $active[] = [
+                    'label' => 'Transcription: ' . $transcriptionQ,
+                    'qs'    => qs(['transcription_q' => '', 'page' => 1]),
+            ];
+        }
+
+        $place = trim((string)($params['place'] ?? ''));
+        if ($place !== '') {
+            $active[] = [
+                    'label' => 'Place: ' . $place,
+                    'qs'    => qs(['place' => '', 'page' => 1]),
+            ];
+        }
+
+        $genre = trim((string)($params['genre'] ?? ''));
+        if ($genre !== '') {
+            $active[] = [
+                    'label' => 'Genre: ' . $genre,
+                    'qs'    => qs(['genre' => '', 'page' => 1]),
+            ];
+        }
+
+        $hasEn = (int)($params['has_en'] ?? 0);
+        if ($hasEn === 1) {
+            $active[] = [
+                    'label' => 'Has English',
+                    'qs'    => qs(['has_en' => 0, 'page' => 1]),
+            ];
+        }
+
+        // Arrays can come in as subgenre[] / subject[]
+        $subgenre = $params['subgenre'] ?? [];
+        if (!is_array($subgenre)) $subgenre = [];
+        foreach ($subgenre as $sg) {
+            $sg = (string)$sg;
+            if ($sg === '') continue;
+
+            $remaining = array_values(array_filter($subgenre, fn($x) => (string)$x !== $sg));
+            $active[] = [
+                    'label' => 'Sub-genre: ' . $sg,
+                    'qs'    => qs(['subgenre' => $remaining, 'page' => 1]),
+            ];
+        }
+
+        $subject = $params['subject'] ?? [];
+        if (!is_array($subject)) $subject = [];
+        foreach ($subject as $s) {
+            $s = (string)$s;
+            if ($s === '') continue;
+
+            $remaining = array_values(array_filter($subject, fn($x) => (string)$x !== $s));
+            $active[] = [
+                    'label' => 'Subject: ' . $s,
+                    'qs'    => qs(['subject' => $remaining, 'page' => 1]),
+            ];
+        }
+        ?>
+
+        <?php if (!empty($active)): ?>
+            <div class="mb-2">
+                <div class="small text-muted mb-1">Active filters:</div>
+                <div class="d-flex flex-wrap gap-2">
+                    <?php foreach ($active as $f): ?>
+                        <span class="badge text-bg-light border">
+                    <?= e($f['label']) ?>
+                    <a class="text-decoration-none ms-1"
+                       href="?<?= e($f['qs']) ?>"
+                       title="Remove filter"
+                       aria-label="Remove filter: <?= e($f['label']) ?>">✕</a>
+                </span>
+                    <?php endforeach; ?>
+
+                    <a class="btn btn-sm btn-outline-secondary ms-1"
+                       href="<?= e(base_path('/recordings')) ?>">
+                        Clear all
+                    </a>
+                </div>
+            </div>
+        <?php endif; ?>
+
 </form>

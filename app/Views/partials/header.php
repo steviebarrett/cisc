@@ -59,7 +59,16 @@ function nav_link(string $href, string $label, string $key, string $activeNav): 
                     <div class="card-header">Search & Filters</div>
                     <div class="card-body">
                         <?php if ($searchPanelType === 'recordings'): ?>
-                            <?php require __DIR__ . '/search/recording-search-panel.php'; ?>
+                            <?php
+                                $searchPanel = $searchPanel ?? [];
+
+                                $params = $searchPanel['params'] ?? [];
+                                $places_all = $searchPanel['places_all'] ?? [];
+                                $genres = $searchPanel['genres'] ?? [];
+                                $subgenres_all = $searchPanel['subgenres_all'] ?? [];
+                                $subjects_all = $searchPanel['subjects_all'] ?? [];
+
+                                require __DIR__ . '/search/recording-search-panel.php'; ?>
                         <?php endif; ?>
                     </div>
                 </div>

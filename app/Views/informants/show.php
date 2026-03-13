@@ -1,25 +1,40 @@
 <?php
-$title = trim(($inf['first_name'] ?? '') . ' ' . ($inf['last_name'] ?? '')) ?: $inf['informant_id'];
+$title = trim(e($inf['first_name'] ?? '') . ' ' . ($inf['last_name'] ?? '')) ?: $inf['informant_id'];
+$title .=  $inf["maiden_name"] != '' ? " <em>née</em> " . e($inf["maiden_name"]) : '';
+$title .=  $inf["nickname"] != '' ? " <em>aka</em> " . e($inf["nickname"]) : '';
 ?>
 
 <div class="mb-3">
-    <a href="<?= e(base_path('/recordings')) ?>">&larr; Back to recordings</a>
+    <a href="<?= e(base_path('/informants')) ?>">&larr; informants</a>
 </div>
 
 <div class="card mb-3">
     <div class="card-body">
-        <h2 class="h4 mb-1"><?= e($title) ?></h2>
+        <h2 class="h4 mb-1"><?= $title ?></h2>
         <div class="text-muted"><?= e($inf['informant_id']) ?></div>
 
-        <?php if (!empty($inf['ainm']) || !empty($inf['sloinneadh_breithe'])): ?>
+        <?php if (!empty($inf['ainm']) || !empty($inf['cinneadh'])): ?>
             <div class="mt-2">
                 <strong>Gaelic name:</strong>
-                <?= e(trim(($inf['ainm'] ?? '') . ' ' . ($inf['sloinneadh_breithe'] ?? ''))) ?>
+                <?= e(trim(($inf['ainm'] ?? '') . ' ' . ($inf['cinneadh'] ?? ''))) ?>
             </div>
         <?php endif; ?>
 
+        <?php if (!empty($inf['patronymic'])): ?>
+            <div class="mt-2">
+                <strong>Patronymic:</strong>
+                <?= e(trim(($inf['patronymic'] ?? ''))); ?>
+            </div>
+        <?php endif; ?>
+
+
+
         <?php if (!empty($inf['dates_raw'])): ?>
             <div class="mt-2"><strong>Dates:</strong> <?= e($inf['dates_raw']) ?></div>
+        <?php endif; ?>
+
+        <?php if (!empty($inf['years_recorded'])): ?>
+            <div class="mt-2"><strong>Years Recorded:</strong> <?= e($inf['years_recorded']) ?></div>
         <?php endif; ?>
 
         <?php if (!empty($inf['community_origin_canada']) || !empty($inf['county']) || !empty($inf['province_canada'])): ?>
@@ -53,7 +68,7 @@ $title = trim(($inf['first_name'] ?? '') . ' ' . ($inf['last_name'] ?? '')) ?: $
                                 src="<?= e($imgUrl) ?>"
                                 class="img-fluid rounded border"
                                 loading="lazy"
-                                alt="<?= e($title) ?>"
+                                alt="<?= e($caption) ?>"
                         >
                     </a>
                     <figcaption><?= e($caption); ?></figcaption>

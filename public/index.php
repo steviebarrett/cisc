@@ -14,6 +14,7 @@ require __DIR__ . '/../app/Models/Taxonomy.php';
 require __DIR__ . '/../app/Models/Recording.php';
 require __DIR__ . '/../app/Models/Informant.php';
 require __DIR__ . '/../app/Models/Composer.php';
+require __DIR__ . '/../app/Models/SearchPanel.php';
 
 require __DIR__ . '/../app/Controllers/HomeController.php';
 require __DIR__ . '/../app/Controllers/RecordingController.php';

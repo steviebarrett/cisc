@@ -1,5 +1,5 @@
 <?php
-$title = 'Cainnt ‘is Ceathramhan';
+$title = 'Sruth nan Gàidheal | Gaelstream';
 $headerTitle = 'Home';
 
 $kw = trim((string)($params['q'] ?? ''));

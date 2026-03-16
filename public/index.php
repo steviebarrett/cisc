@@ -187,6 +187,9 @@ function stream_mp3(string $id, bool $headOnly = false): void
 
 $routes = [
     ['GET', '#^/$#', fn() => (new HomeController())->index()],
+    ['GET', '#^/about$#', fn() => (new HomeController())->about()],
+    ['GET', '#^/how_to_use#', fn() => (new HomeController())->how_to_use()],
+    ['GET', '#^/thanks$#', fn() => (new HomeController())->thanks()],
     ['GET', '#^/map$#', fn() => (new HomeController())->show_map()],
     ['GET', '#^/recordings/?$#', fn() => (new RecordingController())->index()],
     ['GET', '#^/recordings/([^/]+)/?$#', fn($id) => (new RecordingController())->show($id)],

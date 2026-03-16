@@ -25,4 +25,39 @@ final class HomeController extends Controller
           'searchPanel' => $searchPanel,
         ]);
     }
+
+    public function about(): void
+    {
+        $searchPanel = SearchPanel::recordings();
+        $this->render('home/about', [
+            'enableSearchPanel' => true,
+            'searchPanelType' => 'recordings',
+            'headerSearchOpen' => false,
+            'searchPanel' => $searchPanel,
+        ]);
+    }
+
+    public function how_to_use(): void
+    {
+        $searchPanel = SearchPanel::recordings();
+        $this->render('home/how_to_use', [
+            'enableSearchPanel' => true,
+            'searchPanelType' => 'recordings',
+            'headerSearchOpen' => false,
+            'searchPanel' => $searchPanel,
+        ]);
+    }
+
+    public function thanks(): void
+    {
+        $searchPanel = SearchPanel::recordings();
+        $this->render('home/thanks', [
+            'enableSearchPanel' => true,
+            'searchPanelType' => 'recordings',
+            'headerSearchOpen' => false,
+            'searchPanel' => $searchPanel,
+        ]);
+    }
+
+
 }

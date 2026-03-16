@@ -33,6 +33,9 @@ function nav_link(string $href, string $label, string $key, string $activeNav): 
                     <?= nav_link(base_path('/recordings'), 'Recordings', 'recordings', $activeNav) ?>
                     <?= nav_link(base_path('/informants'), 'Informants', 'informants', $activeNav) ?>
                     <?= nav_link(base_path('/map'), 'Map', 'map', $activeNav) ?>
+                    <?= nav_link(base_path('/about'), 'About', 'about', $activeNav) ?>
+                    <?= nav_link(base_path('/how_to_use'), 'How To Use', 'how_to_use', $activeNav) ?>
+                    <?= nav_link(base_path('/thanks'), 'Thanks', 'thanks', $activeNav) ?>
                 </nav>
             </div>
 
@@ -87,6 +90,9 @@ function nav_link(string $href, string $label, string $key, string $activeNav): 
             <a class="btn btn-outline-secondary" href="<?= e(base_path('/recordings')) ?>">Recordings</a>
             <a class="btn btn-outline-secondary" href="<?= e(base_path('/informants')) ?>">Informants</a>
             <a class="btn btn-outline-secondary" href="<?= e(base_path('/map')) ?>">Map</a>
+            <a class="btn btn-outline-secondary" href="<?= e(base_path('/about')) ?>">About</a>
+            <a class="btn btn-outline-secondary" href="<?= e(base_path('/how_to_use')) ?>">How To Use</a>
+            <a class="btn btn-outline-secondary" href="<?= e(base_path('/thanks')) ?>">Thanks</a>
         </div>
     </div>
 </div>

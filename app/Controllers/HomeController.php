@@ -22,6 +22,7 @@ final class HomeController extends Controller
           'enableSearchPanel' => true,
           'searchPanelType' => 'recordings',
           'headerSearchOpen' => false,
+          'fullWidth' => true,
           'searchPanel' => $searchPanel,
         ]);
     }

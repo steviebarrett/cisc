@@ -26,7 +26,7 @@
 
 
 
-<main class="container my-4 pt-3">
+<main class="<?= !empty($fullWidth) ? 'container-fluid' : 'container' ?> my-4 pt-3">
     <?= $content ?>
 </main>
 

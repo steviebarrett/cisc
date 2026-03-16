@@ -9,7 +9,7 @@ $activeNav = 'home';
 ?>
 
     <div>
-        <h1>Cainnt ‘is Ceathramhan</h1>
+        <h1>Sruth nan Gàidheal</h1>
         <div>
             <p>
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam id lacus at lacus faucibus suscipit. In et gravida sem. Mauris pellentesque finibus est, a mollis eros euismod ut. Nam sit amet tincidunt urna, eu malesuada orci. Phasellus ac sem leo. Morbi imperdiet massa ac magna porttitor finibus. Sed non tincidunt nunc, eget ultrices nulla. Donec quis mi id augue euismod feugiat et eu ante. In ligula nunc, pretium vel arcu quis, mollis porttitor odio. Phasellus non odio rhoncus, lacinia elit non, hendrerit magna. Nam faucibus, turpis sit amet rutrum ultricies, velit leo rhoncus risus, eget molestie ligula purus at metus. In consectetur purus congue massa rhoncus placerat sed vel massa. Suspendisse non laoreet nibh. Morbi luctus neque vel vulputate bibendum. Pellentesque feugiat nisi vel mi ullamcorper, eu egestas elit volutpat. Morbi iaculis ut ex aliquet vehicula.

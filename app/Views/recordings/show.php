@@ -101,7 +101,9 @@ if ($qs !== '') {
                     </dd>
             <?php endif; ?>
 
-            <dt class="col-sm-3">Crùth òrain | Song form</dt><dd class="col-sm-9"><?= e($rec['structure_name'] ?? '') ?></dd>
+            <?php if (!empty($rec['structure_name'])): ?>
+                <dt class="col-sm-3">Crùth òrain | Song form</dt><dd class="col-sm-9"><?= e($rec['structure_name']) ?></dd>
+            <?php endif; ?>
 
             <?php if (!empty($rec['song_air'])): ?>
                 <dt class="col-sm-3">Fonn an òrain | Song air</dt><dd class="col-sm-9"><?= e($rec['song_air'] ?? '') ?></dd>

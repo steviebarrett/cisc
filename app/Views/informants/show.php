@@ -1,7 +1,11 @@
 <?php
-$title = trim(e($inf['first_name'] ?? '') . ' ' . ($inf['last_name'] ?? '')) ?: $inf['informant_id'];
-$title .=  $inf["maiden_name"] != '' ? " <em>née</em> " . e($inf["maiden_name"]) : '';
-$title .=  $inf["nickname"] != '' ? " <em>aka</em> " . e($inf["nickname"]) : '';
+
+// pull together the informant's name
+$title = !empty($inf["ainm"]) ? e($inf['ainm'] . ' ' . $inf['cinneadh']) . ' ' : '';
+$title .= '| ' . trim(e($inf['first_name']));
+$title .= !empty($inf["nickname"]) ? ' (' . $inf["nickname"] . ')': '';
+$title .=  ' ' . $inf['last_name'];
+
 ?>
 
 <div class="mb-3">
@@ -11,45 +15,47 @@ $title .=  $inf["nickname"] != '' ? " <em>aka</em> " . e($inf["nickname"]) : '';
 <div class="card mb-3">
     <div class="card-body">
         <h2 class="h4 mb-1"><?= $title ?></h2>
-        <div class="text-muted"><?= e($inf['informant_id']) ?></div>
-
-        <?php if (!empty($inf['ainm']) || !empty($inf['cinneadh'])): ?>
-            <div class="mt-2">
-                <strong>Gaelic name:</strong>
-                <?= e(trim(($inf['ainm'] ?? '') . ' ' . ($inf['cinneadh'] ?? ''))) ?>
-            </div>
-        <?php endif; ?>
+        <!--div class="text-muted"><?= e($inf['informant_id']) ?></div-->
 
         <?php if (!empty($inf['patronymic'])): ?>
             <div class="mt-2">
-                <strong>Patronymic:</strong>
+                <strong>Sloinneadh | Patronymic:</strong>
                 <?= e(trim(($inf['patronymic'] ?? ''))); ?>
             </div>
         <?php endif; ?>
 
-
-
-        <?php if (!empty($inf['dates_raw'])): ?>
-            <div class="mt-2"><strong>Dates:</strong> <?= e($inf['dates_raw']) ?></div>
-        <?php endif; ?>
-
-        <?php if (!empty($inf['years_recorded'])): ?>
-            <div class="mt-2"><strong>Years Recorded:</strong> <?= e($inf['years_recorded']) ?></div>
-        <?php endif; ?>
-
-        <?php if (!empty($inf['community_origin_canada']) || !empty($inf['county']) || !empty($inf['province_canada'])): ?>
+        <?php if (!empty($inf['maiden_name'])): ?>
             <div class="mt-2">
-                <strong>Location:</strong>
-                <?= e(trim(($inf['community_origin_canada'] ?? '') . ' ' . ($inf['county'] ?? '') . ' ' . ($inf['province_canada'] ?? ''))) ?>
+                <strong>Sloinneadh-breithe | Maiden Name:</strong>
+                <?= e(trim(($inf['maiden_name'] ?? ''))); ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($inf['community_origin_canada'])): ?>
+            <div class="mt-2">
+                <strong>Coimhearsnachd Thùsail | Community of Origin:</strong>
+                <?= e(trim(($inf['community_origin_canada']))) ?>
+            </div>
+        <?php endif; ?>
+
+        <?php if (!empty($inf['county'])): ?>
+            <div class="mt-2">
+                <strong>Siorramachd | County:</strong>
+                <?= e(trim(($inf['county']))) ?>
             </div>
         <?php endif; ?>
 
         <?php if (!empty($inf['tradition_scotland'])): ?>
             <div class="mt-2">
-                <strong>Scottish Tradition:</strong>
+                <strong>Dualchas (Alba) | Tradition (Scotland):</strong>
                 <?= e(trim(($inf['tradition_scotland']))) ?? ''; ?>
             </div>
         <?php endif; ?>
+
+        <?php if (!empty($inf['dates_raw'])): ?>
+            <div class="mt-2"><strong>Cinn-latha | Dates:</strong> <?= e($inf['dates_raw']) ?></div>
+        <?php endif; ?>
+
     </div>
 </div>
 

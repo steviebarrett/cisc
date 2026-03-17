@@ -4,7 +4,7 @@ $headerTitle = 'How To Use';
 
 $kw = trim((string)($params['q'] ?? ''));
 
-$activeNav = 'How To Use';
+$activeNav = 'how_to_use';
 
 ?>
 

@@ -25,8 +25,8 @@ final class Informant {
         $q = trim((string)($params['q'] ?? ''));
         $page = max(1, (int)($params['page'] ?? 1));
 
-        $perPage = (int)($params['per_page'] ?? 20);
-        if (!in_array($perPage, [10,20,50,100], true)) $perPage = 20;
+        $perPage = (int)($params['per_page'] ?? 12);
+        if (!in_array($perPage, [12,24,48,96,10,20,50,100], true)) $perPage = 12;
 
         $sort = (string)($params['sort'] ?? 'name_asc');
         $orderBy = match ($sort) {
@@ -66,6 +66,13 @@ final class Informant {
         SELECT
             i.informant_id, i.first_name, i.last_name, i.ainm, i.cinneadh,
             i.community_origin_canada, i.county, i.province_canada, i.country, i.tradition_scotland,
+            (
+                SELECT ii.filename
+                FROM informant_image ii
+                WHERE ii.informant_id = i.informant_id
+                ORDER BY ii.slot ASC, ii.filename ASC
+                LIMIT 1
+            ) AS image_filename,
             (SELECT COUNT(*) FROM recording r WHERE r.informant_id = i.informant_id) AS recording_count
         FROM informant i
         {$whereSql}

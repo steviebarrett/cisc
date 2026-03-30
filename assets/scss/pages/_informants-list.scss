@@ -89,6 +89,10 @@
     flex-shrink: 0;
 }
 
+.page-informants-list .informant-photo:not([style*="background-image"]) {
+    filter: grayscale(0%);
+}
+
 .page-informants-list .informant-card:hover .informant-photo {
     filter: grayscale(0%);
 }
@@ -179,4 +183,3 @@
         gap: var(--space-sm);
     }
 }
-

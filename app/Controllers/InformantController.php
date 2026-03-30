@@ -9,7 +9,7 @@ final class InformantController extends Controller {
         $params = [
             'q' => trim((string)($_GET['q'] ?? '')),
             'page' => (int)($_GET['page'] ?? 1),
-            'per_page' => (int)($_GET['per_page'] ?? 20),
+            'per_page' => (int)($_GET['per_page'] ?? 12),
             'sort' => (string)($_GET['sort'] ?? 'name_asc'),
         ];
 

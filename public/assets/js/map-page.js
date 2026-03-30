@@ -10692,6 +10692,14 @@ function formatBilingualHtml(gaelic, english, englishClass = "english-accent") {
     return `<span class="gaelic-dark">${escapeHtml(gd)}</span>`;
 }
 
+function formatBilingualText(gaelic, english) {
+    const gd = String(gaelic || "").trim();
+    const en = String(english || "").trim();
+
+    if (gd && en) return `${gd} | ${en}`;
+    return gd || en || "—";
+}
+
 function keepOnlySnapshotButton() {
     const buttons = capeBretonMapDiv.querySelectorAll(".modebar-btn");
     buttons.forEach((btn) => {
@@ -10785,7 +10793,7 @@ function renderPlaceInlineDetail(placeKey) {
                 placeKey: String(placeKey),
                 latitude: place.latitude,
                 longitude: place.longitude,
-                placeOriginHtml: formatBilingualHtml(place.place_name_gaelic || "", place.place_name_english || ""),
+                placeOriginText: formatBilingualText(place.place_name_gaelic || "", place.place_name_english || ""),
                 forceOpen: expandAllPlacePersonCards,
             });
         }
@@ -11225,87 +11233,62 @@ function renderPersonCard(person, options = {}) {
     const placeKey = options.placeKey || person.place_key || "";
     const latitude = options.latitude || person.latitude || "";
     const longitude = options.longitude || person.longitude || "";
-    const placeOriginHtml = options.placeOriginHtml || "—";
+    const placeOriginText = options.placeOriginText || "—";
     const forceOpen = options.forceOpen === true;
 
     const gaelicName = person.gaelic_name || "";
     const englishName = person.english_name || "";
-
-    let summaryName = "";
-    if (gaelicName && englishName) {
-        summaryName = `${escapeHtml(gaelicName)}<span class="separator-accent"> | </span><span class="english-highlight-person">${escapeHtml(englishName)}</span>`;
-    } else if (englishName) {
-        summaryName = `<span class="english-highlight-person">${escapeHtml(englishName)}</span>`;
-    } else {
-        summaryName = escapeHtml(gaelicName || person.display_name || person.id || "Unnamed person");
-    }
+    const summaryGaelic = gaelicName || person.display_name || person.id || "Unnamed person";
+    const summaryEnglish = englishName || "";
 
     return `
-        <details class="person-card"
+        <details class="informant-row-card"
             data-place-key="${escapeHtml(String(placeKey))}"
             data-lat="${escapeHtml(String(latitude))}"
             data-lon="${escapeHtml(String(longitude))}"
             ${forceOpen ? "open" : ""}>
-            <summary><span class="person-summary-name">${summaryName}</span></summary>
-            <div class="metadata">
-                <div class="meta-top-row">
-                    <div class="meta-top-item">
-                        <div class="meta-label">ID</div>
-                        <div class="meta-inline-value">${escapeHtml(person.id || "—")}</div>
+            <summary class="informant-row${forceOpen ? " expanded" : ""}">
+                <span class="informant-row-names">
+                    <span class="informant-name-gd">${escapeHtml(summaryGaelic)}</span>
+                    ${summaryEnglish ? `<span class="informant-name-en">${escapeHtml(summaryEnglish)}</span>` : ""}
+                </span>
+                <span class="informant-row-chevron" aria-hidden="true">${renderPlaceChevronIcon(forceOpen)}</span>
+            </summary>
+            <div class="informant-detail">
+                <div class="detail-grid">
+                    <div class="detail-field">
+                        <div class="detail-label">ID</div>
+                        <div class="detail-value">${escapeHtml(person.id || "—")}</div>
                     </div>
-                    <div class="meta-top-item">
-                        <div class="meta-label">Dates</div>
-                        <div class="meta-inline-value">${escapeHtml(person.yob_yod || "—")}</div>
+                    <div class="detail-field">
+                        <div class="detail-label">Dates</div>
+                        <div class="detail-value">${escapeHtml(person.yob_yod || "—")}</div>
                     </div>
-                    <div class="meta-top-item meta-top-item-button">
-                        ${
-                            person.person_page_url
-                                ? `<a class="person-page-link-btn" href="${escapeHtml(person.person_page_url)}" target="_blank" rel="noopener noreferrer" title="Full biographical information and recordings">View person page</a>`
-                                : ""
-                        }
+                    <div class="detail-field">
+                        <div class="detail-label">Recordings</div>
+                        <div class="detail-value">${formatRecordingCount(person.number_of_recordings)}</div>
                     </div>
                 </div>
 
-                <div class="meta-block">
-                    <div class="meta-label">Sloinneadh</div>
-                    <div class="meta-value">${escapeHtml(person.sloinneadh || "—")}</div>
+                <div class="detail-field-wide">
+                    <div class="detail-label">Sloinneadh</div>
+                    <div class="detail-value">${escapeHtml(person.sloinneadh || "—")}</div>
                 </div>
 
-                <div class="meta-block">
-                    <div class="meta-label">Place of origin</div>
-                    <div class="meta-value">${placeOriginHtml}</div>
+                <div class="detail-field-wide">
+                    <div class="detail-label">Origin</div>
+                    <div class="detail-value">${escapeHtml(placeOriginText)}</div>
                 </div>
 
-                <div class="meta-block recordings-meta-block">
-                    <div class="recordings-meta-row">
-                        <div class="recordings-meta-left">
-                            <div class="meta-label">Number of recordings</div>
-                            <div class="meta-value">${formatRecordingCount(person.number_of_recordings)}</div>
-                        </div>
-                    </div>
+                <div class="detail-footer">
+                    ${
+                        person.person_page_url
+                            ? `<a class="detail-link" href="${escapeHtml(person.person_page_url)}" target="_blank" rel="noopener noreferrer" title="Full biographical information and recordings">View profile <i data-lucide="arrow-right" class="icon-sm" aria-hidden="true"></i></a>`
+                            : ""
+                    }
                 </div>
             </div>
         </details>`;
-}
-
-function resetInfoPanel() {
-    currentLocationPlaceKey = null;
-    currentTraditionPanelKey = null;
-    currentTraditionCommunityKey = null;
-    renderPlacesIndex(null);
-    renderTraditionsIndex(null, null);
-}
-
-function clearTraditionPanelSelection(preserveMode = false) {
-    currentTraditionPanelKey = null;
-    currentTraditionCommunityKey = null;
-    renderTraditionsIndex(null, null);
-    clearSelectionRing();
-    hideSelectedPlaceLabel();
-    clearAllTraditionsAndControls();
-    if (preserveMode) {
-        setSidePanelMode("traditions");
-    }
 }
 
 function clearActivePlaceSelection() {
@@ -11957,13 +11940,13 @@ function buildAllPeopleListHtml() {
         html += `<div class="people-letter-group-body">`;
 
         for (const person of grouped[letter]) {
-            const placeLabel = formatBilingualHtml(person.place_name_gaelic || "", person.place_name_english || "");
+            const placeLabel = formatBilingualText(person.place_name_gaelic || "", person.place_name_english || "");
 
             html += renderPersonCard(person, {
                 placeKey: String(person.place_key || ""),
                 latitude: person.latitude || "",
                 longitude: person.longitude || "",
-                placeOriginHtml: placeLabel,
+                placeOriginText: placeLabel,
             });
         }
 
@@ -11999,7 +11982,7 @@ let selectedPersonCard = null;
 function clearSelectedPerson(options = {}) {
     const restoreActivePlace = options.restoreActivePlace !== false;
 
-    document.querySelectorAll("details.person-card.selected").forEach((card) => {
+    document.querySelectorAll("details.informant-row-card.selected").forEach((card) => {
         card.classList.remove("selected");
     });
 
@@ -12028,7 +12011,7 @@ function clearSelectedPerson(options = {}) {
 function selectPersonCard(card) {
     if (!card) return;
 
-    document.querySelectorAll("details.person-card.selected").forEach((el) => {
+    document.querySelectorAll("details.informant-row-card.selected").forEach((el) => {
         if (el !== card) el.classList.remove("selected");
     });
 
@@ -12066,9 +12049,20 @@ function selectPersonCard(card) {
 }
 
 function wirePersonSelectionBehaviour() {
-    document.querySelectorAll("#all-people-list details.person-card").forEach((card) => {
-        const summary = card.querySelector(":scope > summary");
+    document.querySelectorAll("#all-people-list details.informant-row-card").forEach((card) => {
+        const summary = card.querySelector(":scope > summary.informant-row");
         if (!summary) return;
+
+        summary.classList.toggle("expanded", card.open);
+
+        card.addEventListener("toggle", function () {
+            summary.classList.toggle("expanded", card.open);
+            const chevronEl = summary.querySelector(":scope > .informant-row-chevron");
+            if (chevronEl) {
+                chevronEl.innerHTML = renderPlaceChevronIcon(card.open);
+                refreshLucideIcons();
+            }
+        });
 
         summary.addEventListener("click", function () {
             const toggleOff = card.classList.contains("selected") && card.open;
@@ -12088,6 +12082,7 @@ function wirePersonSelectionBehaviour() {
 
 function renderAllPeopleList() {
     allPeopleList.innerHTML = buildAllPeopleListHtml();
+    refreshLucideIcons();
     wirePersonSelectionBehaviour();
 }
 
@@ -12100,13 +12095,13 @@ function getOpenPeopleLetterGroups() {
 }
 
 function getAllPeopleCards() {
-    return Array.from(document.querySelectorAll("#all-people-list details.person-card"));
+    return Array.from(document.querySelectorAll("#all-people-list details.informant-row-card"));
 }
 
 function getVisiblePeopleCards() {
     const cards = [];
     getOpenPeopleLetterGroups().forEach((group) => {
-        cards.push(...Array.from(group.querySelectorAll("details.person-card")));
+        cards.push(...Array.from(group.querySelectorAll("details.informant-row-card")));
     });
     return cards;
 }
@@ -12181,9 +12176,20 @@ function decreasePeopleDetail() {
 }
 
 function wireLocationPersonSelectionBehaviour() {
-    document.querySelectorAll("#places-index-list .place-card-content details.person-card").forEach((card) => {
-        const summary = card.querySelector(":scope > summary");
+    document.querySelectorAll("#places-index-list .place-card-content details.informant-row-card").forEach((card) => {
+        const summary = card.querySelector(":scope > summary.informant-row");
         if (!summary) return;
+
+        summary.classList.toggle("expanded", card.open);
+
+        card.addEventListener("toggle", function () {
+            summary.classList.toggle("expanded", card.open);
+            const chevronEl = summary.querySelector(":scope > .informant-row-chevron");
+            if (chevronEl) {
+                chevronEl.innerHTML = renderPlaceChevronIcon(card.open);
+                refreshLucideIcons();
+            }
+        });
 
         summary.addEventListener("click", function () {
             const toggleOff = card.classList.contains("selected") && card.open;
@@ -13194,7 +13200,7 @@ if (typeof ResizeObserver === "function" && pageShell) {
 scheduleAppViewportSync();
 
 document.addEventListener("click", function (event) {
-    const clickedPersonCard = event.target.closest("details.person-card");
+    const clickedPersonCard = event.target.closest("details.informant-row-card");
     if (clickedPersonCard) return;
 
     const clickedMapMarker = event.target.closest("#map, #cb-main-selected-place-label, #cb-inset-selected-place-label");

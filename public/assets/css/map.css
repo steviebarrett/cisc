@@ -1031,17 +1031,18 @@ details.person-card.selected .separator-accent {
     line-height: 1.25;
 }
 
-.people-letter-group,
-.place-letter-group {
+.letter-group {
     border-top: 1px solid rgba(25, 41, 48, 0.08);
     margin-top: 6px;
     padding-top: 4px;
 }
 
-.people-letter-group > summary,
-.place-letter-group > summary {
+.letter-header {
     cursor: pointer;
     list-style: none;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     font-size: 14px;
     font-weight: 700;
     color: #1f5f99;
@@ -1050,27 +1051,17 @@ details.person-card.selected .separator-accent {
     padding: 2px 0 6px 0;
 }
 
-.people-letter-group > summary::-webkit-details-marker,
-.place-letter-group > summary::-webkit-details-marker {
+.letter-header::-webkit-details-marker {
     display: none;
 }
 
-.people-letter-group > summary::after,
-.place-letter-group > summary::after {
-    content: "+";
-    float: right;
+.letter-toggle {
     color: #8cc7ea;
     font-size: 0.95rem;
     font-weight: 700;
 }
 
-.people-letter-group[open] > summary::after,
-.place-letter-group[open] > summary::after {
-    content: "–";
-}
-
-.people-letter-group-body,
-.place-letter-group-body {
+.letter-content {
     display: flex;
     flex-direction: column;
     gap: 6px;

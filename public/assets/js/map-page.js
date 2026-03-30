@@ -11869,6 +11869,10 @@ function setSidePanelMode(mode) {
     modeAllPeopleBtn.classList.toggle("active", showAllPeople);
     modeTraditionsBtn.classList.toggle("active", showTraditions);
 
+    if (showAllPeople) {
+        renderAllPeopleList();
+    }
+
     if (showLocation) {
         clearSelectedPerson();
     }
@@ -11935,9 +11939,12 @@ function buildAllPeopleListHtml() {
     let html = "";
 
     for (const letter of letters) {
-        html += `<details class="people-letter-group" open>`;
-        html += `<summary>${escapeHtml(letter)}</summary>`;
-        html += `<div class="people-letter-group-body">`;
+        html += `<details class="letter-group" data-people-letter="${escapeHtml(letter)}" open>`;
+        html += `<summary class="letter-header">`;
+        html += `<span class="letter-label">${escapeHtml(letter)}</span>`;
+        html += `<span class="letter-toggle" aria-hidden="true">${renderLetterToggleIcon(true)}</span>`;
+        html += `</summary>`;
+        html += `<div class="letter-content">`;
 
         for (const person of grouped[letter]) {
             const placeLabel = formatBilingualText(person.place_name_gaelic || "", person.place_name_english || "");
@@ -12049,6 +12056,21 @@ function selectPersonCard(card) {
 }
 
 function wirePersonSelectionBehaviour() {
+    document.querySelectorAll("#all-people-list details.letter-group").forEach((group) => {
+        const toggleEl = group.querySelector(":scope > summary.letter-header .letter-toggle");
+        if (toggleEl) {
+            toggleEl.innerHTML = renderLetterToggleIcon(group.open);
+        }
+
+        group.addEventListener("toggle", function () {
+            const scopedToggleEl = this.querySelector(":scope > summary.letter-header .letter-toggle");
+            if (scopedToggleEl) {
+                scopedToggleEl.innerHTML = renderLetterToggleIcon(this.open);
+                refreshLucideIcons();
+            }
+        });
+    });
+
     document.querySelectorAll("#all-people-list details.informant-row-card").forEach((card) => {
         const summary = card.querySelector(":scope > summary.informant-row");
         if (!summary) return;
@@ -12087,7 +12109,7 @@ function renderAllPeopleList() {
 }
 
 function getAllPeopleLetterGroups() {
-    return Array.from(document.querySelectorAll("#all-people-list details.people-letter-group"));
+    return Array.from(document.querySelectorAll("#all-people-list details.letter-group"));
 }
 
 function getOpenPeopleLetterGroups() {

@@ -80,22 +80,17 @@ $logoPath = $isHome
 
 <?php if ($enableSearchPanel): ?>
 <div class="collapse mt-2 <?= $headerSearchOpen ? 'show' : '' ?>" id="searchPanel">
-    <div class="card">
-        <div class="card-header">Search & Filters</div>
-        <div class="card-body">
-            <?php if ($searchPanelType === 'recordings'): ?>
-            <?php
-                        $searchPanel = $searchPanel ?? [];
+    <?php if ($searchPanelType === 'recordings'): ?>
+    <?php
+        $searchPanel = $searchPanel ?? [];
 
-                        $params = $searchPanel['params'] ?? [];
-                        $places_all = $searchPanel['places_all'] ?? [];
-                        $genres = $searchPanel['genres'] ?? [];
-                        $subgenres_all = $searchPanel['subgenres_all'] ?? [];
-                        $subjects_all = $searchPanel['subjects_all'] ?? [];
+        $params = $searchPanel['params'] ?? [];
+        $places_all = $searchPanel['places_all'] ?? [];
+        $genres = $searchPanel['genres'] ?? [];
+        $subgenres_all = $searchPanel['subgenres_all'] ?? [];
+        $subjects_all = $searchPanel['subjects_all'] ?? [];
 
-                        require __DIR__ . '/search/recording-search-panel.php'; ?>
-            <?php endif; ?>
-        </div>
-    </div>
+        require __DIR__ . '/search/recording-search-panel.php'; ?>
+    <?php endif; ?>
 </div>
 <?php endif; ?>

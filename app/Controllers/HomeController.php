@@ -8,10 +8,11 @@ final class HomeController extends Controller
     {
         $searchPanel = SearchPanel::recordings();
         $this->render('home/index', [
-          'enableSearchPanel' => true,
-          'searchPanelType' => 'recordings',
-          'headerSearchOpen' => false,
-          'searchPanel' => $searchPanel,
+            'enableSearchPanel' => true,
+            'searchPanelType' => 'recordings',
+            'headerSearchOpen' => false,
+            'fullWidth' => true,
+            'searchPanel' => $searchPanel,
         ]);
     }
 
@@ -19,11 +20,11 @@ final class HomeController extends Controller
     {
         $searchPanel = SearchPanel::recordings();
         $this->render('home/map', [
-          'enableSearchPanel' => true,
-          'searchPanelType' => 'recordings',
-          'headerSearchOpen' => false,
-          'fullWidth' => true,
-          'searchPanel' => $searchPanel,
+            'enableSearchPanel' => true,
+            'searchPanelType' => 'recordings',
+            'headerSearchOpen' => false,
+            'fullWidth' => true,
+            'searchPanel' => $searchPanel,
         ]);
     }
 

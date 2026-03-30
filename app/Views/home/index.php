@@ -5,24 +5,74 @@ $headerTitle = 'Home';
 $kw = trim((string)($params['q'] ?? ''));
 
 $activeNav = 'home';
+$bodyClass = 'page-homepage';
 
 ?>
 
-    <div>
-        <h1>Sruth nan Gàidheal</h1>
-        <div>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam id lacus at lacus faucibus suscipit. In et gravida sem. Mauris pellentesque finibus est, a mollis eros euismod ut. Nam sit amet tincidunt urna, eu malesuada orci. Phasellus ac sem leo. Morbi imperdiet massa ac magna porttitor finibus. Sed non tincidunt nunc, eget ultrices nulla. Donec quis mi id augue euismod feugiat et eu ante. In ligula nunc, pretium vel arcu quis, mollis porttitor odio. Phasellus non odio rhoncus, lacinia elit non, hendrerit magna. Nam faucibus, turpis sit amet rutrum ultricies, velit leo rhoncus risus, eget molestie ligula purus at metus. In consectetur purus congue massa rhoncus placerat sed vel massa. Suspendisse non laoreet nibh. Morbi luctus neque vel vulputate bibendum. Pellentesque feugiat nisi vel mi ullamcorper, eu egestas elit volutpat. Morbi iaculis ut ex aliquet vehicula.
-            </p>
-            <p>
-                Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Donec aliquet mi consectetur ipsum vestibulum finibus. Fusce ultrices gravida lectus, at consequat lectus. Sed a ante sed purus facilisis feugiat quis vitae nisi. Quisque ac cursus nisl. Phasellus eu imperdiet dui, suscipit suscipit ante. Aliquam felis magna, imperdiet vitae urna hendrerit, hendrerit interdum mi. Maecenas pulvinar arcu a magna tincidunt iaculis. Aliquam imperdiet quam auctor posuere aliquet. Aliquam vulputate lectus nisi, non vehicula libero hendrerit accumsan. Vivamus cursus dictum risus, eu bibendum orci pellentesque quis. Quisque semper lorem a dapibus ultricies. Vivamus pulvinar ornare quam, id semper justo. Praesent eleifend egestas rutrum.
-            </p>
-            <p>
-                Suspendisse potenti. Aenean nec nisl at orci condimentum fringilla. Proin sem justo, pretium ut nisl at, iaculis consectetur leo. Integer eget pharetra ante. Suspendisse ac gravida dolor. Suspendisse id eros consectetur, ullamcorper eros in, luctus urna. Aliquam at ligula purus. Suspendisse imperdiet ultricies pharetra. Nunc commodo placerat arcu, in lobortis odio viverra ac. Aliquam tincidunt, ante quis tempor tristique, eros nulla dictum mauris, quis mattis libero purus ut dolor. Pellentesque vitae ultrices dui. Donec scelerisque mi ac turpis condimentum ultricies. Ut lobortis consequat finibus. Maecenas et semper ipsum. Morbi ultricies felis ante, vel tincidunt orci sodales vitae.
-            </p>
-            <p>
-                Morbi facilisis sapien eget pretium aliquet. Etiam congue bibendum cursus. Phasellus fringilla nibh dolor, ac sollicitudin nulla aliquet sed. Donec consectetur, sapien nec porttitor pulvinar, leo lectus bibendum quam, id varius ex velit sit amet risus. Etiam accumsan fermentum sollicitudin. Cras non facilisis metus. Donec lacinia iaculis tortor vitae egestas. Suspendisse pellentesque imperdiet tristique. Duis bibendum sapien vitae faucibus gravida. Donec interdum justo quis mauris consectetur, ut cursus risus congue. Vestibulum efficitur efficitur velit, eu maximus erat consectetur ac. Nulla facilisi. Phasellus scelerisque malesuada velit, quis ultricies libero bibendum at. Maecenas lacus augue, consequat sit amet vestibulum quis, rutrum et dolor. In eget neque sollicitudin, rutrum ante eget, mattis ligula. Nam pharetra augue sit amet elit rhoncus, malesuada sagittis mauris aliquam.
-            </p>
+<section class="hero">
+    <div class="hero-mosaic-base"></div>
+    <div class="hero-gradient-overlay"></div>
+    <div class="hero-content">
+        <img class="hero-logo-mark" src="<?= e(base_path('/assets/images/gaelstream-shape.svg')) ?>" alt="Gaelstream">
+        <h1 class="hero-title">Ceap Breatainn &middot; Cape Breton</h1>
+        <img class="hero-map" src="<?= e(base_path('/assets/images/gaelstream-map.svg')) ?>" alt="Map of Nova Scotia and Cape Breton">
+        <!-- TODO this should probably be dynamic -->
+        <p class="hero-stats">2,151 recordings from 161 voices across Cape Breton</p>
+        <div class="hero-cta-row">
+            <a href="<?= e(base_path('/map')) ?>" class="hero-cta-primary">Explore the Map</a>
+            <a href="<?= e(base_path('/recordings')) ?>" class="hero-cta-secondary">Browse Recordings</a>
         </div>
     </div>
+</section>
 
+<section class="featured-informants">
+    <h2 class="section-heading">Luchd-fiosrachaidh | Featured Informants</h2>
+
+    <!-- TODO informants need to be dynamic -->
+    <!-- Note: I do not see a way to fetch featured informants -->
+    <div class="informant-row">
+        <div class="informant-card">
+            <div class="informant-photo" style="background-image: url('src/photos/CURREB01.P1.png')"></div>
+            <div class="informant-name"><a href="informant-detail.html">Effie Bella Currie</a></div>
+            <div class="informant-community">MacAdam's Lake</div>
+            <div class="informant-count">46 recordings</div>
+        </div>
+
+        <div class="informant-card">
+            <div class="informant-photo" style="background-image: url('src/photos/MACLAL01.P1.jpg')"></div>
+            <div class="informant-name"><a href="informant-detail.html">Lauchie MacLellan</a></div>
+            <div class="informant-community">Dunvegan</div>
+            <div class="informant-count">38 recordings</div>
+        </div>
+
+        <div class="informant-card">
+            <div class="informant-photo" style="background-image: url('src/photos/MACNJD01.P1.jpg')"></div>
+            <div class="informant-name"><a href="informant-detail.html">John Dan MacNeil</a></div>
+            <div class="informant-community">Christmas Island</div>
+            <div class="informant-count">29 recordings</div>
+        </div>
+
+        <div class="informant-card">
+            <div class="informant-photo" style="background-image: url('src/photos/GILLM02.P1.jpg')"></div>
+            <div class="informant-name"><a href="informant-detail.html">Murdoch Gillis</a></div>
+            <div class="informant-community">Gillisdale</div>
+            <div class="informant-count">24 recordings</div>
+        </div>
+
+        <div class="informant-card">
+            <div class="informant-photo" style="background-image: url('src/photos/MACDA02.P1.jpg')"></div>
+            <div class="informant-name"><a href="informant-detail.html">Angus MacDonald</a></div>
+            <div class="informant-community">South West Margaree</div>
+            <div class="informant-count">18 recordings</div>
+        </div>
+
+    </div>
+</section>
+
+<section class="collection-intro">
+    <h2 class="collection-intro-heading">About the Collection</h2>
+    <p class="collection-intro-text">Sruth nan Gàidheal (Gaelstream) is a digital archive of Scottish Gaelic oral traditions from Cape Breton, Nova Scotia. The collection preserves
+        over 2,000 recordings of songs, stories, beliefs, proverbs, and customs from 161 tradition bearers across the island.</p>
+    <p class="collection-intro-text">These recordings, gathered between the 1930s and 1990s, capture a living tradition carried from the Scottish Highlands and Islands to Nova
+        Scotia. Each voice connects Cape Breton to communities in Uist, Barra, Mull, and the Scottish mainland - a bridge of language, music, and memory across the Atlantic.</p>
+</section>

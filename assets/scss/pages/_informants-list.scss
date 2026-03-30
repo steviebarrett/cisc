@@ -1,0 +1,182 @@
+/* === INFORMANTS LIST === */
+
+.page-informants-list .controls-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-lg);
+}
+
+.page-informants-list .controls-count {
+    font-weight: var(--weight-semibold);
+    font-size: var(--text-meta-value);
+    color: var(--color-text-secondary);
+}
+
+.page-informants-list .controls-right {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-md);
+    align-items: center;
+}
+
+.page-informants-list .control-group {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-sm);
+    align-items: center;
+}
+
+.page-informants-list .control-label {
+    font-size: var(--text-meta-label);
+    color: var(--color-text-tertiary);
+    white-space: nowrap;
+}
+
+.page-informants-list .control-select {
+    border: 1px solid var(--color-border);
+    border-radius: var(--tag-radius);
+    padding: 6px 10px;
+    font-family: var(--font-primary);
+    font-size: var(--text-meta-label);
+    background: white;
+    color: var(--color-text-primary);
+    cursor: pointer;
+}
+
+.page-informants-list .control-select:focus {
+    outline: none;
+    border-color: var(--color-primary);
+}
+
+.page-informants-list .informant-grid {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: var(--space-md-lg);
+}
+
+.page-informants-list .informant-card {
+    flex: 0 0 calc(25% - 15px);
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+    background: var(--color-surface-card);
+    border: var(--card-border);
+    border-radius: var(--card-radius);
+    overflow: hidden;
+    transition:
+        box-shadow var(--transition-normal),
+        border-color var(--transition-normal);
+    cursor: pointer;
+}
+
+.page-informants-list .informant-card:hover {
+    box-shadow: var(--card-shadow-hover);
+    border-color: var(--color-periwinkle);
+}
+
+.page-informants-list .informant-photo {
+    width: 100%;
+    height: 200px;
+    background-color: var(--color-placeholder);
+    background-size: cover;
+    background-position: center 20%;
+    border-radius: var(--card-radius) var(--card-radius) 0 0;
+    filter: grayscale(100%);
+    transition: filter 0.4s ease;
+    flex-shrink: 0;
+}
+
+.page-informants-list .informant-card:hover .informant-photo {
+    filter: grayscale(0%);
+}
+
+.page-informants-list .informant-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm);
+    padding: var(--space-md);
+}
+
+.page-informants-list .informant-name-en {
+    font-size: var(--text-body-lg);
+    font-weight: var(--weight-medium);
+    line-height: var(--leading-snug);
+}
+
+.page-informants-list .informant-name-en a {
+    color: var(--color-text-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.page-informants-list .informant-name-en a:hover {
+    color: var(--color-primary);
+}
+
+.page-informants-list .informant-name-gd {
+    font-size: var(--text-meta-label);
+    font-weight: var(--weight-regular);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-normal);
+}
+
+.page-informants-list .informant-community {
+    font-size: var(--text-meta-label);
+    font-weight: var(--weight-regular);
+    color: var(--color-text-tertiary);
+}
+
+.page-informants-list .informant-bottom-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.page-informants-list .informant-county {
+    font-family: var(--font-condensed);
+    font-size: var(--text-caption);
+    color: var(--color-text-tertiary);
+}
+
+.page-informants-list .informant-rec-count {
+    font-family: var(--font-condensed);
+    font-size: var(--text-caption);
+    color: var(--color-text-tertiary);
+}
+
+@media (max-width: 768px) {
+    .page-informants-list .informant-card {
+        flex: 0 0 calc(50% - 10px);
+    }
+
+    .page-informants-list .informant-photo {
+        height: 170px;
+    }
+
+    .page-informants-list .controls-bar {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    .page-informants-list .informant-card {
+        flex: 0 0 100%;
+    }
+
+    .page-informants-list .informant-photo {
+        height: 140px;
+    }
+
+    .page-informants-list .controls-right {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: var(--space-sm);
+    }
+}
+

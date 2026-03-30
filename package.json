@@ -1,0 +1,16 @@
+{
+    "name": "cisc-project",
+    "version": "1.0.0",
+    "description": "CISC Project with SCSS Support",
+    "scripts": {
+        "build": "gulp build",
+        "watch": "gulp watch",
+        "sass": "gulp sass"
+    },
+    "devDependencies": {
+        "gulp": "^4.0.2",
+        "gulp-sass": "^5.1.0",
+        "sass": "^1.69.5",
+        "gulp-sourcemaps": "^3.0.0"
+    }
+}

@@ -1,0 +1,264 @@
+/* === INFORMANT DETAIL === */
+
+.page-informant-detail .profile-header {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-xl);
+    align-items: flex-start;
+}
+
+.page-informant-detail .profile-photo-column {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+.page-informant-detail .profile-photo {
+    width: 280px;
+    height: 350px;
+    border-radius: var(--photo-radius);
+    border: var(--photo-border);
+    object-fit: cover;
+    object-position: center 20%;
+}
+
+.page-informant-detail .profile-info-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    flex-grow: 1;
+}
+
+.page-informant-detail .name-block {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.page-informant-detail .name-gaelic {
+    font-size: var(--text-page-title);
+    font-weight: var(--weight-light);
+    line-height: var(--leading-tight);
+    color: var(--color-text-primary);
+}
+
+.page-informant-detail .name-english {
+    font-size: 20px;
+    font-weight: var(--weight-regular);
+    line-height: var(--leading-snug);
+    color: var(--color-text-secondary);
+}
+
+.page-informant-detail .metadata-pairs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm-md);
+}
+
+.page-informant-detail .metadata-pair {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+}
+
+.page-informant-detail .metadata-label {
+    min-width: 200px;
+    font-size: var(--text-meta-label);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-secondary);
+    flex-shrink: 0;
+}
+
+.page-informant-detail .metadata-value {
+    font-size: var(--text-meta-value);
+    font-weight: var(--weight-regular);
+    color: var(--color-text-primary);
+}
+
+.page-informant-detail .recording-count-badge {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--space-sm);
+    margin-top: var(--space-sm);
+}
+
+.page-informant-detail .badge-pill {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background: var(--gradient-brand);
+    color: #ffffff;
+    padding: 6px var(--space-md);
+    border-radius: var(--space-md);
+    font-size: var(--text-meta-value);
+    font-weight: var(--weight-semibold);
+    line-height: 1;
+}
+
+.page-informant-detail .biography-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin-top: var(--space-2xl);
+}
+
+.page-informant-detail .biography-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.page-informant-detail .biography-text p {
+    font-size: var(--text-body);
+    line-height: var(--leading-relaxed);
+    color: var(--color-text-primary);
+}
+
+.page-informant-detail .recordings-section {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+    margin-top: var(--space-2xl);
+}
+
+.page-informant-detail .recording-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+}
+
+.page-informant-detail .recording-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 14px var(--space-md-lg);
+    background: var(--color-surface-card);
+    border-bottom: 1px solid var(--color-border);
+    border-left: 4px solid transparent;
+    transition: box-shadow var(--transition-normal);
+    cursor: pointer;
+}
+
+.page-informant-detail .recording-item:hover {
+    box-shadow: var(--card-shadow-hover);
+}
+
+.page-informant-detail .recording-item:first-child {
+    border-top: 1px solid var(--color-border);
+    border-top-left-radius: var(--card-radius);
+    border-top-right-radius: var(--card-radius);
+}
+
+.page-informant-detail .recording-item:last-child {
+    border-bottom-left-radius: var(--card-radius);
+    border-bottom-right-radius: var(--card-radius);
+}
+
+.page-informant-detail .recording-item.genre-song {
+    border-left-color: var(--genre-song);
+}
+
+.page-informant-detail .recording-item.genre-story {
+    border-left-color: var(--genre-story);
+}
+
+.page-informant-detail .recording-item.genre-biography {
+    border-left-color: var(--genre-biography);
+}
+
+.page-informant-detail .recording-item.genre-custom {
+    border-left-color: var(--genre-custom);
+}
+
+.page-informant-detail .recording-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.page-informant-detail .recording-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.page-informant-detail .recording-title {
+    font-size: var(--text-body);
+    font-weight: var(--weight-medium);
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.page-informant-detail .recording-title:hover {
+    color: var(--color-primary-dark);
+}
+
+.page-informant-detail .recording-meta {
+    font-size: var(--text-meta-label);
+    color: var(--color-text-secondary);
+}
+
+.page-informant-detail .recording-id {
+    font-family: var(--font-condensed);
+    font-size: var(--text-caption);
+    color: var(--color-text-tertiary);
+    flex-shrink: 0;
+}
+
+@media (max-width: 768px) {
+    .page-informant-detail .profile-header {
+        flex-direction: column;
+    }
+
+    .page-informant-detail .profile-photo {
+        width: 100%;
+        max-height: 280px;
+    }
+
+    .page-informant-detail .profile-photo-column {
+        width: 100%;
+    }
+
+    .page-informant-detail .metadata-label {
+        min-width: 160px;
+    }
+
+    .page-informant-detail .recording-item {
+        padding: 12px 16px;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-informant-detail .profile-photo {
+        max-width: 100%;
+        height: 240px;
+    }
+
+    .page-informant-detail .metadata-pair {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .page-informant-detail .metadata-label {
+        min-width: unset;
+    }
+
+    .page-informant-detail .recording-content {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+    }
+
+    .page-informant-detail .recording-id {
+        align-self: flex-start;
+    }
+
+    .page-informant-detail .recording-item {
+        padding: 12px 14px;
+    }
+}
+

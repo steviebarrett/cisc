@@ -235,4 +235,6 @@ $subjectValue = is_array($params['subject'] ?? null)
             </div>
         <?php endif; ?>
 
+    </div>
+
 </form>

@@ -11123,6 +11123,22 @@ function getSortedTraditionKeys(mode = currentTraditionSort) {
     });
 }
 
+function getTraditionLetter(traditionKey, mode = currentTraditionSort) {
+    const source = getTraditionSortLabel(traditionKey, mode) || "#";
+    const initial = (source.trim().charAt(0) || "#").toUpperCase();
+    return /[A-Za-zÀ-ÖØ-öø-ÿ]/.test(initial) ? initial : "#";
+}
+
+function getGroupedTraditionKeys(mode = currentTraditionSort) {
+    const grouped = {};
+    for (const traditionKey of getSortedTraditionKeys(mode)) {
+        const letter = getTraditionLetter(traditionKey, mode);
+        if (!grouped[letter]) grouped[letter] = [];
+        grouped[letter].push(traditionKey);
+    }
+    return grouped;
+}
+
 function updateTraditionSortButtons() {
     if (traditionSortGaelicBtn) traditionSortGaelicBtn.classList.toggle("active", currentTraditionSort === "gaelic");
     if (traditionSortEnglishBtn) traditionSortEnglishBtn.classList.toggle("active", currentTraditionSort === "english");
@@ -11179,31 +11195,63 @@ function renderTraditionsIndex(activeTraditionKey = null, activeCommunityKey = n
             const communityCount = Array.isArray(tradition.community_places) ? tradition.community_places.length : 0;
 
             return `
-                <div class="place-card${isActive ? " active" : ""}" data-tradition-key="${escapeHtml(String(traditionKey))}">
-                    <button class="place-card-header${isActive ? " active" : ""}" type="button" data-tradition-key="${escapeHtml(String(traditionKey))}">
+                <details class="place-card${isActive ? " active" : ""}" data-tradition-key="${escapeHtml(String(traditionKey))}" ${isActive ? "open" : ""}>
+                    <summary class="place-card-header${isActive ? " active" : ""}" data-tradition-key="${escapeHtml(String(traditionKey))}">
                         <span class="place-card-info">${labelHtml}</span>
                         <span class="place-card-meta">
                             <span class="place-informant-count">Communities: ${communityCount}</span>
                             <span class="place-chevron" aria-hidden="true">${renderPlaceChevronIcon(isActive)}</span>
                         </span>
-                    </button>
+                    </summary>
                     ${isActive ? renderTraditionInlineDetail(traditionKey, activeCommunityKey) : ""}
-                </div>`;
+                </details>`;
         })
         .join("");
 
     traditionsIndexList.innerHTML = html;
     refreshLucideIcons();
 
-    traditionsIndexList.querySelectorAll("button[data-tradition-key]").forEach((btn) => {
-        btn.addEventListener("click", function () {
-            const traditionKey = this.dataset.traditionKey;
-            const isAlreadyActive = String(currentTraditionPanelKey || "") === String(traditionKey);
-            if (isAlreadyActive) {
-                clearTraditionPanelSelection(true);
-                return;
+    traditionsIndexList.querySelectorAll("details.place-card > summary.place-card-header").forEach((summary) => {
+        summary.addEventListener("click", function () {
+            const card = this.parentElement;
+            if (!card) return;
+
+            const traditionKey = String(card.dataset.traditionKey || "");
+            const wasOpen = card.open;
+            const willOpen = !wasOpen;
+            const wasActive = String(currentTraditionPanelKey || "") === traditionKey;
+
+            window.setTimeout(() => {
+                if (willOpen) {
+                    activateTradition(traditionKey, { source: "list" });
+                    return;
+                }
+
+                if (wasActive) {
+                    currentTraditionPanelKey = null;
+                    currentTraditionCommunityKey = null;
+                    currentOverlayTraditionKeys = [];
+                    overlayListCleared = false;
+                    renderTraditionsIndex(null, null);
+                    renderOverlayControls([]);
+                    updateOverlayListActionButton();
+                    clearInsetSelectionRing();
+                    hideInsetSelectedPlaceLabel();
+                    return;
+                }
+
+                renderTraditionsIndex(currentTraditionPanelKey, currentTraditionCommunityKey);
+            }, 0);
+        });
+    });
+
+    traditionsIndexList.querySelectorAll("details.place-card").forEach((card) => {
+        card.addEventListener("toggle", function () {
+            const chevronEl = this.querySelector(":scope > summary.place-card-header .place-chevron");
+            if (chevronEl) {
+                chevronEl.innerHTML = renderPlaceChevronIcon(this.open);
+                refreshLucideIcons();
             }
-            activateTradition(traditionKey, { source: "list" });
         });
     });
 

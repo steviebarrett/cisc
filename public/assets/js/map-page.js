@@ -10739,18 +10739,45 @@ function getCapeBretonBaseMarkerOpacityForVariant(figureVariant = null) {
     return figureOpacity == null ? 1 : figureOpacity;
 }
 
+function renderLetterToggleIcon(isOpen) {
+    return `<i data-lucide="${isOpen ? "minus" : "plus"}" class="icon-md"></i>`;
+}
+
+function renderPlaceChevronIcon(isOpen) {
+    return `<i data-lucide="${isOpen ? "chevron-down" : "chevron-right"}" class="icon-sm"></i>`;
+}
+
+function refreshLucideIcons() {
+    if (window.lucide && typeof window.lucide.createIcons === "function") {
+        window.lucide.createIcons();
+    }
+}
+
+function formatPlaceListNameHtml(gaelic, english) {
+    const gd = String(gaelic || "").trim();
+    const en = String(english || "").trim();
+
+    if (gd && en) {
+        return `<span class="place-name-gd">${escapeHtml(gd)}</span><span class="place-name-separator">|</span><span class="place-name-en">${escapeHtml(en)}</span>`;
+    }
+    if (gd) {
+        return `<span class="place-name-gd">${escapeHtml(gd)}</span>`;
+    }
+    return `<span class="place-name-en">${escapeHtml(en)}</span>`;
+}
+
 function renderPlaceInlineDetail(placeKey) {
     const place = placesLookup[String(placeKey)];
     const people = (peopleByPlace[String(placeKey)] || []).slice().sort((a, b) => a.sort_name.localeCompare(b.sort_name) || a.name.localeCompare(b.name));
 
     if (!place) {
-        return '<div class="place-list-detail"><div class="empty">No data found for that place.</div></div>';
+        return '<div class="place-card-content"><div class="informant-detail"><div class="detail-value">No data found for that place.</div></div></div>';
     }
 
-    let html = '<div class="place-list-detail">';
+    let html = '<div class="place-card-content">';
 
     if (!people.length) {
-        html += '<div class="informants-pane"><div class="empty">No people are linked to this place key.</div></div>';
+        html += '<div class="informant-detail"><div class="detail-value">No people are linked to this place key.</div></div>';
     } else {
         let peopleHtml = "";
         for (const person of people) {
@@ -10762,7 +10789,7 @@ function renderPlaceInlineDetail(placeKey) {
                 forceOpen: expandAllPlacePersonCards,
             });
         }
-        html += `<div class="informants-pane">${peopleHtml}</div>`;
+        html += peopleHtml;
     }
 
     html += "</div>";
@@ -10829,21 +10856,24 @@ function renderPlaceCard(placeKey, activePlaceKey = null) {
     const place = placesLookup[String(placeKey)] || {};
     const isActive = String(activePlaceKey || "") === String(placeKey);
     const isOpen = isPlaceCardOpen(placeKey);
-    const labelHtml = formatBilingualHtml(place.place_name_gaelic || "", place.place_name_english || "", "english-highlight-place");
+    const labelHtml = formatPlaceListNameHtml(place.place_name_gaelic || "", place.place_name_english || "");
     const peopleCount = Number(place.people_count || 0);
 
     return `
-            <details class="place-list-item place-entry-card${isActive ? " active" : ""}" data-place-key="${escapeHtml(String(placeKey))}" ${isOpen ? "open" : ""}>
-                <summary class="place-list-btn${isActive ? " active" : ""}" data-place-key="${escapeHtml(String(placeKey))}">
-                    <span class="place-list-name">${labelHtml}</span>
-                    <span class="place-list-meta">Informants: ${peopleCount}</span>
+            <details class="place-card${isActive ? " active" : ""}" data-place-key="${escapeHtml(String(placeKey))}" ${isOpen ? "open" : ""}>
+                <summary class="place-card-header${isActive ? " active" : ""}" data-place-key="${escapeHtml(String(placeKey))}">
+                    <span class="place-card-info">${labelHtml}</span>
+                    <span class="place-card-meta">
+                        <span class="place-informant-count">Informants: ${peopleCount}</span>
+                        <span class="place-chevron" aria-hidden="true">${renderPlaceChevronIcon(isOpen)}</span>
+                    </span>
                 </summary>
                 ${isOpen ? renderPlaceInlineDetail(placeKey) : ""}
             </details>`;
 }
 
 function wirePlaceIndexBehaviour() {
-    placesIndexList.querySelectorAll("details.place-letter-group").forEach((group) => {
+    placesIndexList.querySelectorAll("details.letter-group").forEach((group) => {
         group.addEventListener("toggle", function () {
             const letter = String(this.dataset.placeLetter || "");
             if (!letter) return;
@@ -10852,10 +10882,16 @@ function wirePlaceIndexBehaviour() {
             } else {
                 openPlaceLetters.delete(letter);
             }
+
+            const toggleEl = this.querySelector(":scope > summary.letter-header .letter-toggle");
+            if (toggleEl) {
+                toggleEl.innerHTML = renderLetterToggleIcon(this.open);
+                refreshLucideIcons();
+            }
         });
     });
 
-    placesIndexList.querySelectorAll("details.place-entry-card > summary.place-list-btn").forEach((summary) => {
+    placesIndexList.querySelectorAll("details.place-card > summary.place-card-header").forEach((summary) => {
         summary.addEventListener("click", function () {
             const card = this.parentElement;
             if (!card) return;
@@ -10884,6 +10920,16 @@ function wirePlaceIndexBehaviour() {
             }, 0);
         });
     });
+
+    placesIndexList.querySelectorAll("details.place-card").forEach((card) => {
+        card.addEventListener("toggle", function () {
+            const chevronEl = this.querySelector(":scope > summary.place-card-header .place-chevron");
+            if (chevronEl) {
+                chevronEl.innerHTML = renderPlaceChevronIcon(this.open);
+                refreshLucideIcons();
+            }
+        });
+    });
 }
 
 function renderPlacesIndex(activePlaceKey = null) {
@@ -10903,14 +10949,18 @@ function renderPlacesIndex(activePlaceKey = null) {
             const itemsHtml = keys.map((placeKey) => renderPlaceCard(placeKey, activePlaceKey)).join("");
 
             return `
-                <details class="place-letter-group" data-place-letter="${escapeHtml(letter)}" ${groupOpen ? "open" : ""}>
-                    <summary>${escapeHtml(letter)}</summary>
-                    <div class="place-letter-group-body">${itemsHtml}</div>
+                <details class="letter-group" data-place-letter="${escapeHtml(letter)}" ${groupOpen ? "open" : ""}>
+                    <summary class="letter-header">
+                        <span class="letter-label">${escapeHtml(letter)}</span>
+                        <span class="letter-toggle" aria-hidden="true">${renderLetterToggleIcon(groupOpen)}</span>
+                    </summary>
+                    <div class="letter-content">${itemsHtml}</div>
                 </details>`;
         })
         .join("");
 
     placesIndexList.innerHTML = html;
+    refreshLucideIcons();
     wirePlaceIndexBehaviour();
     wireLocationPersonSelectionBehaviour();
 }
@@ -10925,7 +10975,7 @@ function scrollItemToTopWithinPane(item, pane) {
 function setActivePlaceInList(placeKey = null, options = {}) {
     renderPlacesIndex(placeKey);
     if (!placeKey || !placesIndexList) return;
-    const activeItem = placesIndexList.querySelector(".place-list-item.active");
+    const activeItem = placesIndexList.querySelector(".place-card.active");
     if (!activeItem) return;
     if (options.alignToTop !== false) {
         scrollItemToTopWithinPane(activeItem, placesIndexList);
@@ -10937,7 +10987,7 @@ function setActivePlaceInList(placeKey = null, options = {}) {
 function setActiveTraditionInList(traditionKey = null, options = {}) {
     renderTraditionsIndex(traditionKey, currentTraditionCommunityKey);
     if (!traditionKey || !traditionsIndexList) return;
-    const activeItem = traditionsIndexList.querySelector(".place-list-item.active");
+    const activeItem = traditionsIndexList.querySelector(".place-card.active");
     if (!activeItem) return;
     if (options.alignToTop !== false) {
         scrollItemToTopWithinPane(activeItem, traditionsIndexList);
@@ -10954,7 +11004,7 @@ function setPlaceSort(mode) {
 }
 
 function getAllPlaceLetterGroups() {
-    return Array.from(document.querySelectorAll("#places-index-list details.place-letter-group"));
+    return Array.from(document.querySelectorAll("#places-index-list details.letter-group"));
 }
 
 function getOpenPlaceLetterGroups() {
@@ -10962,13 +11012,13 @@ function getOpenPlaceLetterGroups() {
 }
 
 function getAllPlaceCards() {
-    return Array.from(document.querySelectorAll("#places-index-list details.place-entry-card"));
+    return Array.from(document.querySelectorAll("#places-index-list details.place-card"));
 }
 
 function getVisiblePlaceCards() {
     const cards = [];
     getOpenPlaceLetterGroups().forEach((group) => {
-        cards.push(...Array.from(group.querySelectorAll("details.place-entry-card")));
+        cards.push(...Array.from(group.querySelectorAll("details.place-card")));
     });
     return cards;
 }
@@ -11073,7 +11123,7 @@ function updateTraditionSortButtons() {
 function renderTraditionInlineDetail(traditionKey, activeCommunityKey = null) {
     const tradition = traditionsLookup[String(traditionKey)];
     if (!tradition) {
-        return '<div class="place-list-detail"><div class="empty">No data found for that tradition.</div></div>';
+        return '<div class="place-card-content"><div class="informant-detail"><div class="detail-value">No data found for that tradition.</div></div></div>';
     }
 
     const communities = (tradition.community_places || []).slice().sort((a, b) => {
@@ -11089,23 +11139,23 @@ function renderTraditionInlineDetail(traditionKey, activeCommunityKey = null) {
     });
 
     if (!communities.length) {
-        return '<div class="place-list-detail"><div class="empty">No Cape Breton communities are linked to this tradition.</div></div>';
+        return '<div class="place-card-content"><div class="informant-detail"><div class="detail-value">No Cape Breton communities are linked to this tradition.</div></div></div>';
     }
 
     const items = communities
         .map((community) => {
             const isActive = String(activeCommunityKey || "") === String(community.place_key);
-            const labelHtml = formatBilingualHtml(community.place_name_gaelic || "", community.place_name_english || "", "english-highlight-place");
+            const nameHtml = formatPlaceListNameHtml(community.place_name_gaelic || "", community.place_name_english || "");
             const peopleCount = Number(community.people_count || 0);
             return `
-                <button class="tradition-community-btn${isActive ? " active" : ""}" type="button" data-tradition-community-key="${escapeHtml(String(community.place_key))}">
-                    <span class="place-list-name">${labelHtml}</span>
-                    <span class="place-list-meta">Informants: ${peopleCount}</span>
+                <button class="informant-row${isActive ? " active" : ""}" type="button" data-tradition-community-key="${escapeHtml(String(community.place_key))}">
+                    <span class="informant-row-names">${nameHtml}</span>
+                    <span class="place-informant-count">Informants: ${peopleCount}</span>
                 </button>`;
         })
         .join("");
 
-    return `<div class="place-list-detail"><div class="informants-pane tradition-community-pane"><div class="tradition-community-list">${items}</div></div></div>`;
+    return `<div class="place-card-content"><div class="tradition-community-list">${items}</div></div>`;
 }
 
 function renderTraditionsIndex(activeTraditionKey = null, activeCommunityKey = null) {
@@ -11117,14 +11167,17 @@ function renderTraditionsIndex(activeTraditionKey = null, activeCommunityKey = n
         .map((traditionKey) => {
             const tradition = traditionsLookup[String(traditionKey)] || {};
             const isActive = String(activeTraditionKey || "") === String(traditionKey);
-            const labelHtml = formatBilingualHtml(tradition.label_gaelic || "", tradition.label_english || "", "english-highlight-place");
+            const labelHtml = formatPlaceListNameHtml(tradition.label_gaelic || "", tradition.label_english || "");
             const communityCount = Array.isArray(tradition.community_places) ? tradition.community_places.length : 0;
 
             return `
-                <div class="place-list-item${isActive ? " active" : ""}" data-tradition-key="${escapeHtml(String(traditionKey))}">
-                    <button class="place-list-btn${isActive ? " active" : ""}" type="button" data-tradition-key="${escapeHtml(String(traditionKey))}">
-                        <span class="place-list-name">${labelHtml}</span>
-                        <span class="place-list-meta">Communities: ${communityCount}</span>
+                <div class="place-card${isActive ? " active" : ""}" data-tradition-key="${escapeHtml(String(traditionKey))}">
+                    <button class="place-card-header${isActive ? " active" : ""}" type="button" data-tradition-key="${escapeHtml(String(traditionKey))}">
+                        <span class="place-card-info">${labelHtml}</span>
+                        <span class="place-card-meta">
+                            <span class="place-informant-count">Communities: ${communityCount}</span>
+                            <span class="place-chevron" aria-hidden="true">${renderPlaceChevronIcon(isActive)}</span>
+                        </span>
                     </button>
                     ${isActive ? renderTraditionInlineDetail(traditionKey, activeCommunityKey) : ""}
                 </div>`;
@@ -11132,6 +11185,7 @@ function renderTraditionsIndex(activeTraditionKey = null, activeCommunityKey = n
         .join("");
 
     traditionsIndexList.innerHTML = html;
+    refreshLucideIcons();
 
     traditionsIndexList.querySelectorAll("button[data-tradition-key]").forEach((btn) => {
         btn.addEventListener("click", function () {
@@ -11989,7 +12043,7 @@ function selectPersonCard(card) {
 
     const previousPlaceKey = String(currentLocationPlaceKey || "");
     const nextPlaceKey = String(placeKey || "");
-    const clickedInsideActivePlaceList = !!card.closest("#places-index-list .place-list-detail");
+    const clickedInsideActivePlaceList = !!card.closest("#places-index-list .place-card-content");
 
     currentLocationPlaceKey = nextPlaceKey;
 
@@ -12127,7 +12181,7 @@ function decreasePeopleDetail() {
 }
 
 function wireLocationPersonSelectionBehaviour() {
-    document.querySelectorAll("#places-index-list .place-list-detail details.person-card").forEach((card) => {
+    document.querySelectorAll("#places-index-list .place-card-content details.person-card").forEach((card) => {
         const summary = card.querySelector(":scope > summary");
         if (!summary) return;
 

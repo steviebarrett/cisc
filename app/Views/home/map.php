@@ -24,14 +24,16 @@
                 <div id="location-panel-view" class="active">
                     <div class="sidebar-controls index-controls-row">
                         <div class="controls-left">
-                            <button class="sort-btn" title="Sort" type="button" aria-label="Sort">⇅</button>
+                            <button class="sort-btn" title="Sort" type="button" aria-label="Sort"><i data-lucide="arrow-up-down" class="icon-sm"></i></button>
                             <button id="sort-gaelic-btn" class="lang-btn active" type="button">GD</button>
                             <button id="sort-english-btn" class="lang-btn" type="button">EN</button>
                         </div>
                         <div class="controls-right">
                             <span class="detail-stepper-label">Mion-fhiosrachadh | Detail</span>
-                            <button id="place-detail-less-btn" class="detail-stepper-btn" type="button" aria-label="Less detail">&lt;</button>
-                            <button id="place-detail-more-btn" class="detail-stepper-btn" type="button" aria-label="More detail">&gt;</button>
+                            <button id="place-detail-less-btn" class="detail-stepper-btn" type="button" aria-label="Less detail"><i data-lucide="chevron-left"
+                                    class="icon-sm"></i></button>
+                            <button id="place-detail-more-btn" class="detail-stepper-btn" type="button" aria-label="More detail"><i data-lucide="chevron-right"
+                                    class="icon-sm"></i></button>
                         </div>
                     </div>
 

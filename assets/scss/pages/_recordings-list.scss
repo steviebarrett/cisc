@@ -14,6 +14,18 @@
     align-items: flex-end;
 }
 
+.page-recordings-list .filter-row-selects {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: end;
+}
+
+.page-recordings-list .filter-row-selects .filter-select,
+.page-recordings-list .filter-row-selects .filter-select-place {
+    width: 100%;
+    min-width: 0;
+}
+
 .page-recordings-list .filter-row-options {
     display: flex;
     flex-direction: row;
@@ -248,18 +260,23 @@
 .page-recordings-list .recording-accent-story {
     background: var(--genre-story);
 }
+
 .page-recordings-list .recording-accent-song {
     background: var(--genre-song);
 }
+
 .page-recordings-list .recording-accent-belief {
     background: var(--genre-belief);
 }
+
 .page-recordings-list .recording-accent-biography {
     background: var(--genre-biography);
 }
+
 .page-recordings-list .recording-accent-custom {
     background: var(--genre-custom);
 }
+
 .page-recordings-list .recording-accent-proverb {
     background: var(--genre-proverb);
 }
@@ -315,6 +332,11 @@
         flex-direction: column;
     }
 
+    .page-recordings-list .filter-row-selects {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
     .page-recordings-list .filter-row-options {
         flex-wrap: wrap;
         gap: var(--space-sm-md);
@@ -345,6 +367,12 @@
     }
 }
 
+@media (max-width: 1100px) {
+    .page-recordings-list .filter-row-selects {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 480px) {
     .page-recordings-list .recording-title-row {
         flex-direction: column;
@@ -355,4 +383,3 @@
         padding: var(--space-sm-md) 14px;
     }
 }
-

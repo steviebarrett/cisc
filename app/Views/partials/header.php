@@ -17,82 +17,80 @@ $searchPanelType = $searchPanelType ?? '';
 $headerSearchOpen = (bool)($headerSearchOpen ?? false);
 
 function nav_link(string $href, string $label, string $key, string $activeNav): string {
-    $active = ($key !== '' && $activeNav === $key) ? ' fw-semibold text-body' : '';
-    return '<a class="text-decoration-none' . $active . '" href="' . e($href) . '">' . e($label) . '</a>';
+    $active = ($key !== '' && $activeNav === $key) ? ' class="active"' : '';
+    return '<a href="' . e($href) . '"' . $active . '>' . e($label) . '</a>';
 }
 ?>
 
-<header class="sticky-top bg-body border-bottom">
-    <div class="container-fluid py-2">
-        <div class="d-flex align-items-center justify-content-between gap-2">
-            <div class="d-flex align-items-center gap-3">
-                <a class="navbar-brand fw-semibold text-decoration-none" href="<?= e(base_path('/')) ?>">Sruth nan Gàidheal | Gaelstream</a>
+<?php
+$isHome = ($activeNav === 'home');
+$navClasses = $isHome ? 'nav nav--transparent' : 'nav';
+$logoPath = $isHome
+    ? '/assets/images/logos/logo--dark-bg.svg'
+    : '/assets/images/logos/logo--light-bg.svg';
+?>
 
-                <nav class="d-none d-md-flex gap-3">
-                    <?= nav_link(base_path('/'), 'Home', 'home', $activeNav) ?>
-                    <?= nav_link(base_path('/recordings'), 'Recordings', 'recordings', $activeNav) ?>
-                    <?= nav_link(base_path('/informants'), 'Informants', 'informants', $activeNav) ?>
-                    <?= nav_link(base_path('/map'), 'Map', 'map', $activeNav) ?>
-                    <?= nav_link(base_path('/about'), 'About', 'about', $activeNav) ?>
-                    <?= nav_link(base_path('/how_to_use'), 'How To Use', 'how_to_use', $activeNav) ?>
-                    <?= nav_link(base_path('/thanks'), 'Thanks', 'thanks', $activeNav) ?>
-                </nav>
-            </div>
+<nav class="<?= e($navClasses) ?>">
+    <a href="<?= e(base_path('/')) ?>" class="nav-logo">
+        <img src="<?= e(base_path($logoPath)) ?>" alt="Gaelstream">
+    </a>
 
-            <div class="d-flex align-items-center gap-2">
-                <?php if ($enableSearchPanel): ?>
-                    <button class="btn btn-outline-primary" type="button"
-                            data-bs-toggle="collapse"
-                            data-bs-target="#searchPanel"
-                            aria-expanded="<?= $headerSearchOpen ? 'true' : 'false' ?>"
-                            aria-controls="searchPanel">
-                        Search / Filters
-                    </button>
-                <?php endif; ?>
+    <button class="nav-hamburger" type="button" onclick="document.body.classList.toggle('nav-open')" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
 
-                <button class="btn btn-outline-secondary d-md-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#siteNav" aria-controls="siteNav">
-                    Menu
-                </button>
-            </div>
-        </div>
+    <ul class="nav-links">
+        <li><?= nav_link(base_path('/'), 'Home', 'home', $activeNav) ?></li>
+        <li><?= nav_link(base_path('/recordings'), 'Recordings', 'recordings', $activeNav) ?></li>
+        <li><?= nav_link(base_path('/informants'), 'Informants', 'informants', $activeNav) ?></li>
+        <li><?= nav_link(base_path('/map'), 'Map', 'map', $activeNav) ?></li>
+        <li><?= nav_link(base_path('/about'), 'About', 'about', $activeNav) ?></li>
+    </ul>
 
-        <?php if ($enableSearchPanel): ?>
-            <div class="collapse mt-2 <?= $headerSearchOpen ? 'show' : '' ?>" id="searchPanel">
-                <div class="card">
-                    <div class="card-header">Search & Filters</div>
-                    <div class="card-body">
-                        <?php if ($searchPanelType === 'recordings'): ?>
-                            <?php
-                                $searchPanel = $searchPanel ?? [];
+    <?php if ($enableSearchPanel): ?>
+    <button class="nav-search-btn" type="button" data-bs-toggle="collapse" data-bs-target="#searchPanel" aria-expanded="<?= $headerSearchOpen ? 'true' : 'false' ?>"
+        aria-controls="searchPanel">
+        <i class="fa-solid fa-magnifying-glass icon-md" aria-hidden="true"></i>
+        Search
+    </button>
+    <?php else: ?>
+    <a class="nav-search-btn" href="<?= e(base_path('/recordings')) ?>">
+        <i class="fa-solid fa-magnifying-glass icon-md" aria-hidden="true"></i>
+        Search
+    </a>
+    <?php endif; ?>
+</nav>
 
-                                $params = $searchPanel['params'] ?? [];
-                                $places_all = $searchPanel['places_all'] ?? [];
-                                $genres = $searchPanel['genres'] ?? [];
-                                $subgenres_all = $searchPanel['subgenres_all'] ?? [];
-                                $subjects_all = $searchPanel['subjects_all'] ?? [];
+<div class="nav-overlay">
+    <ul class="nav-overlay-links">
+        <li><?= nav_link(base_path('/'), 'Home', 'home', $activeNav) ?></li>
+        <li><?= nav_link(base_path('/recordings'), 'Recordings', 'recordings', $activeNav) ?></li>
+        <li><?= nav_link(base_path('/informants'), 'Informants', 'informants', $activeNav) ?></li>
+        <li><?= nav_link(base_path('/map'), 'Map', 'map', $activeNav) ?></li>
+        <li><?= nav_link(base_path('/about'), 'About', 'about', $activeNav) ?></li>
+        <li><?= nav_link(base_path('/how_to_use'), 'How To Use', 'how_to_use', $activeNav) ?></li>
+        <li><?= nav_link(base_path('/thanks'), 'Thanks', 'thanks', $activeNav) ?></li>
+    </ul>
 
-                                require __DIR__ . '/search/recording-search-panel.php'; ?>
-                        <?php endif; ?>
-                    </div>
-                </div>
-            </div>
-        <?php endif; ?>
-    </div>
-</header>
-
-<div class="offcanvas offcanvas-end" tabindex="-1" id="siteNav" aria-labelledby="siteNavLabel">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title" id="siteNavLabel">Menu</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-        <div class="d-grid gap-2">
-            <a class="btn btn-outline-secondary" href="<?= e(base_path('/recordings')) ?>">Recordings</a>
-            <a class="btn btn-outline-secondary" href="<?= e(base_path('/informants')) ?>">Informants</a>
-            <a class="btn btn-outline-secondary" href="<?= e(base_path('/map')) ?>">Map</a>
-            <a class="btn btn-outline-secondary" href="<?= e(base_path('/about')) ?>">About</a>
-            <a class="btn btn-outline-secondary" href="<?= e(base_path('/how_to_use')) ?>">How To Use</a>
-            <a class="btn btn-outline-secondary" href="<?= e(base_path('/thanks')) ?>">Thanks</a>
-        </div>
-    </div>
+    <a class="nav-overlay-search" href="<?= e(base_path('/recordings')) ?>" onclick="document.body.classList.remove('nav-open')">
+        <i class="fa-solid fa-magnifying-glass icon-xl" aria-hidden="true"></i>
+        Search
+    </a>
 </div>
+
+<?php if ($enableSearchPanel): ?>
+<div class="collapse mt-2 <?= $headerSearchOpen ? 'show' : '' ?>" id="searchPanel">
+    <?php if ($searchPanelType === 'recordings'): ?>
+    <?php
+        $searchPanel = $searchPanel ?? [];
+
+        $params = $searchPanel['params'] ?? [];
+        $places_all = $searchPanel['places_all'] ?? [];
+        $genres = $searchPanel['genres'] ?? [];
+        $subgenres_all = $searchPanel['subgenres_all'] ?? [];
+        $subjects_all = $searchPanel['subjects_all'] ?? [];
+
+        require __DIR__ . '/search/recording-search-panel.php'; ?>
+    <?php endif; ?>
+</div>
+<?php endif; ?>

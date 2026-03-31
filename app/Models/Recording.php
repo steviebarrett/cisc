@@ -9,7 +9,22 @@ final class Recording {
         r.*,
         g.name AS genre_name,
         ss.name AS structure_name,
-        i.informant_id, i.first_name AS informant_first, i.last_name AS informant_last,
+        i.informant_id,
+        i.first_name AS informant_first,
+        i.last_name AS informant_last,
+        i.tradition_scotland AS informant_detail_light,
+        (
+          SELECT COUNT(*)
+          FROM recording rr
+          WHERE rr.informant_id = i.informant_id
+        ) AS informant_recording_count,
+        (
+          SELECT ii.filename
+          FROM informant_image ii
+          WHERE ii.informant_id = i.informant_id
+          ORDER BY ii.slot ASC, ii.filename ASC
+          LIMIT 1
+        ) AS informant_image_filename,
         c.composer_id, c.first_name AS composer_first, c.last_name AS composer_last,
         r.transcription_text AS transcription_text, r.transcription_html AS transcription_html
       FROM recording r
@@ -29,6 +44,66 @@ final class Recording {
         $row['subjects']  = self::subjects($id);
         return $row;
     }
+
+      public static function related(string $recordingId, string $informantId = '', string $genreId = '', int $limit = 3): array {
+        $pdo = DB::pdo();
+        $informantId = trim($informantId);
+        $genreId = trim($genreId);
+        $limit = max(1, min(12, $limit));
+
+        if ($informantId === '' && $genreId === '') {
+          return [];
+        }
+
+        $where = ['r.recording_id <> :recording_id'];
+        $bind = [':recording_id' => $recordingId];
+        $scoreParts = [];
+        $matchFilters = [];
+
+        if ($informantId !== '') {
+          $matchFilters[] = 'r.informant_id = :informant_id';
+          $bind[':informant_id'] = $informantId;
+          $scoreParts[] = 'CASE WHEN r.informant_id = :score_informant_id THEN 2 ELSE 0 END';
+          $bind[':score_informant_id'] = $informantId;
+        }
+        if ($genreId !== '') {
+          $matchFilters[] = 'r.genre_id = :genre_id';
+          $bind[':genre_id'] = $genreId;
+          $scoreParts[] = 'CASE WHEN r.genre_id = :score_genre_id THEN 1 ELSE 0 END';
+          $bind[':score_genre_id'] = $genreId;
+        }
+
+        $scoreSql = implode(' + ', $scoreParts);
+        if (!empty($matchFilters)) {
+          $where[] = '(' . implode(' OR ', $matchFilters) . ')';
+        }
+        $whereSql = implode(' AND ', $where);
+
+        $sql = "
+        SELECT
+        r.recording_id,
+        r.title,
+        r.recording_date,
+        g.name AS genre_name,
+        i.first_name AS informant_first,
+        i.last_name AS informant_last,
+        ({$scoreSql}) AS relation_score
+        FROM recording r
+        JOIN informant i ON i.informant_id = r.informant_id
+        LEFT JOIN genre g ON g.genre_id = r.genre_id
+        WHERE ({$whereSql})
+        ORDER BY relation_score DESC, r.recording_date DESC, r.recording_id DESC
+        LIMIT :limit
+      ";
+
+        $stmt = $pdo->prepare($sql);
+        foreach ($bind as $k => $v) {
+          $stmt->bindValue($k, $v);
+        }
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+      }
 
     public static function subgenres(string $recordingId): array {
         $pdo = DB::pdo();

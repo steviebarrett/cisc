@@ -52,7 +52,17 @@ final class RecordingController extends Controller {
             return;
         }
 
-        $this->render('recordings/show', ['rec' => $rec]);
+        $relatedRecords = Recording::related(
+            (string)($rec['recording_id'] ?? ''),
+            (string)($rec['informant_id'] ?? ''),
+            (string)($rec['genre_id'] ?? ''),
+            3
+        );
+
+        $this->render('recordings/show', [
+            'rec' => $rec,
+            'relatedRecords' => $relatedRecords,
+        ]);
     }
 
     public function downloadTranscription(string $id): void {

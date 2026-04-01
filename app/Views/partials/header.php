@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </div>
 
 <?php if ($enableSearchPanel): ?>
-<div class="collapse mt-2 <?= $headerSearchOpen ? 'show' : '' ?>" id="searchPanel">
+<div class="collapse my-2 <?= $headerSearchOpen ? 'show' : '' ?>" id="searchPanel">
     <?php if ($searchPanelType === 'recordings'): ?>
     <?php
         $searchPanel = $searchPanel ?? [];

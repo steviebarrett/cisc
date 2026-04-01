@@ -139,6 +139,38 @@
     color: var(--color-primary);
 }
 
+.page-map {
+    .btn-bilingual {
+        .gaelic-dark {
+            color: var(--color-primary);
+        }
+
+        .separator-accent,
+        .english-accent {
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+    }
+
+    .cb-main-selected-place-label {
+        border: 1px solid #E2DFF0;
+
+        .gaelic {
+            color: var(--color-primary);
+        }
+
+        .separator,
+        .english {
+            color: var(--color-text-secondary);
+            font-weight: 500;
+        }
+    }
+
+    .tradition-toggle {
+        accent-color: var(--color-primary);
+    }
+}
+
 .page-map .lang-btn.active {
     background: var(--gradient-brand);
     color: white;
@@ -211,7 +243,7 @@
 }
 
 .page-map .letter-content {
-    padding: 0 0 8px 0;
+    padding: 8px 0 8px 0;
 }
 
 .page-map .place-card {
@@ -289,6 +321,7 @@
 
 .page-map .place-card-content {
     border-top: 1px solid var(--color-border);
+    padding-top: 8px;
 }
 
 .page-map .informant-row {
@@ -714,5 +747,33 @@
 
     .page-map .map-pin-label {
         font-size: 10px;
+    }
+}
+
+.page.page-map {
+    .floating-panel {
+        border-left: 4px solid var(--color-lavender);
+    }
+}
+
+.page.page-map .map-view-toggle-shell {
+    background-color: #fff;
+    border-radius: 8px;
+
+    .map-view-btn {
+        box-shadow: none;
+        border: 1px solid var(--color-indigo);
+        background-color: #fff;
+    }
+}
+
+#all-people-list {
+    .informant-row-card {
+        margin: 0 12px 8px 20px;
+        background: var(--color-surface-card);
+        border-radius: 6px;
+        border: 1px solid var(--color-border);
+        border-left: 3px solid var(--color-lavender);
+        overflow: hidden;
     }
 }

@@ -142,6 +142,7 @@ img {
 }
 
 .nav {
+    z-index: 1003;
     display: flex;
     align-items: center;
     gap: var(--space-lg);
@@ -150,7 +151,6 @@ img {
     border-bottom: var(--card-border);
     position: sticky;
     top: 0;
-    z-index: 100;
     max-width: 100%;
 }
 

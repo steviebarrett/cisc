@@ -123,6 +123,7 @@ img {
 }
 
 .nav {
+  z-index: 1003;
   display: flex;
   align-items: center;
   gap: var(--space-lg);
@@ -131,7 +132,6 @@ img {
   border-bottom: var(--card-border);
   position: sticky;
   top: 0;
-  z-index: 100;
   max-width: 100%;
 }
 
@@ -2774,6 +2774,29 @@ body.page-homepage #searchPanel {
   color: var(--color-primary);
 }
 
+.page-map .btn-bilingual .gaelic-dark {
+  color: var(--color-primary);
+}
+.page-map .btn-bilingual .separator-accent,
+.page-map .btn-bilingual .english-accent {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+.page-map .cb-main-selected-place-label {
+  border: 1px solid #E2DFF0;
+}
+.page-map .cb-main-selected-place-label .gaelic {
+  color: var(--color-primary);
+}
+.page-map .cb-main-selected-place-label .separator,
+.page-map .cb-main-selected-place-label .english {
+  color: var(--color-text-secondary);
+  font-weight: 500;
+}
+.page-map .tradition-toggle {
+  accent-color: var(--color-primary);
+}
+
 .page-map .lang-btn.active {
   background: var(--gradient-brand);
   color: white;
@@ -2846,7 +2869,7 @@ body.page-homepage #searchPanel {
 }
 
 .page-map .letter-content {
-  padding: 0 0 8px 0;
+  padding: 8px 0 8px 0;
 }
 
 .page-map .place-card {
@@ -2924,6 +2947,7 @@ body.page-homepage #searchPanel {
 
 .page-map .place-card-content {
   border-top: 1px solid var(--color-border);
+  padding-top: 8px;
 }
 
 .page-map .informant-row {
@@ -3322,6 +3346,29 @@ body.page-homepage #searchPanel {
     font-size: 10px;
   }
 }
+.page.page-map .floating-panel {
+  border-left: 4px solid var(--color-lavender);
+}
+
+.page.page-map .map-view-toggle-shell {
+  background-color: #fff;
+  border-radius: 8px;
+}
+.page.page-map .map-view-toggle-shell .map-view-btn {
+  box-shadow: none;
+  border: 1px solid var(--color-indigo);
+  background-color: #fff;
+}
+
+#all-people-list .informant-row-card {
+  margin: 0 12px 8px 20px;
+  background: var(--color-surface-card);
+  border-radius: 6px;
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-lavender);
+  overflow: hidden;
+}
+
 /* === SEARCH FILTERS === */
 .page-search-filters .filter-panel {
   display: flex;

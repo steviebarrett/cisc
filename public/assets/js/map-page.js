@@ -11004,10 +11004,26 @@ function setActiveTraditionInList(traditionKey = null, options = {}) {
     }
 }
 
+function setSidebarInstructionLanguage(panelId, mode) {
+    const panel = document.getElementById(panelId);
+    if (!panel) return;
+
+    const instructions = panel.querySelector(":scope > .sidebar-instructions");
+    if (!instructions) return;
+
+    const showEnglish = mode === "english";
+    const gaelicInstruction = instructions.querySelector(".instructions-gd");
+    const englishInstruction = instructions.querySelector(".instructions-en");
+
+    if (gaelicInstruction) gaelicInstruction.hidden = showEnglish;
+    if (englishInstruction) englishInstruction.hidden = !showEnglish;
+}
+
 function setPlaceSort(mode) {
     currentPlaceSort = mode === "english" ? "english" : "gaelic";
     openPlaceLetters = new Set();
     placeLetterGroupsInitialised = false;
+    setSidebarInstructionLanguage("location-panel-view", currentPlaceSort);
     setActivePlaceInList(currentLocationPlaceKey);
 }
 
@@ -11274,6 +11290,7 @@ function renderTraditionsIndex(activeTraditionKey = null, activeCommunityKey = n
 
 function setTraditionSort(mode) {
     currentTraditionSort = mode === "english" ? "english" : "gaelic";
+    setSidebarInstructionLanguage("traditions-panel-view", currentTraditionSort);
     renderTraditionsIndex(currentTraditionPanelKey, currentTraditionCommunityKey);
 }
 
@@ -11290,7 +11307,7 @@ function renderPersonCard(person, options = {}) {
     const summaryEnglish = englishName || "";
 
     return `
-        <details class="informant-row-card place-card"
+        <details class="informant-row-card"
             data-place-key="${escapeHtml(String(placeKey))}"
             data-lat="${escapeHtml(String(latitude))}"
             data-lon="${escapeHtml(String(longitude))}"
@@ -12013,6 +12030,7 @@ function buildAllPeopleListHtml() {
 
 function setPeopleSort(mode) {
     currentPeopleSort = mode === "english" ? "english" : "gaelic";
+    setSidebarInstructionLanguage("all-people-panel-view", currentPeopleSort);
     renderAllPeopleList();
 }
 
@@ -12862,6 +12880,10 @@ wireDelayedSortButtonTooltip(peopleSortGaelicBtn, "Gàidhlig");
 wireDelayedSortButtonTooltip(peopleSortEnglishBtn, "English");
 wireDelayedSortButtonTooltip(traditionSortGaelicBtn, "Gàidhlig");
 wireDelayedSortButtonTooltip(traditionSortEnglishBtn, "English");
+
+setSidebarInstructionLanguage("location-panel-view", currentPlaceSort);
+setSidebarInstructionLanguage("all-people-panel-view", currentPeopleSort);
+setSidebarInstructionLanguage("traditions-panel-view", currentTraditionSort);
 
 if (sortGaelicBtn) {
     sortGaelicBtn.addEventListener("click", () => setPlaceSort("gaelic"));

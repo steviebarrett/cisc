@@ -1087,6 +1087,17 @@ body.page-homepage #searchPanel {
   border-bottom-color: #ffffff;
 }
 
+.page-homepage .nav--transparent .nav-dropdown-menu a {
+  color: var(--color-text-secondary);
+  border-bottom-color: transparent;
+}
+
+.page-homepage .nav--transparent .nav-dropdown-menu a:hover,
+.page-homepage .nav--transparent .nav-dropdown-menu a.active {
+  color: var(--color-primary);
+  border-bottom-color: transparent;
+}
+
 .page-homepage .nav--transparent .nav-search-btn {
   border-color: rgba(255, 255, 255, 0.6);
   color: #ffffff;

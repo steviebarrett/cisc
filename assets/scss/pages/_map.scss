@@ -331,6 +331,10 @@
     flex: 1;
 }
 
+.page-map .tradition-community-list .informant-row-names {
+    flex-direction: row;
+}
+
 .page-map .informant-name-gd {
     font-size: var(--text-meta-label);
     font-weight: var(--weight-medium);

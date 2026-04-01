@@ -2966,8 +2966,21 @@ body.page-homepage #searchPanel {
   flex: 1;
 }
 
+#traditions-index-list {
+  margin-top: 1rem;
+}
+
 .page-map .tradition-community-list .informant-row-names {
-  flex-direction: row;
+  display: block;
+}
+.page-map .tradition-community-list .informant-row-names .place-name-gd {
+  display: block !important;
+}
+.page-map .tradition-community-list .informant-row-names .place-name-separator {
+  display: none !important;
+}
+.page-map .tradition-community-list .informant-row-names .place-name-en {
+  display: block !important;
 }
 
 .page-map .informant-name-gd {

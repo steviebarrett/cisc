@@ -11290,7 +11290,7 @@ function renderPersonCard(person, options = {}) {
     const summaryEnglish = englishName || "";
 
     return `
-        <details class="informant-row-card"
+        <details class="informant-row-card place-card"
             data-place-key="${escapeHtml(String(placeKey))}"
             data-lat="${escapeHtml(String(latitude))}"
             data-lon="${escapeHtml(String(longitude))}"

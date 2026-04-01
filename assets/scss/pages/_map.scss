@@ -331,8 +331,24 @@
     flex: 1;
 }
 
+#traditions-index-list {
+    margin-top: 1rem;
+}
+
 .page-map .tradition-community-list .informant-row-names {
-    flex-direction: row;
+    display: block;
+
+    .place-name-gd {
+        display: block !important;
+    }
+
+    .place-name-separator {
+        display: none !important;
+    }
+
+    .place-name-en {
+        display: block !important;
+    }
 }
 
 .page-map .informant-name-gd {

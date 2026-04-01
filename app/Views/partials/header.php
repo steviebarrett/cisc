@@ -24,6 +24,7 @@ function nav_link(string $href, string $label, string $key, string $activeNav): 
 
 <?php
 $isHome = ($activeNav === 'home');
+$aboutGroupActive = in_array($activeNav, ['about', 'how_to_use', 'thanks'], true);
 $navClasses = $isHome ? 'nav nav--transparent' : 'nav';
 $logoPath = $isHome
     ? '/assets/images/logos/logo--dark-bg.svg'
@@ -44,7 +45,17 @@ $logoPath = $isHome
         <li><?= nav_link(base_path('/recordings'), 'Recordings', 'recordings', $activeNav) ?></li>
         <li><?= nav_link(base_path('/informants'), 'Informants', 'informants', $activeNav) ?></li>
         <li><?= nav_link(base_path('/map'), 'Map', 'map', $activeNav) ?></li>
-        <li><?= nav_link(base_path('/about'), 'About', 'about', $activeNav) ?></li>
+        <li class="nav-item-dropdown<?= $aboutGroupActive ? ' is-active' : '' ?>">
+            <a class="nav-dropdown-toggle<?= $aboutGroupActive ? ' active' : '' ?>" aria-haspopup="true" aria-expanded="false">
+                About
+                <i data-lucide="chevron-down" class="icon-sm" aria-hidden="true"></i>
+            </a>
+            <ul class="nav-dropdown-menu" aria-label="About pages">
+                <li><?= nav_link(base_path('/about'), 'About', 'about', $activeNav) ?></li>
+                <li><?= nav_link(base_path('/how_to_use'), 'How To Use', 'how_to_use', $activeNav) ?></li>
+                <li><?= nav_link(base_path('/thanks'), 'Thanks', 'thanks', $activeNav) ?></li>
+            </ul>
+        </li>
     </ul>
 
     <?php if ($enableSearchPanel): ?>
@@ -60,6 +71,44 @@ $logoPath = $isHome
     </a>
     <?php endif; ?>
 </nav>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const dropdown = document.querySelector('.nav-item-dropdown');
+    if (!dropdown) return;
+
+    const toggle = dropdown.querySelector('.nav-dropdown-toggle');
+    const closeDropdown = () => {
+        dropdown.classList.remove('is-open');
+        toggle?.setAttribute('aria-expanded', 'false');
+    };
+
+    toggle?.addEventListener('click', (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        const isOpen = dropdown.classList.toggle('is-open');
+        toggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!dropdown.contains(event.target)) {
+            closeDropdown();
+        }
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+            closeDropdown();
+        }
+    });
+
+    dropdown.querySelectorAll('.nav-dropdown-menu a').forEach((link) => {
+        link.addEventListener('click', () => {
+            closeDropdown();
+        });
+    });
+});
+</script>
 
 <div class="nav-overlay">
     <ul class="nav-overlay-links">

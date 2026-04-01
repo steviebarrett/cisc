@@ -1796,16 +1796,27 @@ body.page-homepage #searchPanel {
 
 .page-recording-detail .waveform-area {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
   width: 100%;
   height: 80px;
   background: linear-gradient(180deg, rgba(66, 62, 178, 0.04) 0%, rgba(30, 153, 163, 0.08) 100%);
+  padding: 0 var(--space-sm-md);
 }
 
-.page-recording-detail .waveform-area svg {
+.page-recording-detail .waveform-host {
   width: 100%;
   height: 100%;
+}
+
+.page-recording-detail .audio-player #detail-audio {
+  display: none;
+}
+
+.page-recording-detail .audio-player.audio-player--fallback #detail-audio {
+  display: block;
+  width: calc(100% - 2 * var(--space-lg));
+  margin: 0 var(--space-lg) var(--space-md);
 }
 
 .page-recording-detail .player-controls {

@@ -73,15 +73,6 @@ $hasNotes = array_filter($notes, fn($x) => trim((string)$x) !== '');
 $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
 ?>
 
-<!-- TODO/Notes:
- 
-1. Waveform is decorative, not audio-driven.
-Current bars are generated in PHP loop SVG at show.php:81, so it does not reflect the real MP3 waveform.
-
-We do not have the /files or /media directory in our project so I cant test informant photo nor mp3 functionality
-
--->
-
 <div class="page-container">
     <a href="<?= e($backUrl) ?>" class="back-link"><i class="fa-solid fa-arrow-left icon-sm" aria-hidden="true"></i> Back to recordings</a>
 
@@ -94,23 +85,8 @@ We do not have the /files or /media directory in our project so I cant test info
 
     <?php if ($hasAudio): ?>
     <div class="audio-player">
-        <div class="waveform-area" aria-hidden="true">
-            <svg viewBox="0 0 800 80" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <linearGradient id="waveGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stop-color="#423EB2" stop-opacity="0.6" />
-                        <stop offset="100%" stop-color="#1E99A3" stop-opacity="0.6" />
-                    </linearGradient>
-                </defs>
-                <?php for ($i = 0; $i < 120; $i++): ?>
-                <?php
-                        $x = 6 + ($i * 6.5);
-                        $h = 10 + (($i * 13) % 38);
-                        $y = 40 - (int)($h / 2);
-                        ?>
-                <rect x="<?= $x ?>" y="<?= $y ?>" width="3" height="<?= $h ?>" rx="1" fill="url(#waveGradient)" />
-                <?php endfor; ?>
-            </svg>
+        <div class="waveform-area">
+            <div id="waveform" class="waveform-host" aria-label="Audio waveform"></div>
         </div>
 
         <div class="player-controls">
@@ -118,12 +94,6 @@ We do not have the /files or /media directory in our project so I cant test info
                 <i class="fa-solid fa-play icon-lg" style="color: white" aria-hidden="true"></i>
             </button>
             <span class="time-display" id="current-time">0:00</span>
-            <div class="progress-track" id="progress-track" role="slider" aria-label="Playback progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
-                <div class="progress-bar">
-                    <div class="progress-filled" id="progress-filled"></div>
-                    <div class="progress-unfilled"></div>
-                </div>
-            </div>
             <span class="time-display" id="duration-time">0:00</span>
             <div class="volume-icon"><i class="fa-solid fa-volume-high icon-xl" aria-hidden="true"></i></div>
         </div>
@@ -318,29 +288,23 @@ We do not have the /files or /media directory in our project so I cant test info
 </div>
 
 <?php if ($hasAudio): ?>
+<script src="https://unpkg.com/wavesurfer.js@7"></script>
 <script>
 (() => {
+    const waveformEl = document.getElementById('waveform');
     const audio = document.getElementById('detail-audio');
     const playBtn = document.getElementById('play-btn');
     const currentTimeEl = document.getElementById('current-time');
     const durationEl = document.getElementById('duration-time');
-    const progressTrack = document.getElementById('progress-track');
-    const progressFilled = document.getElementById('progress-filled');
+    const player = document.querySelector('.audio-player');
 
-    if (!audio || !playBtn || !currentTimeEl || !durationEl || !progressTrack || !progressFilled) return;
+    if (!waveformEl || !audio || !playBtn || !currentTimeEl || !durationEl || !player) return;
 
     const formatTime = (seconds) => {
         if (!isFinite(seconds) || seconds < 0) return '0:00';
         const m = Math.floor(seconds / 60);
         const s = Math.floor(seconds % 60);
         return `${m}:${String(s).padStart(2, '0')}`;
-    };
-
-    const setProgress = () => {
-        const pct = audio.duration ? (audio.currentTime / audio.duration) * 100 : 0;
-        progressFilled.style.width = `${Math.max(0, Math.min(100, pct))}%`;
-        progressTrack.setAttribute('aria-valuenow', String(Math.round(pct)));
-        currentTimeEl.textContent = formatTime(audio.currentTime);
     };
 
     const setPlayIcon = (isPlaying) => {
@@ -350,43 +314,88 @@ We do not have the /files or /media directory in our project so I cant test info
         icon.style.color = 'white';
     };
 
+    const enableNativeFallback = () => {
+        player.classList.add('audio-player--fallback');
+        audio.controls = true;
+        audio.preload = 'metadata';
+
+        audio.addEventListener('loadedmetadata', () => {
+            durationEl.textContent = formatTime(audio.duration);
+        });
+
+        audio.addEventListener('timeupdate', () => {
+            currentTimeEl.textContent = formatTime(audio.currentTime);
+        });
+
+        playBtn.addEventListener('click', () => {
+            if (audio.paused) {
+                audio.play();
+            } else {
+                audio.pause();
+            }
+        });
+
+        audio.addEventListener('play', () => setPlayIcon(true));
+        audio.addEventListener('pause', () => setPlayIcon(false));
+        audio.addEventListener('ended', () => setPlayIcon(false));
+    };
+
+    if (!window.WaveSurfer) {
+        enableNativeFallback();
+        return;
+    }
+
+    let wavesurfer;
+    try {
+        wavesurfer = window.WaveSurfer.create({
+            container: waveformEl,
+            height: 80,
+            url: audio.currentSrc || audio.src,
+            waveColor: 'rgba(66, 62, 178, 0.45)',
+            progressColor: '#1E99A3',
+            cursorColor: '#423EB2',
+            cursorWidth: 2,
+            barWidth: 3,
+            barGap: 2,
+            barRadius: 2,
+            normalize: true,
+            dragToSeek: true,
+            mediaControls: false,
+            autoScroll: false,
+        });
+    } catch (error) {
+        console.error('WaveSurfer failed to initialize', error);
+        enableNativeFallback();
+        return;
+    }
+
     playBtn.addEventListener('click', () => {
-        if (audio.paused) {
-            audio.play();
-        } else {
-            audio.pause();
+        wavesurfer.playPause();
+    });
+
+    wavesurfer.on('ready', () => {
+        durationEl.textContent = formatTime(wavesurfer.getDuration());
+        currentTimeEl.textContent = '0:00';
+    });
+
+    wavesurfer.on('timeupdate', (time) => {
+        currentTimeEl.textContent = formatTime(time);
+    });
+
+    wavesurfer.on('play', () => setPlayIcon(true));
+    wavesurfer.on('pause', () => setPlayIcon(false));
+    wavesurfer.on('finish', () => setPlayIcon(false));
+
+    wavesurfer.on('error', (error) => {
+        console.error('WaveSurfer playback error', error);
+        if (!player.classList.contains('audio-player--fallback')) {
+            enableNativeFallback();
         }
     });
 
-    progressTrack.addEventListener('click', (e) => {
-        if (!audio.duration) return;
-        const rect = progressTrack.getBoundingClientRect();
-        const ratio = (e.clientX - rect.left) / rect.width;
-        audio.currentTime = Math.max(0, Math.min(audio.duration, ratio * audio.duration));
+    window.addEventListener('beforeunload', () => {
+        wavesurfer.destroy();
     });
-
-    progressTrack.addEventListener('keydown', (e) => {
-        if (!audio.duration) return;
-        const step = 5;
-        if (e.key === 'ArrowRight') {
-            e.preventDefault();
-            audio.currentTime = Math.min(audio.duration, audio.currentTime + step);
-        }
-        if (e.key === 'ArrowLeft') {
-            e.preventDefault();
-            audio.currentTime = Math.max(0, audio.currentTime - step);
-        }
-    });
-
-    audio.addEventListener('loadedmetadata', () => {
-        durationEl.textContent = formatTime(audio.duration);
-        setProgress();
-    });
-
-    audio.addEventListener('timeupdate', setProgress);
-    audio.addEventListener('play', () => setPlayIcon(true));
-    audio.addEventListener('pause', () => setPlayIcon(false));
-    audio.addEventListener('ended', () => setPlayIcon(false));
 })();
 </script>
 <?php endif; ?>

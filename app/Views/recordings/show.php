@@ -94,8 +94,16 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
                 <i class="fa-solid fa-play icon-lg" style="color: white" aria-hidden="true"></i>
             </button>
             <span class="time-display" id="current-time">0:00</span>
+            <div class="progress-track" id="progress-track" role="slider" aria-label="Playback progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
+                <div class="progress-bar">
+                    <div class="progress-filled" id="progress-filled"></div>
+                    <div class="progress-unfilled"></div>
+                </div>
+            </div>
             <span class="time-display" id="duration-time">0:00</span>
-            <div class="volume-icon"><i class="fa-solid fa-volume-high icon-xl" aria-hidden="true"></i></div>
+            <button class="volume-icon" type="button" id="volume-btn" aria-label="Mute" aria-pressed="false">
+                <i class="fa-solid fa-volume-high icon-xl" id="volume-icon" aria-hidden="true"></i>
+            </button>
         </div>
 
         <audio id="detail-audio" preload="none" src="<?= e($audioUrl) ?>"></audio>
@@ -296,9 +304,13 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
     const playBtn = document.getElementById('play-btn');
     const currentTimeEl = document.getElementById('current-time');
     const durationEl = document.getElementById('duration-time');
+    const progressTrack = document.getElementById('progress-track');
+    const progressFilled = document.getElementById('progress-filled');
+    const volumeBtn = document.getElementById('volume-btn');
+    const volumeIcon = document.getElementById('volume-icon');
     const player = document.querySelector('.audio-player');
 
-    if (!waveformEl || !audio || !playBtn || !currentTimeEl || !durationEl || !player) return;
+    if (!waveformEl || !audio || !playBtn || !currentTimeEl || !durationEl || !progressTrack || !progressFilled || !volumeBtn || !volumeIcon || !player) return;
 
     const formatTime = (seconds) => {
         if (!isFinite(seconds) || seconds < 0) return '0:00';
@@ -314,17 +326,61 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
         icon.style.color = 'white';
     };
 
+    const setProgress = (currentTime, duration) => {
+        const pct = duration > 0 ? (currentTime / duration) * 100 : 0;
+        const safePct = Math.max(0, Math.min(100, pct));
+        progressFilled.style.width = `${safePct}%`;
+        progressTrack.setAttribute('aria-valuenow', String(Math.round(safePct)));
+    };
+
+    const setVolumeIcon = (isMuted) => {
+        volumeIcon.className = isMuted ? 'fa-solid fa-volume-xmark icon-xl' : 'fa-solid fa-volume-high icon-xl';
+        volumeBtn.setAttribute('aria-pressed', isMuted ? 'true' : 'false');
+        volumeBtn.setAttribute('aria-label', isMuted ? 'Unmute' : 'Mute');
+    };
+
+    const seekByRatio = (ratio, duration, seekFn) => {
+        if (!duration || duration <= 0) return;
+        const clampedRatio = Math.max(0, Math.min(1, ratio));
+        seekFn(clampedRatio * duration);
+    };
+
     const enableNativeFallback = () => {
         player.classList.add('audio-player--fallback');
         audio.controls = true;
         audio.preload = 'metadata';
+        setVolumeIcon(Boolean(audio.muted || audio.volume === 0));
 
         audio.addEventListener('loadedmetadata', () => {
             durationEl.textContent = formatTime(audio.duration);
+            setProgress(audio.currentTime, audio.duration);
         });
 
         audio.addEventListener('timeupdate', () => {
             currentTimeEl.textContent = formatTime(audio.currentTime);
+            setProgress(audio.currentTime, audio.duration);
+        });
+
+        progressTrack.addEventListener('click', (event) => {
+            if (!audio.duration) return;
+            const rect = progressTrack.getBoundingClientRect();
+            const ratio = (event.clientX - rect.left) / rect.width;
+            seekByRatio(ratio, audio.duration, (time) => {
+                audio.currentTime = time;
+            });
+        });
+
+        progressTrack.addEventListener('keydown', (event) => {
+            if (!audio.duration) return;
+            const step = 5;
+            if (event.key === 'ArrowRight') {
+                event.preventDefault();
+                audio.currentTime = Math.min(audio.duration, audio.currentTime + step);
+            }
+            if (event.key === 'ArrowLeft') {
+                event.preventDefault();
+                audio.currentTime = Math.max(0, audio.currentTime - step);
+            }
         });
 
         playBtn.addEventListener('click', () => {
@@ -333,6 +389,15 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
             } else {
                 audio.pause();
             }
+        });
+
+        volumeBtn.addEventListener('click', () => {
+            audio.muted = !audio.muted;
+            setVolumeIcon(audio.muted);
+        });
+
+        audio.addEventListener('volumechange', () => {
+            setVolumeIcon(Boolean(audio.muted || audio.volume === 0));
         });
 
         audio.addEventListener('play', () => setPlayIcon(true));
@@ -373,13 +438,69 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
         wavesurfer.playPause();
     });
 
+    let lastVolume = 1;
+    const getWaveVolume = () => {
+        if (typeof wavesurfer.getVolume === 'function') {
+            return wavesurfer.getVolume();
+        }
+        return 1;
+    };
+
+    const setWaveVolume = (value) => {
+        if (typeof wavesurfer.setVolume === 'function') {
+            wavesurfer.setVolume(value);
+        }
+    };
+
+    volumeBtn.addEventListener('click', () => {
+        const currentVolume = getWaveVolume();
+        const isMuted = currentVolume <= 0.001;
+        if (isMuted) {
+            setWaveVolume(lastVolume > 0 ? lastVolume : 1);
+            setVolumeIcon(false);
+        } else {
+            lastVolume = currentVolume;
+            setWaveVolume(0);
+            setVolumeIcon(true);
+        }
+    });
+
     wavesurfer.on('ready', () => {
-        durationEl.textContent = formatTime(wavesurfer.getDuration());
+        const duration = wavesurfer.getDuration();
+        durationEl.textContent = formatTime(duration);
         currentTimeEl.textContent = '0:00';
+        setProgress(0, duration);
+        setVolumeIcon(getWaveVolume() <= 0.001);
     });
 
     wavesurfer.on('timeupdate', (time) => {
+        const duration = wavesurfer.getDuration();
         currentTimeEl.textContent = formatTime(time);
+        setProgress(time, duration);
+    });
+
+    progressTrack.addEventListener('click', (event) => {
+        const duration = wavesurfer.getDuration();
+        if (!duration) return;
+        const rect = progressTrack.getBoundingClientRect();
+        const ratio = (event.clientX - rect.left) / rect.width;
+        seekByRatio(ratio, duration, (time) => {
+            wavesurfer.setTime(time);
+        });
+    });
+
+    progressTrack.addEventListener('keydown', (event) => {
+        const duration = wavesurfer.getDuration();
+        if (!duration) return;
+        const step = 5;
+        if (event.key === 'ArrowRight') {
+            event.preventDefault();
+            wavesurfer.setTime(Math.min(duration, wavesurfer.getCurrentTime() + step));
+        }
+        if (event.key === 'ArrowLeft') {
+            event.preventDefault();
+            wavesurfer.setTime(Math.max(0, wavesurfer.getCurrentTime() - step));
+        }
     });
 
     wavesurfer.on('play', () => setPlayIcon(true));

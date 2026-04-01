@@ -95,36 +95,51 @@
     flex-direction: row;
     align-items: center;
     flex-grow: 1;
+    min-width: 0;
     height: 20px;
 }
 
 .page-recording-detail .progress-bar {
-    display: flex;
-    flex-direction: row;
+    position: relative;
     width: 100%;
     height: 4px;
     border-radius: 2px;
     overflow: hidden;
+    background: var(--color-border);
 }
 
 .page-recording-detail .progress-filled {
-    width: 30%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
     height: 100%;
     background: var(--gradient-brand);
-    border-radius: 2px 0 0 2px;
+    border-radius: 2px;
 }
 
 .page-recording-detail .progress-unfilled {
-    width: 70%;
+    position: absolute;
+    inset: 0;
+    width: 100%;
     height: 100%;
-    background: var(--color-border);
-    border-radius: 0 2px 2px 0;
+    background: transparent;
 }
 
 .page-recording-detail .volume-icon {
     display: flex;
     align-items: center;
+    justify-content: center;
+    border: none;
+    background: transparent;
+    padding: 0;
     color: var(--color-text-tertiary);
+    cursor: pointer;
+    transition: color var(--transition-fast);
+}
+
+.page-recording-detail .volume-icon:hover {
+    color: var(--color-primary);
 }
 
 .page-recording-detail .content-columns {

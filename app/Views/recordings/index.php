@@ -47,6 +47,16 @@ $genreAccentMap = [
     'custom' => 'custom',
     'proverb' => 'proverb',
 ];
+
+$allSubgenresForFilter = array_values(array_filter(array_map(
+    static fn($value) => trim((string)$value),
+    $subgenres_all ?? []
+), static fn($value) => $value !== ''));
+
+$subgenresByGenreForFilter = is_array($subgenres_by_genre ?? null) ? $subgenres_by_genre : [];
+
+$allSubgenresJson = json_encode($allSubgenresForFilter, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+$subgenresByGenreJson = json_encode($subgenresByGenreForFilter, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 ?>
 
 <div class="page-container">
@@ -264,3 +274,71 @@ $genreAccentMap = [
     </div>
     <?php endif; ?>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const genreSelect = document.querySelector('select[name="genre"]');
+    const subgenreSelect = document.querySelector('select[name="subgenre[]"]');
+    if (!genreSelect || !subgenreSelect) return;
+
+    const allSubgenres = <?= $allSubgenresJson ?: '[]' ?>;
+    const subgenresByGenre = <?= $subgenresByGenreJson ?: '{}' ?>;
+
+    const getAllowedSubgenres = (genreValue) => {
+        const genre = (genreValue || '').trim();
+        if (genre === '') return null;
+
+        const mapped = subgenresByGenre[genre];
+        if (!Array.isArray(mapped)) return new Set();
+        return new Set(mapped);
+    };
+
+    const hasTomSelectInstances = () => Boolean(genreSelect.tomselect && subgenreSelect.tomselect);
+
+    const applySubgenreFilter = () => {
+        const genreTs = genreSelect.tomselect;
+        const subgenreTs = subgenreSelect.tomselect;
+        if (!genreTs || !subgenreTs) return;
+
+        const selectedGenre = String(genreTs.getValue() || '').trim();
+        const selectedSubgenre = String(subgenreTs.getValue() || '').trim();
+        const allowed = getAllowedSubgenres(selectedGenre);
+
+        subgenreTs.clearOptions();
+        subgenreTs.addOption({
+            value: '',
+            text: 'All'
+        });
+
+        for (const subgenre of allSubgenres) {
+            if (allowed && !allowed.has(subgenre)) continue;
+            subgenreTs.addOption({
+                value: subgenre,
+                text: subgenre
+            });
+        }
+
+        subgenreTs.refreshOptions(false);
+
+        if (selectedSubgenre !== '' && (!allowed || allowed.has(selectedSubgenre))) {
+            subgenreTs.setValue(selectedSubgenre, true);
+        } else {
+            subgenreTs.setValue('', true);
+        }
+    };
+
+    const bindWhenReady = (attempt = 0) => {
+        if (!hasTomSelectInstances()) {
+            if (attempt < 20) {
+                window.setTimeout(() => bindWhenReady(attempt + 1), 50);
+            }
+            return;
+        }
+
+        applySubgenreFilter();
+        genreSelect.tomselect.on('change', applySubgenreFilter);
+    };
+
+    bindWhenReady();
+});
+</script>

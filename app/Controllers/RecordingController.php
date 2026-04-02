@@ -39,6 +39,7 @@ final class RecordingController extends Controller {
             'params' => $params,
             'genres' => Taxonomy::genres(),
             'subgenres_all' => Taxonomy::subgenres(),
+            'subgenres_by_genre' => Taxonomy::subgenresByGenre(),
             'subjects_all'  => Taxonomy::subjects(),
             'places_all' => Taxonomy::places(1500),
         ]);

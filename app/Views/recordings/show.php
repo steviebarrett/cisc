@@ -77,7 +77,7 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
 ?>
 
 <div class="page-container">
-    <a href="<?= e($backUrl) ?>" class="back-link"><i class="fa-solid fa-arrow-left icon-sm" aria-hidden="true"></i> Back to recordings</a>
+    <a href="<?= e($backUrl) ?>" class="back-link"><i data-lucide="arrow-left" class="icon-sm" aria-hidden="true"></i> Back to recordings</a>
 
     <div class="recording-header">
         <h1 class="recording-title"><?= e($recordingTitle) ?></h1>
@@ -94,7 +94,7 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
 
         <div class="player-controls">
             <button class="play-button" type="button" id="play-btn" aria-label="Play">
-                <i class="fa-solid fa-play icon-lg" style="color: white" aria-hidden="true"></i>
+                <i data-lucide="play" fill="#fff" class="icon-lg" style="color: white" aria-hidden="true"></i>
             </button>
             <span class="time-display" id="current-time">0:00</span>
             <div class="progress-track" id="progress-track" role="slider" aria-label="Playback progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" tabindex="0">
@@ -105,14 +105,14 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
             </div>
             <span class="time-display" id="duration-time">0:00</span>
             <button class="volume-icon" type="button" id="volume-btn" aria-label="Mute" aria-pressed="false">
-                <i class="fa-solid fa-volume-high icon-xl" id="volume-icon" aria-hidden="true"></i>
+                <i data-lucide="volume-2" class="icon-xl" aria-hidden="true"></i>
             </button>
+            <?php if(!empty($audioDownloadUrl)): ?>
+            <a class="toggle-btn" href="<?= e($audioDownloadUrl) ?>" download="<?= e($recId . '.mp3') ?>">Download MP3</a>
+            <?php endif; ?>
         </div>
 
         <audio id="detail-audio" preload="none" src="<?= e($audioUrl) ?>"></audio>
-    </div>
-    <div class="mb-3">
-        <a class="toggle-btn" href="<?= e($audioDownloadUrl) ?>" download="<?= e($recId . '.mp3') ?>">Download <?= e($recId . '.mp3') ?></a>
     </div>
     <?php endif; ?>
 
@@ -264,7 +264,7 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
                 <?php if ($informantDetailLight !== ''): ?><span class="informant-detail-light"><?= e($informantDetailLight) ?></span><?php endif; ?>
                 <?php if ($informantRecordingCount > 0): ?><span class="informant-count"><?= e((string)$informantRecordingCount) ?> recordings</span><?php endif; ?>
                 <?php if ($informantUrl !== ''): ?>
-                <a href="<?= e($informantUrl) ?>" class="informant-link">View profile <i class="fa-solid fa-arrow-right icon-sm" aria-hidden="true"></i></a>
+                <a href="<?= e($informantUrl) ?>" class="informant-link">View profile <i data-lucide="arrow-right" class="icon-sm" aria-hidden="true"></i></a>
                 <?php endif; ?>
             </div>
             <?php endif; ?>
@@ -324,10 +324,9 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
     const progressTrack = document.getElementById('progress-track');
     const progressFilled = document.getElementById('progress-filled');
     const volumeBtn = document.getElementById('volume-btn');
-    const volumeIcon = document.getElementById('volume-icon');
     const player = document.querySelector('.audio-player');
 
-    if (!waveformEl || !audio || !playBtn || !currentTimeEl || !durationEl || !progressTrack || !progressFilled || !volumeBtn || !volumeIcon || !player) return;
+    if (!waveformEl || !audio || !playBtn || !currentTimeEl || !durationEl || !progressTrack || !progressFilled || !volumeBtn || !player) return;
 
     const formatTime = (seconds) => {
         if (!isFinite(seconds) || seconds < 0) return '0:00';
@@ -337,10 +336,11 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
     };
 
     const setPlayIcon = (isPlaying) => {
-        const icon = playBtn.querySelector('i');
-        if (!icon) return;
-        icon.className = isPlaying ? 'fa-solid fa-pause icon-lg' : 'fa-solid fa-play icon-lg';
-        icon.style.color = 'white';
+        const iconName = isPlaying ? 'pause' : 'play';
+        playBtn.innerHTML = `<i data-lucide="${iconName}" fill="#FFF" class="icon-lg" style="color: white" aria-hidden="true"></i>`;
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+            window.lucide.createIcons();
+        }
     };
 
     const setProgress = (currentTime, duration) => {
@@ -351,9 +351,13 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
     };
 
     const setVolumeIcon = (isMuted) => {
-        volumeIcon.className = isMuted ? 'fa-solid fa-volume-xmark icon-xl' : 'fa-solid fa-volume-high icon-xl';
+        const iconName = isMuted ? 'volume-x' : 'volume-2';
+        volumeBtn.innerHTML = `<i data-lucide="${iconName}" class="icon-xl" aria-hidden="true"></i>`;
         volumeBtn.setAttribute('aria-pressed', isMuted ? 'true' : 'false');
         volumeBtn.setAttribute('aria-label', isMuted ? 'Unmute' : 'Mute');
+        if (window.lucide && typeof window.lucide.createIcons === 'function') {
+            window.lucide.createIcons();
+        }
     };
 
     const seekByRatio = (ratio, duration, seekFn) => {

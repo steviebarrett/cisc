@@ -37,12 +37,12 @@ final class RecordingController extends Controller {
         $result = $search->search($params);
 
         $searchPanel = SearchPanel::recordings();
+        $searchPanel['subgenres_by_genre'] = Taxonomy::subgenresByGenre();
 
         $this->render('recordings/index', [
             'result' => $result,
             'params' => $params,
             'genres' => Taxonomy::genres(),
-            'subgenres_all' => Taxonomy::subgenres(),
             'subjects_all'  => Taxonomy::subjects(),
             'places_all' => Taxonomy::places(1500),
             'enableSearchPanel' => true,

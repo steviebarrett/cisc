@@ -3,9 +3,7 @@ $params = $params ?? [];
 $places_all = $places_all ?? [];
 $genres = $genres ?? [];
 
-
-//print_r($genres); die();
-$subgenres_all = $subgenres_all ?? [];
+$subgenres_by_genre = $subgenres_by_genre ?? ($searchPanel['subgenres_by_genre'] ?? []);
 $subjects_all = $subjects_all ?? [];
 
 $kw = isset($params['q']) && !is_array($params['q']) ? trim((string)$params['q']) : '';
@@ -87,7 +85,7 @@ $subjectValue = is_array($params['subject'] ?? null)
 
         <div class="col-12 col-lg-3">
             <label class="form-label">Genre</label>
-            <select class="form-select" name="genre">
+            <select class="form-select" name="genre" id="genre">
                 <option value="">(Any)</option>
                 <?php foreach ($genres as $g): ?>
                     <option value="<?= e($g) ?>" <?= (($params['genre'] ?? '') === $g) ? 'selected' : '' ?>>
@@ -97,16 +95,17 @@ $subjectValue = is_array($params['subject'] ?? null)
             </select>
         </div>
 
-        <div class="col-12 col-lg-6">
-            <label class="form-label">Sub-genres</label>
-            <div class="border rounded p-2" style="max-height: 220px; overflow:auto;">
-                <?php foreach ($subgenres_all as $sg): ?>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" name="subgenre[]" value="<?= e($sg) ?>" <?= in_array($sg, $selectedSubgenres, true) ? 'checked' : '' ?>>
-                        <label class="form-check-label"><?= e($sg) ?></label>
-                    </div>
-                <?php endforeach; ?>
-            </div>
+        <script type="application/json" id="subgenres-by-genre-data">
+            <?= json_encode($subgenres_by_genre, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) ?>
+        </script>
+
+        <div id="subgenre-container">
+            <?php foreach ($subgenres_all as $sg): ?>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="subgenre[]" value="<?= e($sg) ?>" <?= in_array($sg, $selectedSubgenres, true) ? 'checked' : '' ?>>
+                    <label class="form-check-label"><?= e($sg) ?></label>
+                </div>
+            <?php endforeach; ?>
         </div>
 
         <div class="col-12 col-lg-6">
@@ -239,3 +238,76 @@ $subjectValue = is_array($params['subject'] ?? null)
         <?php endif; ?>
 
 </form>
+
+
+<!-- Javascript to dynamically update subgenre checkboxes based on genre selection -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const genreSelect = document.getElementById('genre');
+        const subgenreContainer = document.getElementById('subgenre-container');
+        const dataEl = document.getElementById('subgenres-by-genre-data');
+
+        if (!genreSelect || !subgenreContainer || !dataEl) {
+            return;
+        }
+
+        let subgenresByGenre = {};
+
+        try {
+            subgenresByGenre = JSON.parse(dataEl.textContent || '{}');
+        } catch (err) {
+            console.error('Could not parse subgenres-by-genre data', err);
+            return;
+        }
+
+        function escapeHtml(str) {
+            return String(str).replace(/[&<>"']/g, function (ch) {
+                return ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                })[ch];
+            });
+        }
+
+        function updateSubgenres() {
+            const genre = genreSelect.value || '';
+
+            const selectedValues = Array.from(
+                subgenreContainer.querySelectorAll('input[name="subgenre[]"]:checked')
+            ).map(input => input.value);
+
+            const subgenres = genre && subgenresByGenre[genre]
+                ? subgenresByGenre[genre]
+                : [];
+
+            subgenreContainer.innerHTML = '';
+
+            if (!genre) {
+                subgenreContainer.innerHTML = '<div class="text-muted small">Select a genre first</div>';
+                return;
+            }
+
+            if (subgenres.length === 0) {
+                subgenreContainer.innerHTML = '<div class="text-muted small">No subgenres available</div>';
+                return;
+            }
+
+            for (const sg of subgenres) {
+                const checked = selectedValues.includes(sg) ? ' checked' : '';
+
+                subgenreContainer.insertAdjacentHTML('beforeend', `
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" name="subgenre[]" value="${escapeHtml(sg)}"${checked}>
+                    <label class="form-check-label">${escapeHtml(sg)}</label>
+                </div>
+            `);
+            }
+        }
+
+        genreSelect.addEventListener('change', updateSubgenres);
+        updateSubgenres();
+    });
+</script>

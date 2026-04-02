@@ -68,7 +68,9 @@ function nav_link(string $href, string $label, string $key, string $activeNav): 
                                 $params = $searchPanel['params'] ?? [];
                                 $places_all = $searchPanel['places_all'] ?? [];
                                 $genres = $searchPanel['genres'] ?? [];
+
                                 $subgenres_all = $searchPanel['subgenres_all'] ?? [];
+                                $subgenres_by_genre = $searchPanel['subgenres_by_genre'] ?? [];
                                 $subjects_all = $searchPanel['subjects_all'] ?? [];
 
                                 require __DIR__ . '/search/recording-search-panel.php'; ?>

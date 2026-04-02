@@ -51,4 +51,53 @@ final class Taxonomy {
 
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
+
+    public static function subgenresByGenre(): array
+    {
+        $sql = "
+            SELECT DISTINCT
+                g.name AS genre_name,
+                sg.name AS subgenre_name
+            FROM recording r
+            JOIN genre g
+                ON g.genre_id = r.genre_id
+            JOIN recording_subgenre rs
+                ON rs.recording_id = r.recording_id
+            JOIN subgenre sg
+                ON sg.subgenre_id = rs.subgenre_id
+            WHERE g.name IS NOT NULL
+              AND g.name <> ''
+              AND sg.name IS NOT NULL
+              AND sg.name <> ''
+            ORDER BY g.name ASC, sg.name ASC
+        ";
+
+        $stmt = DB::pdo()->query($sql);
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+
+        $out = [];
+
+        foreach ($rows as $row) {
+            $genre = trim((string)($row['genre_name'] ?? ''));
+            $subgenre = trim((string)($row['subgenre_name'] ?? ''));
+
+            if ($genre === '' || $subgenre === '') {
+                continue;
+            }
+
+            if (!isset($out[$genre])) {
+                $out[$genre] = [];
+            }
+
+            $out[$genre][] = $subgenre;
+        }
+
+        foreach ($out as $genre => $items) {
+            $items = array_values(array_unique($items, SORT_STRING));
+            sort($items, SORT_NATURAL | SORT_FLAG_CASE);
+            $out[$genre] = $items;
+        }
+
+        return $out;
+    }
 }

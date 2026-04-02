@@ -2085,9 +2085,6 @@ body.page-homepage #searchPanel {
   flex-direction: column;
   gap: var(--space-md);
 }
-.page-recording-detail .transcription-text#transcription-content p {
-  margin-bottom: 0;
-}
 
 .page-recording-detail .transcription-text p {
   font-size: var(--text-body);

@@ -16,7 +16,6 @@ $bodyClass = 'page-homepage';
         <img class="hero-logo-mark" src="<?= e(base_path('/assets/images/gaelstream-shape.svg')) ?>" alt="Gaelstream">
         <h1 class="hero-title">Cruinneachadh Beul-aithris Ghàidhlig Cheap Breatuinn &middot; Cape Breton Gaelic Folklore Project</h1>
         <img class="hero-map" src="<?= e(base_path('/assets/images/gaelstream-map.svg')) ?>" alt="Map of Nova Scotia and Cape Breton">
-        <!-- TODO this should probably be dynamic -->
         <p class="hero-stats">2,151 recordings from 161 voices across Cape Breton</p>
         <div class="hero-cta-row">
             <a href="<?= e(base_path('/map')) ?>" class="hero-cta-primary">Explore the Map</a>

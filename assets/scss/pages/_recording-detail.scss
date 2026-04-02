@@ -298,11 +298,11 @@
     flex-direction: column;
     gap: var(--space-md);
 
-    &#transcription-content {
-        p {
-            margin-bottom: 0;
-        }
-    }
+    // &#transcription-content {
+    //     p {
+    //         margin-bottom: 0;
+    //     }
+    // }
 }
 
 .page-recording-detail .transcription-text p {

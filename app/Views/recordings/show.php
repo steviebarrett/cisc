@@ -139,11 +139,8 @@ if ($qs !== '') {
         <?php endif; ?>
 
 
-        <hr>
-
-
-
         <!-- transcription -->
+
         <?php $transcriptionQ = trim((string)($_GET['transcription_q'] ?? ''));     //transcription query
 
         // highlight any searched for keyword in transcription context

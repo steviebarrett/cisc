@@ -186,12 +186,22 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
             </div>
 
             <?php if (!empty($rec['first_line_chorus']) || !empty($rec['first_line_verse'])): ?>
-            <div class="transcription-section">
+            <div class="transcription-section first-lines">
                 <div class="transcription-divider"></div>
-                <h2 class="transcription-heading">First lines</h2>
-                <div class="transcription-text">
-                    <?php if (!empty($rec['first_line_chorus'])): ?><p><strong>Chorus:</strong> <?= e((string)$rec['first_line_chorus']) ?></p><?php endif; ?>
-                    <?php if (!empty($rec['first_line_verse'])): ?><p><strong>Verse:</strong> <?= e((string)$rec['first_line_verse']) ?></p><?php endif; ?>
+                <h2 class="transcription-heading">A 'chiad sreathan | First lines</h2>
+                <div class="metadata-section">
+                    <?php if (!empty($rec['first_line_chorus'])): ?>
+                    <div class="metadata-row">
+                        <div class="metadata-label">Sèist | Chorus</div>
+                        <div class="metadata-value"><?= e((string)$rec['first_line_chorus']) ?></div>
+                    </div>
+                    <?php endif; ?>
+                    <?php if (!empty($rec['first_line_verse'])): ?>
+                    <div class="metadata-row">
+                        <div class="metadata-label">Rann | Verse</div>
+                        <div class="metadata-value"><?= e((string)$rec['first_line_verse']) ?></div>
+                    </div>
+                    <?php endif; ?>
                 </div>
             </div>
             <?php endif; ?>

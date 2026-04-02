@@ -217,7 +217,17 @@
     flex-direction: column;
     gap: var(--space-sm-md);
 
+    &.first-lines {
+        .transcription-heading {
+            font-size: 1.0625rem;
+            line-height: 1.3125rem;
+            font-weight: 500;
+        }
 
+        .metadata-value {
+            color: #8A86A8;
+        }
+    }
 }
 
 .page-recording-detail .notes-section {

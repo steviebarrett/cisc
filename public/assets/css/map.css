@@ -1933,6 +1933,25 @@ details.person-card > summary .person-summary-name {
 }
 
 @media (max-width: 900px) {
+    .floating-panel {
+        display: none !important;
+    }
+
+    .map-controls-btn {
+        right: 28px !important;
+    }
+}
+
+@media (max-width: 1250px) {
+    .map-sidebar {
+        order: 2;
+        width: 100% !important;
+    }
+
+    .map-panel {
+        order: 1;
+    }
+
     .page {
         height: auto;
         min-height: var(--app-viewport-height);
@@ -1956,8 +1975,8 @@ details.person-card > summary .person-summary-name {
     }
 
     .map-panel {
-        height: clamp(360px, calc(var(--app-viewport-height) * 0.56), 640px);
-        min-height: clamp(360px, calc(var(--app-viewport-height) * 0.56), 640px);
+        height: clamp(360px, calc(var(--app-viewport-height) * 0.8), 640px);
+        min-height: clamp(360px, calc(var(--app-viewport-height) * 0.8), 640px);
     }
 
     .main-map-slot {

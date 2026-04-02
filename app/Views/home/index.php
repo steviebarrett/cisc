@@ -40,7 +40,7 @@ $activeNav = 'home';
                 ?>
 
                 <li>
-                    <a href="/informants/<?= $informant['informant_id']  ?>" title="<?= $fullname ?>">
+                    <a href="<?= base_path('/informants/' . $informant['informant_id'])  ?>" title="<?= $fullname ?>">
                         <figure>
                             <img class="featured_element_image" src="<?= $imgUrl ?>" alt="<?= $fullname ?>">
                             <figcaption>
@@ -61,7 +61,7 @@ $activeNav = 'home';
                 $title = $recording["title"] ?? $row["recording_id"];
             ?>
                 <li>
-                    <a href="/recordings/<?= $recording["recording_id"] ?>" title="<?= $title ?>">
+                    <a href="<?= base_path('/recordings/' . $recording["recording_id"]) ?>" title="<?= $title ?>">
                         <h4><?= $title ?></h4>
                         <p><?= e(trim((string)($recording['informant_name'] ?? ''))) ?>
                         <?php if (!empty($recording['genre_name'])): ?> · <?= e((string)$recording['genre_name']) ?><?php endif; ?></p>

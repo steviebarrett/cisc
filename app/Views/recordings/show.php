@@ -233,16 +233,16 @@ if ($qs !== '') {
                 <?php endif; ?>
                 <?php if(!empty($genre)): ?>
                     <li>
-                        <h5>in the <em> <?= $genre['genre_name'] ?> </em> genre</h5>
                         <a href="<?= e(base_path('/recordings/'.$genre["recording_id"]))?> ">
+                        <h5>in the <em> <?= $genre['genre_name'] ?> </em> genre</h5>
                             <?= e($genre["recording_title"]) ?>
                         </a>
                     </li>
                 <?php endif; ?>
                 <?php if(!empty($subject)): ?>
                     <li>
-                        <h5>with the subject <em><?= $subject['subject_name'] ?></em></h5>
                         <a href="<?= e(base_path('/recordings/'.$subject["recording_id"]))?> ">
+                        <h5>with the subject <em><?= $subject['subject_name'] ?></em></h5>
                             <?= e($subject["recording_title"]) ?>
                         </a>
                     </li>

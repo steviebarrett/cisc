@@ -5,15 +5,50 @@ $genres = $genres ?? [];
 $subgenres_all = $subgenres_all ?? [];
 $subjects_all = $subjects_all ?? [];
 
+if (isset($searchPanel) && is_array($searchPanel)) {
+    if (empty($params) && isset($searchPanel['params']) && is_array($searchPanel['params'])) {
+        $params = $searchPanel['params'];
+    }
+    if (empty($places_all) && isset($searchPanel['places_all']) && is_array($searchPanel['places_all'])) {
+        $places_all = $searchPanel['places_all'];
+    }
+    if (empty($genres) && isset($searchPanel['genres']) && is_array($searchPanel['genres'])) {
+        $genres = $searchPanel['genres'];
+    }
+    if (empty($subgenres_all) && isset($searchPanel['subgenres_all']) && is_array($searchPanel['subgenres_all'])) {
+        $subgenres_all = $searchPanel['subgenres_all'];
+    }
+    if (empty($subjects_all) && isset($searchPanel['subjects_all']) && is_array($searchPanel['subjects_all'])) {
+        $subjects_all = $searchPanel['subjects_all'];
+    }
+}
+
+$places_all = !empty($places_all) ? $places_all : Taxonomy::places(1500);
+$genres = !empty($genres) ? $genres : Taxonomy::genres();
+$subgenres_all = !empty($subgenres_all) ? $subgenres_all : Taxonomy::subgenres();
+$subjects_all = !empty($subjects_all) ? $subjects_all : Taxonomy::subjects();
+
 $kw = isset($params['q']) && !is_array($params['q']) ? trim((string)$params['q']) : '';
 $place = isset($params['place']) && !is_array($params['place']) ? trim((string)$params['place']) : '';
+$transcriptionQ = trim((string)($params['transcription_q'] ?? ''));
+$selectedGenre = trim((string)($params['genre'] ?? ''));
 
-$hasEn = (int)($params['has_en'] ?? 0);
-$hasTranscription = (int)($params['has_transcription'] ?? 0);
-$selectedSubgenres = (array)($params['subgenre'] ?? ($params['subgenres'] ?? []));
-$subjectValue = is_array($params['subject'] ?? null)
-    ? implode(', ', $params['subject'])
-    : (string)($params['subject'] ?? '');
+$hasEn = (int)($params['has_en'] ?? 0) === 1;
+$hasTranscription = (int)($params['has_transcription'] ?? 0) === 1;
+
+$selectedSubgenre = '';
+if (!empty($params['subgenre']) && is_array($params['subgenre'])) {
+    $selectedSubgenre = trim((string)$params['subgenre'][0]);
+}
+
+$selectedSubject = '';
+if (!empty($params['subject'])) {
+    if (is_array($params['subject'])) {
+        $selectedSubject = trim((string)$params['subject'][0]);
+    } else {
+        $selectedSubject = trim((string)$params['subject']);
+    }
+}
 ?>
 
 <div class="page-container global-search-shell">
@@ -25,91 +60,74 @@ $subjectValue = is_array($params['subject'] ?? null)
 
             <div class="filter-panel-body">
                 <div class="filter-row">
-                    <div class="filter-field">
-                        <span class="filter-label">Keyword / title / first line</span>
-                        <input type="text" class="filter-input" name="q" value="<?= e($kw) ?>" placeholder="Title, first line, notes...">
+                    <div class="filter-field filter-field-grow">
+                        <input type="text" class="filter-input" name="q" value="<?= e($kw) ?>" placeholder="Search titles...">
                     </div>
 
-                    <div class="filter-field">
-                        <span class="filter-label">Transcription Content</span>
-                        <input type="text" class="filter-input" name="transcription_q" id="transcription_q" value="<?= e((string)($params['transcription_q'] ?? '')) ?>"
+                    <div class="filter-field filter-field-grow">
+                        <input type="text" class="filter-input" name="transcription_q" id="transcription_q" value="<?= e($transcriptionQ) ?>"
                             placeholder="Search within transcriptions...">
                     </div>
                 </div>
 
-                <div class="filter-row">
+                <div class="filter-row filter-row-selects">
                     <div class="filter-field">
-                        <span class="filter-label">Place</span>
-                        <div class="filter-input-wrapper">
-                            <input type="text" class="filter-input" name="place" value="<?= e($place) ?>" placeholder="Start typing a place..." list="placeOptions"
-                                id="place-input">
-                            <button class="filter-clear-btn" type="button" title="Clear place filter" <?= $place === '' ? 'disabled' : '' ?>
-                                onclick="document.getElementById('place-input').value=''; document.getElementById('place-input').focus();">
-                                <i class="fa-solid fa-xmark icon-sm" aria-hidden="true"></i>
-                            </button>
-                        </div>
-
-                        <?php if (!empty($places_all)): ?>
-                        <datalist id="placeOptions">
+                        <span class="filter-label">Aite | Place</span>
+                        <select class="filter-select filter-select-place" name="place">
+                            <option value="">All places</option>
                             <?php foreach ($places_all as $p): ?>
-                            <option value="<?= e($p) ?>"></option>
+                            <?php $placeValue = trim((string)$p); ?>
+                            <option value="<?= e($placeValue) ?>" <?= $placeValue === $place ? 'selected' : '' ?>><?= e($placeValue) ?></option>
                             <?php endforeach; ?>
-                        </datalist>
-                        <?php endif; ?>
+                        </select>
                     </div>
 
-                    <div class="filter-field filter-field--auto">
-                        <span class="filter-label">Genre</span>
+                    <div class="filter-field">
+                        <span class="filter-label">Seorsa | Genre</span>
                         <select class="filter-select" name="genre">
-                            <option value="">(Any)</option>
+                            <option value="">All</option>
                             <?php foreach ($genres as $g): ?>
-                            <option value="<?= e($g) ?>" <?= (($params['genre'] ?? '') === $g) ? 'selected' : '' ?>><?= e($g) ?></option>
+                            <?php $genreValue = trim((string)$g); ?>
+                            <option value="<?= e($genreValue) ?>" <?= $genreValue === $selectedGenre ? 'selected' : '' ?>><?= e($genreValue) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="filter-field">
+                        <span class="filter-label">Fo-sheorsa | Sub-genre</span>
+                        <select class="filter-select" name="subgenre[]">
+                            <option value="">All</option>
+                            <?php foreach ($subgenres_all as $sg): ?>
+                            <?php $subgenreValue = trim((string)$sg); ?>
+                            <option value="<?= e($subgenreValue) ?>" <?= $subgenreValue === $selectedSubgenre ? 'selected' : '' ?>><?= e($subgenreValue) ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="filter-field">
+                        <span class="filter-label">Cuspair | Subject</span>
+                        <select class="filter-select" name="subject">
+                            <option value="">All</option>
+                            <?php foreach ($subjects_all as $s): ?>
+                            <?php $subjectValue = trim((string)$s); ?>
+                            <option value="<?= e($subjectValue) ?>" <?= $subjectValue === $selectedSubject ? 'selected' : '' ?>><?= e($subjectValue) ?></option>
                             <?php endforeach; ?>
                         </select>
                     </div>
                 </div>
 
-                <div class="filter-checkboxes">
-                    <label class="filter-checkbox">
-                        <input type="checkbox" name="has_en" value="1" <?= $hasEn === 1 ? 'checked' : '' ?>>
-                        <span class="filter-checkbox-label">Includes English translation</span>
-                    </label>
-                    <label class="filter-checkbox">
-                        <input type="checkbox" name="has_transcription" value="1" <?= $hasTranscription === 1 ? 'checked' : '' ?>>
-                        <span class="filter-checkbox-label">Has transcription</span>
-                    </label>
-                </div>
-
-                <div class="filter-row">
-                    <div class="filter-field">
-                        <span class="filter-label">Sub-genres</span>
-                        <div class="filter-checklist">
-                            <?php foreach ($subgenres_all as $sg): ?>
-                            <label class="filter-checklist-item">
-                                <input type="checkbox" name="subgenre[]" value="<?= e($sg) ?>" <?= in_array($sg, $selectedSubgenres, true) ? 'checked' : '' ?>>
-                                <span><?= e($sg) ?></span>
-                            </label>
-                            <?php endforeach; ?>
-                        </div>
-                    </div>
-
-                    <div class="filter-field">
-                        <span class="filter-label">Subject</span>
-                        <input type="text" class="filter-input" list="subjectOptions" name="subject" value="<?= e($subjectValue) ?>" placeholder="Start typing a subject...">
-
-                        <?php if (!empty($subjects_all)): ?>
-                        <datalist id="subjectOptions">
-                            <?php foreach ($subjects_all as $s): ?>
-                            <option value="<?= e($s) ?>"></option>
-                            <?php endforeach; ?>
-                        </datalist>
-                        <?php endif; ?>
-                    </div>
-                </div>
-
                 <input type="hidden" name="search_closed" value="0" id="search-closed-input">
 
-                <div class="filter-actions">
+                <div class="filter-row-options">
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="header-has-translation" name="has_en" value="1" <?= $hasEn ? 'checked' : '' ?>>
+                        <label for="header-has-translation">Has translation</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="header-has-transcription" name="has_transcription" value="1" <?= $hasTranscription ? 'checked' : '' ?>>
+                        <label for="header-has-transcription">Has transcription</label>
+                    </div>
+                    <div class="filter-spacer"></div>
                     <button class="btn-apply" type="submit">Apply</button>
                     <a class="btn-reset" href="<?= e(base_path('/recordings')) ?>">Reset</a>
                 </div>
@@ -181,7 +199,9 @@ $subjectValue = is_array($params['subject'] ?? null)
         }
 
         $subject = $params['subject'] ?? [];
-        if (!is_array($subject)) $subject = [];
+        if (!is_array($subject)) {
+            $subject = ((string)$subject !== '') ? [(string)$subject] : [];
+        }
         foreach ($subject as $s) {
             $s = (string)$s;
             if ($s === '') continue;

@@ -36,34 +36,52 @@ body.page-homepage #searchPanel {
 #searchPanel .global-search-panel .filter-panel-body {
     display: flex;
     flex-direction: column;
-    gap: var(--space-lg);
+    gap: var(--space-md);
     padding: var(--space-lg);
 }
 
 #searchPanel .global-search-panel .filter-row {
     display: flex;
     flex-direction: row;
+    gap: var(--space-md);
+    align-items: flex-end;
+}
+
+#searchPanel .global-search-panel .filter-row-selects {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    align-items: end;
+}
+
+#searchPanel .global-search-panel .filter-row-selects .filter-select,
+#searchPanel .global-search-panel .filter-row-selects .filter-select-place {
+    width: 100%;
+    min-width: 0;
+}
+
+#searchPanel .global-search-panel .filter-row-options {
+    display: flex;
+    flex-direction: row;
     gap: var(--space-lg);
+    align-items: center;
 }
 
 #searchPanel .global-search-panel .filter-field {
     display: flex;
     flex-direction: column;
-    gap: var(--space-sm);
+    gap: var(--space-xs);
     flex: 1;
     min-width: 0;
 }
 
-#searchPanel .global-search-panel .filter-field--auto {
-    flex: 0 0 auto;
-    min-width: 220px;
+#searchPanel .global-search-panel .filter-field-grow {
+    flex-grow: 1;
 }
 
 #searchPanel .global-search-panel .filter-label {
-    font-size: var(--text-meta-label);
-    font-weight: var(--weight-semibold);
-    color: var(--color-text-primary);
-    line-height: var(--leading-normal);
+    font-size: var(--text-caption);
+    font-weight: var(--weight-medium);
+    color: var(--color-text-secondary);
 }
 
 #searchPanel .global-search-panel .filter-input {
@@ -129,6 +147,7 @@ body.page-homepage #searchPanel {
 }
 
 #searchPanel .global-search-panel .filter-select {
+    min-width: 160px;
     width: 100%;
     padding: 10px 36px 10px 12px;
     border: 1px solid var(--color-border);
@@ -143,83 +162,70 @@ body.page-homepage #searchPanel {
     background-position: right 12px center;
 }
 
-#searchPanel .global-search-panel .filter-checkboxes {
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-md);
+#searchPanel .global-search-panel .filter-select-place {
+    min-width: 200px;
 }
 
-#searchPanel .global-search-panel .filter-checkbox {
+#searchPanel .global-search-panel .checkbox-group {
     display: flex;
     flex-direction: row;
     align-items: center;
-    gap: var(--space-sm);
+    gap: 6px;
     cursor: pointer;
 }
 
-#searchPanel .global-search-panel .filter-checkbox input[type="checkbox"] {
-    width: 18px;
-    height: 18px;
-    accent-color: var(--color-primary);
-}
-
-#searchPanel .global-search-panel .filter-checklist {
-    display: flex;
-    flex-direction: column;
-    border: 1px solid var(--color-border);
-    border-radius: var(--tag-radius);
-    max-height: 240px;
-    overflow-y: auto;
-}
-
-#searchPanel .global-search-panel .filter-checklist-item {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    gap: var(--space-sm);
-    padding: var(--space-sm) 14px;
-}
-
-#searchPanel .global-search-panel .filter-checklist-item:hover {
-    background: var(--color-surface);
-}
-
-#searchPanel .global-search-panel .filter-checklist-item input[type="checkbox"] {
+#searchPanel .global-search-panel .checkbox-group input[type="checkbox"] {
     width: 16px;
     height: 16px;
     accent-color: var(--color-primary);
+    cursor: pointer;
 }
 
-#searchPanel .global-search-panel .filter-actions {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-end;
-    align-items: center;
-    gap: var(--space-sm);
+#searchPanel .global-search-panel .checkbox-group label {
+    font-size: var(--text-meta-value);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+}
+
+#searchPanel .global-search-panel .filter-spacer {
+    flex-grow: 1;
 }
 
 #searchPanel .global-search-panel .btn-apply,
 #searchPanel .global-search-panel .btn-reset {
-    display: inline-flex;
+    display: flex;
     align-items: center;
     justify-content: center;
-    padding: 10px 24px;
-    border-radius: var(--tag-radius);
+    font-weight: var(--weight-medium);
+    padding: var(--space-sm) var(--space-md-lg);
     font-family: var(--font-primary);
     font-size: var(--text-meta-value);
+    border-radius: var(--tag-radius);
+    cursor: pointer;
     text-decoration: none;
 }
 
 #searchPanel .global-search-panel .btn-apply {
-    background: var(--color-primary);
+    background: var(--gradient-brand);
     color: #fff;
     border: none;
+    transition: opacity var(--transition-fast);
 }
 
 #searchPanel .global-search-panel .btn-reset {
     background: transparent;
-    color: var(--color-text-primary);
-    border: 1px solid var(--color-border);
+    color: var(--color-primary);
+    border: 1px solid var(--color-primary);
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+#searchPanel .global-search-panel .btn-apply:hover {
+    opacity: 0.9;
+}
+
+#searchPanel .global-search-panel .btn-reset:hover {
+    background: var(--color-primary);
+    color: #fff;
 }
 
 #searchPanel .global-search-panel .filter-active {
@@ -272,11 +278,11 @@ body.page-homepage #searchPanel {
         flex-direction: column;
     }
 
-    #searchPanel .global-search-panel .filter-field--auto {
-        min-width: 0;
+    #searchPanel .global-search-panel .filter-row-selects {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
-    #searchPanel .global-search-panel .filter-actions {
+    #searchPanel .global-search-panel .filter-row-options {
         flex-direction: column;
         align-items: stretch;
     }

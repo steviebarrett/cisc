@@ -307,6 +307,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const selectedSubgenre = String(subgenreTs.getValue() || '').trim();
         const allowed = getAllowedSubgenres(selectedGenre);
 
+        // TomSelect clearOptions() only removes unselected options, so clear the
+        // current selection first to prevent stale values from persisting.
+        subgenreTs.clear(true);
         subgenreTs.clearOptions();
         subgenreTs.addOption({
             value: '',

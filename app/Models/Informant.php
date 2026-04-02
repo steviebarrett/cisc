@@ -29,9 +29,12 @@ final class Informant {
         if (!in_array($perPage, [10,20,50,100], true)) $perPage = 20;
 
         $sort = (string)($params['sort'] ?? 'name_asc');
+
         $orderBy = match ($sort) {
-            'name_desc' => 'i.last_name DESC, i.first_name DESC, i.informant_id DESC',
-            default     => 'i.last_name ASC, i.first_name ASC, i.informant_id ASC',
+            'name_desc'   => 'i.first_name DESC, i.last_name DESC',
+            'gaelic_asc'  => 'i.ainm ASC, i.cinneadh ASC',
+            'gaelic_desc' => 'i.ainm DESC, i.cinneadh DESC',
+            default       => 'i.first_name ASC, i.last_name ASC',
         };
 
         $where = [];

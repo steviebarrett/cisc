@@ -25,8 +25,10 @@ $headerSearchOpen = header_filters_open($kw, $params, [
         <div>
             <label for="sort" class="form-label">Sort</label>
             <select name="sort" id="sort" class="form-select">
-                <option value="name_asc" <?= (($params['sort'] ?? 'name_asc') === 'name_asc') ? 'selected' : '' ?>>A–Z</option>
-                <option value="name_desc" <?= (($params['sort'] ?? '') === 'name_desc') ? 'selected' : '' ?>>Z–A</option>
+                <option value="name_asc" <?= (($params['sort'] ?? 'name_asc') === 'name_asc') ? 'selected' : '' ?>>English name A–Z</option>
+                <option value="name_desc" <?= (($params['sort'] ?? '') === 'name_desc') ? 'selected' : '' ?>>English name Z–A</option>
+                <option value="gaelic_asc" <?= (($params['sort'] ?? '') === 'gaelic_asc') ? 'selected' : '' ?>>Gaelic name A–Z</option>
+                <option value="gaelic_desc" <?= (($params['sort'] ?? '') === 'gaelic_desc') ? 'selected' : '' ?>>Gaelic name Z–A</option>
             </select>
         </div>
 

@@ -64,10 +64,23 @@ final class Informant {
         $perPage = (int)($params['per_page'] ?? 12);
         if (!in_array($perPage, [12,24,48,96,10,20,50,100], true)) $perPage = 12;
 
-        $sort = (string)($params['sort'] ?? 'name_asc');
+        $sort = (string)($params['sort'] ?? 'english_name_asc');
+
+        // Keep legacy sort values working.
+        if ($sort === 'name_asc') {
+            $sort = 'english_name_asc';
+        } elseif ($sort === 'name_desc') {
+            $sort = 'english_name_desc';
+        }
+
+        $gaelicLastExpr = "COALESCE(NULLIF(TRIM(i.cinneadh), ''), NULLIF(TRIM(i.last_name), ''), i.informant_id)";
+        $gaelicFirstExpr = "COALESCE(NULLIF(TRIM(i.ainm), ''), NULLIF(TRIM(i.first_name), ''), i.informant_id)";
+
         $orderBy = match ($sort) {
-            'name_desc' => 'i.last_name DESC, i.first_name DESC, i.informant_id DESC',
-            default     => 'i.last_name ASC, i.first_name ASC, i.informant_id ASC',
+            'english_name_desc' => 'i.last_name DESC, i.first_name DESC, i.informant_id DESC',
+            'gaelic_name_asc'   => "{$gaelicLastExpr} ASC, {$gaelicFirstExpr} ASC, i.informant_id ASC",
+            'gaelic_name_desc'  => "{$gaelicLastExpr} DESC, {$gaelicFirstExpr} DESC, i.informant_id DESC",
+            default             => 'i.last_name ASC, i.first_name ASC, i.informant_id ASC',
         };
 
         $where = [];

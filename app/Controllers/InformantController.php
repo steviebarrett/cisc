@@ -8,7 +8,7 @@ final class InformantController extends Controller {
             'q' => trim((string)($_GET['q'] ?? '')),
             'page' => (int)($_GET['page'] ?? 1),
             'per_page' => (int)($_GET['per_page'] ?? 12),
-            'sort' => (string)($_GET['sort'] ?? 'name_asc'),
+            'sort' => (string)($_GET['sort'] ?? 'english_name_asc'),
         ];
 
         $result = Informant::search($params);

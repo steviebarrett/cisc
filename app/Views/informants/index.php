@@ -6,9 +6,25 @@ $bodyClass = 'page-informants-list';
 $fullWidth = true;
 
 $kw = trim((string)($params['q'] ?? ''));
-$sort = (string)($params['sort'] ?? 'name_asc');
+$sort = (string)($params['sort'] ?? 'english_name_asc');
 $perPage = (int)($params['per_page'] ?? 12);
 ?>
+
+<!-- Sorting Notes:
+
+English Name sort:
+
+Primary: last_name
+Secondary: first_name
+Final tie-breaker: informant_id
+
+Gaelic Name sort:
+Primary: cinneadh
+Secondary: ainm
+
+If Gaelic fields are blank, it falls back to English fields, then informant_id
+
+-->
 
 <div class="page-container">
     <h1 class="page-title">Beulaichean | Informants</h1>
@@ -25,8 +41,10 @@ $perPage = (int)($params['per_page'] ?? 12);
             <div class="control-group">
                 <span class="control-label">Sort</span>
                 <select class="control-select" name="sort" onchange="this.form.submit()">
-                    <option value="name_asc" <?= $sort === 'name_asc' ? 'selected' : '' ?>>A–Z</option>
-                    <option value="name_desc" <?= $sort === 'name_desc' ? 'selected' : '' ?>>Z–A</option>
+                    <option value="english_name_asc" <?= in_array($sort, ['english_name_asc', 'name_asc'], true) ? 'selected' : '' ?>>English Name (A–Z)</option>
+                    <option value="english_name_desc" <?= in_array($sort, ['english_name_desc', 'name_desc'], true) ? 'selected' : '' ?>>English Name (Z–A)</option>
+                    <option value="gaelic_name_asc" <?= $sort === 'gaelic_name_asc' ? 'selected' : '' ?>>Gaelic Name (A–Z)</option>
+                    <option value="gaelic_name_desc" <?= $sort === 'gaelic_name_desc' ? 'selected' : '' ?>>Gaelic Name (Z–A)</option>
                 </select>
             </div>
 

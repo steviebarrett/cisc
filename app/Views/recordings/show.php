@@ -200,7 +200,13 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
             <div class="transcription-section">
                 <div class="transcription-divider"></div>
                 <h2 class="transcription-heading">Tar-sgriobhadh | Transcription</h2>
-                <button class="toggle-btn" type="button" id="toggle-transcription">Hide transcription</button>
+                <div class="d-flex gap-3">
+                    <button class="toggle-btn" type="button" id="toggle-transcription">Hide transcription</button>
+                    <?php if (!$usePublicationNote): ?>
+                    <a class="toggle-btn" href="<?= e(base_path('/recordings/' . rawurlencode($recId) . '/download-transcription')) ?>">Download transcription</a>
+                </div>
+
+                <?php endif; ?>
                 <div class="transcription-text" id="transcription-content">
                     <?php if (trim($transcriptionHtml) !== ''): ?>
                     <?= $transcriptionHtml ?>
@@ -209,22 +215,20 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
                     <?php endif; ?>
                 </div>
 
-                <?php if (!$usePublicationNote): ?>
-                <a class="toggle-btn" href="<?= e(base_path('/recordings/' . rawurlencode($recId) . '/download-transcription')) ?>">Download transcription</a>
-                <?php endif; ?>
+
             </div>
             <?php endif; ?>
 
             <?php if ($hasNotes): ?>
-            <div class="transcription-section">
+            <div class="transcription-section notes-section">
                 <div class="transcription-divider"></div>
-                <h2 class="transcription-heading">Additional notes</h2>
                 <div class="transcription-text">
                     <?php foreach ($notes as $label => $txt):
                             $txt = trim((string)$txt);
                             if ($txt === '') continue;
                             ?>
                     <p><strong><?= e($label) ?>:</strong><br><?= nl2br(e($txt)) ?></p>
+                    <div class="transcription-divider equal"></div>
                     <?php endforeach; ?>
                 </div>
             </div>
@@ -258,7 +262,7 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
     </div>
 
     <div class="related-section">
-        <h2 class="related-heading">More related content</h2>
+        <h2 class="related-heading">Tuilleadh bho Lachie | More from this informant</h2>
         <div class="related-row">
             <?php if (!empty($relatedRecords)): ?>
             <?php

@@ -216,6 +216,23 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-sm-md);
+
+
+}
+
+.page-recording-detail .notes-section {
+    .transcription-text {
+        p {
+            margin-bottom: 0;
+
+            strong {
+                font-weight: 500;
+                font-size: 1.0625rem;
+                line-height: 2.375rem;
+            }
+        }
+    }
+
 }
 
 .page-recording-detail .transcription-divider {
@@ -224,6 +241,14 @@
     background: var(--color-border);
     margin-top: var(--space-lg);
     margin-bottom: var(--space-sm);
+
+    &.equal {
+        margin-top: var(--space-sm);
+
+        &:last-of-type {
+            display: none !important;
+        }
+    }
 }
 
 .page-recording-detail .transcription-heading {
@@ -261,6 +286,12 @@
     display: flex;
     flex-direction: column;
     gap: var(--space-md);
+
+    &#transcription-content {
+        p {
+            margin-bottom: 0;
+        }
+    }
 }
 
 .page-recording-detail .transcription-text p {

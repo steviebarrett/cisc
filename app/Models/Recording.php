@@ -55,4 +55,97 @@ final class Recording {
         $stmt->execute([':id' => $recordingId]);
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
+
+    /*
+     * Returns an array of related recordings.
+     */
+    public static function related(array $rec): array
+    {
+        $db = DB::pdo();
+
+        $currentId = $rec['recording_id'];
+        $usedIds = [$currentId];
+
+        $sameInformant = null;
+        if (!empty($rec['informant_id'])) {
+            $stmt = $db->prepare("
+            SELECT r.recording_id, r.title as recording_title, r.informant_id, r.genre_id, 
+                   CONCAT(i.first_name, ' ', i.last_name) AS informant_name
+            FROM recording r
+            JOIN informant i ON i.informant_id = r.informant_id
+            WHERE r.informant_id = :informant_id
+              AND r.recording_id <> :current_id
+            ORDER BY RAND()
+            LIMIT 1
+        ");
+            $stmt->execute([
+                ':informant_id' => $rec['informant_id'],
+                ':current_id' => $currentId,
+            ]);
+            $sameInformant = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+
+            if ($sameInformant) {
+                $usedIds[] = $sameInformant['recording_id'];
+            }
+        }
+
+        $sameGenre = null;
+        if (!empty($rec['genre_id'])) {
+            $placeholders = implode(',', array_fill(0, count($usedIds), '?'));
+
+            $sql = "
+            SELECT r.recording_id, r.title, r.informant_id, r.genre_id, g.name as genre_name, r.title as recording_title
+            FROM recording r
+            JOIN genre g ON g.genre_id = r.genre_id
+            WHERE r.genre_id = ?
+              AND r.recording_id NOT IN ($placeholders)
+            ORDER BY RAND()
+            LIMIT 1
+        ";
+
+            $stmt = $db->prepare($sql);
+            $stmt->execute(array_merge([$rec['genre_id']], $usedIds));
+            $sameGenre = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+
+            if ($sameGenre) {
+                $usedIds[] = $sameGenre['recording_id'];
+            }
+        }
+
+        $sameSubject = null;
+        $stmt = $db->prepare("
+        SELECT DISTINCT rs.subject_id
+        FROM recording_subject rs
+        WHERE rs.recording_id = ?
+    ");
+        $stmt->execute([$currentId]);
+        $subjectIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+
+        if ($subjectIds) {
+            $subjectPlaceholders = implode(',', array_fill(0, count($subjectIds), '?'));
+            $usedPlaceholders = implode(',', array_fill(0, count($usedIds), '?'));
+
+            $sql = "
+            SELECT r.recording_id, r.title as recording_title, r.informant_id, r.genre_id, s.name as subject_name
+            FROM recording r
+            JOIN recording_subject rs ON rs.recording_id = r.recording_id
+            JOIN subject s ON s.subject_id = rs.subject_id
+            WHERE rs.subject_id IN ($subjectPlaceholders)
+              AND r.recording_id NOT IN ($usedPlaceholders)
+            GROUP BY r.recording_id, r.title, r.informant_id, r.genre_id
+            ORDER BY RAND()
+            LIMIT 1
+        ";
+
+            $stmt = $db->prepare($sql);
+            $stmt->execute(array_merge($subjectIds, $usedIds));
+            $sameSubject = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+        }
+
+        return [
+            'same_informant' => $sameInformant,
+            'same_genre' => $sameGenre,
+            'same_subject' => $sameSubject,
+        ];
+    }
 }

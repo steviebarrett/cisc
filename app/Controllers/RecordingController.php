@@ -59,8 +59,11 @@ final class RecordingController extends Controller {
             echo "Recording not found";
             return;
         }
+        $relatedRecordings = Recording::related($rec);
 
-        $this->render('recordings/show', ['rec' => $rec]);
+        $this->render('recordings/show', [
+            'rec' => $rec,
+            'relatedRecordings' => $relatedRecordings,]);
     }
 
     public function downloadTranscription(string $id): void {

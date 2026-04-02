@@ -7,38 +7,6 @@ $kw = trim((string)($params['q'] ?? ''));
 $activeNav = 'home';
 
 ?>
-    <style>
-        .featured-elements {
-            display: flex;
-            gap: 1rem;
-            list-style: none;
-            padding: 0;
-            margin: 0;
-        }
-
-        .featured-elements li {
-            flex: 1;
-        }
-
-        .featured_element_image {
-            width: 150px;
-            height: auto;
-            border-radius: 5px;
-        }
-
-        .featured-elements figcaption {
-            font-size: 0.9rem;
-            margin-top: 0.5rem;
-            color: #555;
-        }
-
-        a {
-            color: #000;
-            text-decoration: none;
-        }
-    </style>
-
-
     <div>
         <h1>Sruth nan Gàidheal</h1>
         <div>

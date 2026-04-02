@@ -206,5 +206,51 @@ if ($qs !== '') {
             </div>
         <?php endif; ?>
 
+
+        <!-- related recordings -->
+
+        <?php if(!empty($relatedRecordings)):
+            $informant = $relatedRecordings["same_informant"] ?? null;
+            $subject = $relatedRecordings["same_subject"] ?? null;
+            $genre = $relatedRecordings["same_genre"] ?? null;
+        ?>
+
+        <hr>
+
+        <div class="mt-3">
+
+            <h4>You might also like the following</h4>
+
+            <ul class="featured-elements">
+                <?php if(!empty($informant)): ?>
+                    <li>
+                        <a href="<?= e(base_path('/recordings/'.$informant["recording_id"]))?> ">
+                            <h5>by <em><?= $informant['informant_name'] ?></em></h5>
+                            <?= e($informant["recording_title"]) ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php if(!empty($genre)): ?>
+                    <li>
+                        <h5>in the <em> <?= $genre['genre_name'] ?> </em> genre</h5>
+                        <a href="<?= e(base_path('/recordings/'.$genre["recording_id"]))?> ">
+                            <?= e($genre["recording_title"]) ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+                <?php if(!empty($subject)): ?>
+                    <li>
+                        <h5>with the subject <em><?= $subject['subject_name'] ?></em></h5>
+                        <a href="<?= e(base_path('/recordings/'.$informant["recording_id"]))?> ">
+                            <?= e($subject["recording_title"]) ?>
+                        </a>
+                    </li>
+                <?php endif; ?>
+
+
+            </ul>
+        </div>
+        <?php endif; ?>
     </div>
+
 </div>

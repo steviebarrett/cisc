@@ -112,34 +112,50 @@ final class Recording {
             }
         }
 
-        $sameSubject = null;
         $stmt = $db->prepare("
-        SELECT DISTINCT rs.subject_id
-        FROM recording_subject rs
-        WHERE rs.recording_id = ?
-    ");
+    SELECT s.subject_id, s.name
+    FROM recording_subject rs
+    JOIN subject s ON s.subject_id = rs.subject_id
+    WHERE rs.recording_id = ?
+    ORDER BY RAND()
+    LIMIT 1
+");
         $stmt->execute([$currentId]);
-        $subjectIds = $stmt->fetchAll(PDO::FETCH_COLUMN);
+        $chosenSubject = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
 
-        if ($subjectIds) {
-            $subjectPlaceholders = implode(',', array_fill(0, count($subjectIds), '?'));
-            $usedPlaceholders = implode(',', array_fill(0, count($usedIds), '?'));
+        $sameSubject = null;
+
+        if ($chosenSubject) {
+          //  $usedPlaceholders = implode(',', array_fill(0, count($usedIds), '?'));
 
             $sql = "
-            SELECT r.recording_id, r.title as recording_title, r.informant_id, r.genre_id, s.name as subject_name
-            FROM recording r
-            JOIN recording_subject rs ON rs.recording_id = r.recording_id
-            JOIN subject s ON s.subject_id = rs.subject_id
-            WHERE rs.subject_id IN ($subjectPlaceholders)
-              AND r.recording_id NOT IN ($usedPlaceholders)
-            GROUP BY r.recording_id, r.title, r.informant_id, r.genre_id
-            ORDER BY RAND()
-            LIMIT 1
-        ";
+        SELECT 
+            r.recording_id,
+            r.title AS recording_title,
+            r.informant_id,
+            r.genre_id,
+            s.name AS subject_name
+        FROM recording r
+        JOIN recording_subject rs ON rs.recording_id = r.recording_id
+        JOIN subject s ON s.subject_id = rs.subject_id
+        WHERE rs.subject_id = ?
+          AND r.recording_id != ?
+        ORDER BY RAND()
+        LIMIT 1
+    ";
 
+            echo $chosenSubject['subject_id'] . ', ' . $rec['recording_id'];
+/*
+            $params = array_merge(
+                [$chosenSubject['name'], $chosenSubject['subject_id']],
+                $usedIds
+            );
+*/
             $stmt = $db->prepare($sql);
-            $stmt->execute(array_merge($subjectIds, $usedIds));
+            $stmt->execute([$chosenSubject['subject_id'], $rec['recording_id']]);
             $sameSubject = $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
+
+            print_r($sameSubject);
         }
 
         return [

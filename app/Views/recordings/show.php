@@ -72,9 +72,13 @@ if ($qs !== '') {
             <?php endif; ?>
 
             <?php
-                $origin = $rec['place_of_origin'] == 'Scotland' ? 'Alba | Scotland' : e($rec['place_of_origin']);
+                if ($rec['place_of_origin']) {
+                    $origin = $rec['place_of_origin'] == 'Scotland' ? 'Alba | Scotland' : e($rec['place_of_origin']);
+                    ?>
+                    <dt class="col-sm-3">Àite tùsail | Place of origin</dt><dd class="col-sm-9"><?= $origin ?></dd>
+                    <?php
+                }
             ?>
-            <dt class="col-sm-3">Àite tùsail | Place of origin</dt><dd class="col-sm-9"><?= $origin ?></dd>
             <dt class="col-sm-3">Seòrsa | Genre</dt><dd class="col-sm-9"><?= e($rec['genre_name'] ?? '') ?></dd>
 
             <?php if (!empty($rec['subgenres'])): ?>
@@ -241,7 +245,7 @@ if ($qs !== '') {
                 <?php if(!empty($subject)): ?>
                     <li>
                         <h5>with the subject <em><?= $subject['subject_name'] ?></em></h5>
-                        <a href="<?= e(base_path('/recordings/'.$informant["recording_id"]))?> ">
+                        <a href="<?= e(base_path('/recordings/'.$subject["recording_id"]))?> ">
                             <?= e($subject["recording_title"]) ?>
                         </a>
                     </li>

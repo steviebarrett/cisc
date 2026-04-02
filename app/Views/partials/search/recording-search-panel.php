@@ -73,7 +73,7 @@ if (!empty($params['subject'])) {
                 <div class="filter-row filter-row-selects">
                     <div class="filter-field">
                         <span class="filter-label">Aite | Place</span>
-                        <select class="filter-select filter-select-place" name="place">
+                        <select class="filter-select filter-select-place js-searchable-select" name="place" data-placeholder="All places">
                             <option value="">All places</option>
                             <?php foreach ($places_all as $p): ?>
                             <?php $placeValue = trim((string)$p); ?>
@@ -84,7 +84,7 @@ if (!empty($params['subject'])) {
 
                     <div class="filter-field">
                         <span class="filter-label">Seorsa | Genre</span>
-                        <select class="filter-select" name="genre">
+                        <select class="filter-select js-searchable-select" name="genre" data-placeholder="All genres">
                             <option value="">All</option>
                             <?php foreach ($genres as $g): ?>
                             <?php $genreValue = trim((string)$g); ?>
@@ -95,7 +95,7 @@ if (!empty($params['subject'])) {
 
                     <div class="filter-field">
                         <span class="filter-label">Fo-sheorsa | Sub-genre</span>
-                        <select class="filter-select" name="subgenre[]">
+                        <select class="filter-select js-searchable-select" name="subgenre[]" data-placeholder="All sub-genres">
                             <option value="">All</option>
                             <?php foreach ($subgenres_all as $sg): ?>
                             <?php $subgenreValue = trim((string)$sg); ?>
@@ -106,7 +106,7 @@ if (!empty($params['subject'])) {
 
                     <div class="filter-field">
                         <span class="filter-label">Cuspair | Subject</span>
-                        <select class="filter-select" name="subject">
+                        <select class="filter-select js-searchable-select" name="subject" data-placeholder="All subjects">
                             <option value="">All</option>
                             <?php foreach ($subjects_all as $s): ?>
                             <?php $subjectValue = trim((string)$s); ?>

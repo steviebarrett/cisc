@@ -88,6 +88,19 @@
     min-width: 200px;
 }
 
+.page-recordings-list .ts-wrapper.single .ts-control {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+.page-recordings-list .ts-wrapper.single .ts-control .item {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .page-recordings-list .checkbox-group {
     display: flex;
     flex-direction: row;

@@ -13,6 +13,7 @@
 
     <!-- Custom SCSS compiled CSS -->
     <link rel="stylesheet" href="/assets/css/main.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.bootstrap5.min.css">
 
     <script src="https://kit.fontawesome.com/0b481d2098.js" crossorigin="anonymous"></script>
 
@@ -58,8 +59,32 @@
             setTimeout(() => el.querySelector('input[name="q"]')?.focus(), 50);
         }
     });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof TomSelect === 'undefined') return;
+
+        document.querySelectorAll('select.js-searchable-select').forEach((selectEl) => {
+            if (selectEl.tomselect) return;
+
+            const placeholder = selectEl.getAttribute('data-placeholder') || 'Select...';
+            new TomSelect(selectEl, {
+                create: false,
+                maxOptions: 500,
+                allowEmptyOption: true,
+                placeholder,
+                hidePlaceholder: false,
+                plugins: {
+                    dropdown_input: {}
+                },
+                render: {
+                    no_results: () => '<div class="no-results">No matches found</div>'
+                }
+            });
+        });
+    });
     </script>
 
+    <script src="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/js/tom-select.complete.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 <script>

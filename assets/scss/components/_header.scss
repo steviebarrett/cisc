@@ -166,6 +166,19 @@ body.page-homepage #searchPanel {
     min-width: 200px;
 }
 
+#searchPanel .global-search-panel .ts-wrapper.single .ts-control {
+    display: flex;
+    flex-wrap: nowrap;
+}
+
+#searchPanel .global-search-panel .ts-wrapper.single .ts-control .item {
+    display: block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 #searchPanel .global-search-panel .checkbox-group {
     display: flex;
     flex-direction: row;

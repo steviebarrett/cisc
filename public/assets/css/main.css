@@ -2176,18 +2176,21 @@ body.page-homepage #searchPanel {
 }
 
 .page-recording-detail .mini-card-story {
+  border: 1px solid var(--genre-story);
   border-left: 4px solid var(--genre-story);
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
 
 .page-recording-detail .mini-card-custom {
+  border: 1px solid var(--genre-custom);
   border-left: 4px solid var(--genre-custom);
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
 }
 
 .page-recording-detail .mini-card-song {
+  border: 1px solid var(--genre-song);
   border-left: 4px solid var(--genre-song);
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;

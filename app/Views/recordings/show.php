@@ -21,6 +21,9 @@ if (str_contains($genreLower, 'belief')) $genreTagClass = 'tag-belief';
 if (str_contains($genreLower, 'custom')) $genreTagClass = 'tag-custom';
 if (str_contains($genreLower, 'biography')) $genreTagClass = 'tag-biography';
 if (str_contains($genreLower, 'proverb')) $genreTagClass = 'tag-proverb';
+$genreFilterUrl = $genreName !== ''
+    ? base_path('/recordings?' . http_build_query(['genre' => $genreName]))
+    : '';
 
 $backUrl = base_path('/recordings');
 $qs = clean_qs($_GET);
@@ -79,7 +82,7 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
     <div class="recording-header">
         <h1 class="recording-title"><?= e($recordingTitle) ?></h1>
         <?php if ($genreName !== ''): ?>
-        <span class="tag <?= e($genreTagClass) ?>"><?= e($genreName) ?></span>
+        <a class="tag <?= e($genreTagClass) ?>" href="<?= e($genreFilterUrl) ?>"><?= e($genreName) ?></a>
         <?php endif; ?>
     </div>
 
@@ -140,7 +143,7 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
                 <?php if ($genreName !== ''): ?>
                 <div class="metadata-row">
                     <div class="metadata-label">Seorsa | Genre</div>
-                    <div class="metadata-value"><span class="tag <?= e($genreTagClass) ?>"><?= e($genreName) ?></span></div>
+                    <div class="metadata-value"><a class="tag <?= e($genreTagClass) ?>" href="<?= e($genreFilterUrl) ?>"><?= e($genreName) ?></a></div>
                 </div>
                 <?php endif; ?>
 
@@ -160,7 +163,7 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
                     <div class="metadata-label">Cuspairean | Subjects</div>
                     <div class="metadata-value">
                         <?php foreach ($rec['subjects'] as $s): ?>
-                        <a class="tag tag-neutral" href="<?= e(base_path('/recordings?' . http_build_query(['subject' => [$s]]))) ?>"><?= e($s) ?></a>
+                        <a class="tag tag-story" href="<?= e(base_path('/recordings?' . http_build_query(['subject' => [$s]]))) ?>"><?= e($s) ?></a>
                         <?php endforeach; ?>
                     </div>
                 </div>

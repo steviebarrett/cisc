@@ -5,12 +5,15 @@ use App\Services\RecordingSearch;
 
 final class RecordingController extends Controller {
     public function index(): void {
-
-        $subjectInput = trim((string)($_GET['subject'] ?? ''));
-
-        $subjects = $subjectInput === ''
-            ? []
-            : array_map('trim', explode(',', $subjectInput));
+        $subjectRaw = $_GET['subject'] ?? [];
+        if (is_array($subjectRaw)) {
+            $subjects = get_array('subject');
+        } else {
+            $subjectInput = trim((string)$subjectRaw);
+            $subjects = $subjectInput === ''
+                ? []
+                : array_values(array_filter(array_map('trim', explode(',', $subjectInput)), fn($x) => $x !== ''));
+        }
 
         $params = [
             'q' => trim((string)($_GET['q'] ?? '')),

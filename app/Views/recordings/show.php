@@ -222,9 +222,8 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
                     <button class="toggle-btn" type="button" id="toggle-transcription">Hide transcription</button>
                     <?php if (!$usePublicationNote): ?>
                     <a class="toggle-btn" href="<?= e(base_path('/recordings/' . rawurlencode($recId) . '/download-transcription')) ?>">Download transcription</a>
+                    <?php endif; ?>
                 </div>
-
-                <?php endif; ?>
                 <div class="transcription-text" id="transcription-content">
                     <?php if (trim($transcriptionHtml) !== ''): ?>
                     <?= $transcriptionHtml ?>

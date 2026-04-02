@@ -60,12 +60,12 @@ $bodyClass = 'page-homepage';
                 $informantUrl = base_path('/informants/' . rawurlencode($informantId));
                 $recordingCount = (int)($fi['recording_count'] ?? 0);
                 ?>
-        <div class="informant-card">
+        <a class="informant-card" href="<?= e($informantUrl) ?>">
             <div class="informant-photo" <?= $photoStyle !== '' ? ' style="' . $photoStyle . '"' : '' ?>></div>
-            <div class="informant-name"><a href="<?= e($informantUrl) ?>"><?= e($name) ?></a></div>
+            <div class="informant-name"><?= e($name) ?></div>
             <div class="informant-community"><?= e($community) ?></div>
             <div class="informant-count"><?= number_format($recordingCount) ?> recordings</div>
-        </div>
+        </a>
         <?php endforeach; ?>
 
     </div>

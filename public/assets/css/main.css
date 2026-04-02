@@ -31,11 +31,14 @@
   --color-warning: #D4A843;
   --color-error: #B84040;
   --color-placeholder: #D8D5E8;
+  --genre-belief: #623BA8;
+  --genre-biography: #5C5880;
+  --genre-custom: #2781A6;
+  --genre-expression: #A185D7;
+  --genre-prayer: #B84040;
+  --genre-rhyme: #9DB8E6;
   --genre-song: #423EB2;
   --genre-story: #1E99A3;
-  --genre-belief: #623BA8;
-  --genre-custom: #2781A6;
-  --genre-biography: #5C5880;
   --genre-proverb: #7E7FBF;
   --font-primary: 'Noto Sans', sans-serif;
   --font-condensed: 'Noto Sans Condensed', sans-serif;
@@ -1269,6 +1272,9 @@ body.page-homepage #searchPanel {
   flex: 1;
   cursor: pointer;
 }
+.page-homepage .informant-card .informant-name {
+  color: var(--color-text-primary);
+}
 
 .page-homepage .informant-photo {
   width: 100%;
@@ -1684,26 +1690,30 @@ body.page-homepage #searchPanel {
   flex-shrink: 0;
 }
 
-.page-recordings-list .recording-accent-story {
-  background: var(--genre-story);
-}
-
-.page-recordings-list .recording-accent-song {
-  background: var(--genre-song);
-}
-
 .page-recordings-list .recording-accent-belief {
   background: var(--genre-belief);
 }
-
 .page-recordings-list .recording-accent-biography {
   background: var(--genre-biography);
 }
-
 .page-recordings-list .recording-accent-custom {
   background: var(--genre-custom);
 }
-
+.page-recordings-list .recording-accent-expression {
+  background: var(--genre-expression);
+}
+.page-recordings-list .recording-accent-prayer {
+  background: var(--genre-prayer);
+}
+.page-recordings-list .recording-accent-rhyme {
+  background: var(--genre-rhyme);
+}
+.page-recordings-list .recording-accent-song {
+  background: var(--genre-song);
+}
+.page-recordings-list .recording-accent-story {
+  background: var(--genre-story);
+}
 .page-recordings-list .recording-accent-proverb {
   background: var(--genre-proverb);
 }
@@ -2343,6 +2353,9 @@ body.page-homepage #searchPanel {
   transition: box-shadow var(--transition-normal), border-color var(--transition-normal);
   cursor: pointer;
 }
+.page-informants-list .informant-card .informant-name-en {
+  color: var(--color-text-primary);
+}
 
 .page-informants-list .informant-card:hover {
   box-shadow: var(--card-shadow-hover);
@@ -2602,20 +2615,38 @@ body.page-homepage #searchPanel {
   border-bottom-right-radius: var(--card-radius);
 }
 
-.page-informant-detail .recording-item.genre-song {
-  border-left-color: var(--genre-song);
+.page-informant-detail .recording-item.genre-belief {
+  border-left-color: var(--genre-belief);
 }
-
-.page-informant-detail .recording-item.genre-story {
-  border-left-color: var(--genre-story);
-}
-
 .page-informant-detail .recording-item.genre-biography {
   border-left-color: var(--genre-biography);
 }
-
 .page-informant-detail .recording-item.genre-custom {
   border-left-color: var(--genre-custom);
+}
+.page-informant-detail .recording-item.genre-expression {
+  border-left-color: var(--genre-expression);
+}
+.page-informant-detail .recording-item.genre-prayer {
+  border-left-color: var(--genre-prayer);
+}
+.page-informant-detail .recording-item.genre-expression {
+  border-left-color: var(--genre-expression);
+}
+.page-informant-detail .recording-item.genre-rhyme {
+  border-left-color: var(--genre-rhyme);
+}
+.page-informant-detail .recording-item.genre-song {
+  border-left-color: var(--genre-song);
+}
+.page-informant-detail .recording-item.genre-story {
+  border-left-color: var(--genre-story);
+}
+.page-informant-detail .recording-item.genre-proverb {
+  border-left-color: var(--genre-proverb);
+}
+.page-informant-detail .recording-item:not(.genre-song):not(.genre-story):not(.genre-biography):not(.genre-custom):not(.genre-belief):not(.genre-proverb):not(.genre-prayer):not(.genre-expression):not(.genre-rhyme):not(.genre-belief) {
+  border-left-color: var(--color-border);
 }
 
 .page-informant-detail .recording-content {

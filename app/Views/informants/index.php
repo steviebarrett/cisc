@@ -78,12 +78,12 @@ If Gaelic fields are blank, it falls back to English fields, then informant_id
                 $photoStyle = 'background-image: url(\'' . e(base_path('/media/informants/' . rawurlencode($imageFilename))) . '\')';
             }
             ?>
-        <div class="informant-card">
+        <a class="informant-card" href="<?= e($url) ?>">
             <div class="informant-photo" <?= $photoStyle !== '' ? ' style="' . $photoStyle . '"' : '' ?>></div>
 
             <div class="informant-content">
                 <div class="informant-name-en">
-                    <a href="<?= e($url) ?>"><?= $kw !== '' ? highlight_ga($name, $kw) : e($name) ?></a>
+                    <?= $kw !== '' ? highlight_ga($name, $kw) : e($name) ?>
                 </div>
 
                 <?php if ($nameGa !== ''): ?>
@@ -99,7 +99,7 @@ If Gaelic fields are blank, it falls back to English fields, then informant_id
                     <span class="informant-rec-count"><?= number_format($recordingCount) ?> recs</span>
                 </div>
             </div>
-        </div>
+        </a>
         <?php endforeach; ?>
     </div>
 

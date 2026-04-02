@@ -40,11 +40,14 @@ $hasEn = (int)($params['has_en'] ?? 0) === 1;
 $hasTranscription = (int)($params['has_transcription'] ?? 0) === 1;
 
 $genreAccentMap = [
-    'story' => 'story',
-    'song' => 'song',
     'belief' => 'belief',
     'biography' => 'biography',
     'custom' => 'custom',
+    'expression' => 'expression',
+    'prayer' => 'prayer',
+    'rhyme' => 'rhyme',
+    'song' => 'song',
+    'story' => 'story',
     'proverb' => 'proverb',
 ];
 

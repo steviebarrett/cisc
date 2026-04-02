@@ -34,10 +34,15 @@ $biographyHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu', ''
     $recordingCount = is_array($recs ?? null) ? count($recs) : 0;
 
     $genreClassMap = [
-    'song' => 'genre-song',
-    'story' => 'genre-story',
+    'belief' => 'genre-belief',
     'biography' => 'genre-biography',
     'custom' => 'genre-custom',
+    'expression' => 'genre-expression',
+    'prayer' => 'genre-prayer',
+    'rhyme' => 'genre-rhyme',
+    'song' => 'genre-song',
+    'story' => 'genre-story',
+    'proverb' => 'genre-proverb',
     ];
     ?>
 

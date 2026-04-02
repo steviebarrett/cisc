@@ -270,28 +270,42 @@
     flex-shrink: 0;
 }
 
-.page-recordings-list .recording-accent-story {
-    background: var(--genre-story);
-}
+.page-recordings-list {
+    .recording-accent-belief {
+        background: var(--genre-belief);
+    }
 
-.page-recordings-list .recording-accent-song {
-    background: var(--genre-song);
-}
+    .recording-accent-biography {
+        background: var(--genre-biography);
+    }
 
-.page-recordings-list .recording-accent-belief {
-    background: var(--genre-belief);
-}
+    .recording-accent-custom {
+        background: var(--genre-custom);
+    }
 
-.page-recordings-list .recording-accent-biography {
-    background: var(--genre-biography);
-}
+    .recording-accent-expression {
+        background: var(--genre-expression);
+    }
 
-.page-recordings-list .recording-accent-custom {
-    background: var(--genre-custom);
-}
+    .recording-accent-prayer {
+        background: var(--genre-prayer);
+    }
 
-.page-recordings-list .recording-accent-proverb {
-    background: var(--genre-proverb);
+    .recording-accent-rhyme {
+        background: var(--genre-rhyme);
+    }
+
+    .recording-accent-song {
+        background: var(--genre-song);
+    }
+
+    .recording-accent-story {
+        background: var(--genre-story);
+    }
+
+    .recording-accent-proverb {
+        background: var(--genre-proverb);
+    }
 }
 
 .page-recordings-list .recording-content {

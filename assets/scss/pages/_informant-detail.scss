@@ -155,20 +155,52 @@
     border-bottom-right-radius: var(--card-radius);
 }
 
-.page-informant-detail .recording-item.genre-song {
-    border-left-color: var(--genre-song);
-}
+.page-informant-detail {
+    .recording-item {
+        &.genre-belief {
+            border-left-color: var(--genre-belief);
+        }
 
-.page-informant-detail .recording-item.genre-story {
-    border-left-color: var(--genre-story);
-}
+        &.genre-biography {
+            border-left-color: var(--genre-biography);
+        }
 
-.page-informant-detail .recording-item.genre-biography {
-    border-left-color: var(--genre-biography);
-}
+        &.genre-custom {
+            border-left-color: var(--genre-custom);
+        }
 
-.page-informant-detail .recording-item.genre-custom {
-    border-left-color: var(--genre-custom);
+        &.genre-expression {
+            border-left-color: var(--genre-expression);
+        }
+
+        &.genre-prayer {
+            border-left-color: var(--genre-prayer);
+        }
+
+        &.genre-expression {
+            border-left-color: var(--genre-expression);
+        }
+
+        &.genre-rhyme {
+            border-left-color: var(--genre-rhyme);
+        }
+
+        &.genre-song {
+            border-left-color: var(--genre-song);
+        }
+
+        &.genre-story {
+            border-left-color: var(--genre-story);
+        }
+
+        &.genre-proverb {
+            border-left-color: var(--genre-proverb);
+        }
+
+        &:not(.genre-song):not(.genre-story):not(.genre-biography):not(.genre-custom):not(.genre-belief):not(.genre-proverb):not(.genre-prayer):not(.genre-expression):not(.genre-rhyme):not(.genre-belief) {
+            border-left-color: var(--color-border);
+        }
+    }
 }
 
 .page-informant-detail .recording-content {

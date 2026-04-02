@@ -70,6 +70,10 @@
         box-shadow var(--transition-normal),
         border-color var(--transition-normal);
     cursor: pointer;
+
+    .informant-name-en {
+        color: var(--color-text-primary);
+    }
 }
 
 .page-informants-list .informant-card:hover {

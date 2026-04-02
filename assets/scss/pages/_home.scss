@@ -195,6 +195,10 @@
     gap: var(--space-sm-md);
     flex: 1;
     cursor: pointer;
+
+    .informant-name {
+        color: var(--color-text-primary);
+    }
 }
 
 .page-homepage .informant-photo {

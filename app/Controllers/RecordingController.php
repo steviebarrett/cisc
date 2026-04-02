@@ -6,11 +6,16 @@ use App\Services\RecordingSearch;
 final class RecordingController extends Controller {
     public function index(): void {
 
-        $subjectInput = trim((string)($_GET['subject'] ?? ''));
+        $subjectRaw = $_GET['subject'] ?? [];
 
-        $subjects = $subjectInput === ''
-            ? []
-            : array_map('trim', explode(',', $subjectInput));
+        if (is_array($subjectRaw)) {
+            $subjects = array_values(array_filter(array_map('trim', $subjectRaw), fn($s) => $s !== ''));
+        } else {
+            $subjectInput = trim((string)$subjectRaw);
+            $subjects = $subjectInput === ''
+                ? []
+                : array_values(array_filter(array_map('trim', explode(',', $subjectInput)), fn($s) => $s !== ''));
+        }
 
         $params = [
             'q' => trim((string)($_GET['q'] ?? '')),
@@ -31,6 +36,8 @@ final class RecordingController extends Controller {
         $search = new RecordingSearch();
         $result = $search->search($params);
 
+        $searchPanel = SearchPanel::recordings();
+
         $this->render('recordings/index', [
             'result' => $result,
             'params' => $params,
@@ -41,6 +48,7 @@ final class RecordingController extends Controller {
             'enableSearchPanel' => true,
             'searchPanelType' => 'recordings',
             'headerSearchOpen' => false,
+            'searchPanel' => $searchPanel,
         ]);
     }
 

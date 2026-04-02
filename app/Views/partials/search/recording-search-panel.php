@@ -2,6 +2,9 @@
 $params = $params ?? [];
 $places_all = $places_all ?? [];
 $genres = $genres ?? [];
+
+
+//print_r($genres); die();
 $subgenres_all = $subgenres_all ?? [];
 $subjects_all = $subjects_all ?? [];
 
@@ -64,7 +67,7 @@ $subjectValue = is_array($params['subject'] ?? null)
         <div class="col-12">
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" name="has_en" value="1" <?= $hasEn === 1 ? 'checked' : '' ?>>
-                <label class="form-check-label">Includes English translation</label>
+                <label class="form-check-label">English translation available</label>
             </div>
         </div>
 

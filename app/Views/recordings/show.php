@@ -282,7 +282,7 @@ $transcriptionHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu'
         </div>
 
         <div class="related-section">
-            <h2 class="related-heading">Tuilleadh bho Lachie | More from this informant</h2>
+            <h2 class="related-heading">Is dòcha gum bu toil leat na leanas | You might like the following</h2>
             <div class="related-row">
                 <?php if (!empty($relatedRecords)): ?>
                 <?php

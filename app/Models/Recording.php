@@ -70,65 +70,130 @@ final class Recording {
         return $row;
     }
 
-      public static function related(string $recordingId, string $informantId = '', string $genreId = '', int $limit = 3): array {
+    public static function related(string $recordingId, string $informantId = '', string $genreId = '', int $limit = 3): array {
         $pdo = DB::pdo();
         $informantId = trim($informantId);
         $genreId = trim($genreId);
-        $limit = max(1, min(12, $limit));
+        $limit = max(1, min(3, $limit));
 
-        if ($informantId === '' && $genreId === '') {
-          return [];
-        }
+        $seenRecordingIds = [$recordingId => true];
 
-        $where = ['r.recording_id <> :recording_id'];
-        $bind = [':recording_id' => $recordingId];
-        $scoreParts = [];
-        $matchFilters = [];
+        $fetchMany = static function (PDO $pdo, string $recordingId, string $joins, string $extraWhere, array $params, int $queryLimit): array {
+            $whereParts = ['r.recording_id <> :recording_id'];
+            $bind = array_merge([':recording_id' => $recordingId], $params);
 
-        if ($informantId !== '') {
-          $matchFilters[] = 'r.informant_id = :informant_id';
-          $bind[':informant_id'] = $informantId;
-          $scoreParts[] = 'CASE WHEN r.informant_id = :score_informant_id THEN 2 ELSE 0 END';
-          $bind[':score_informant_id'] = $informantId;
-        }
-        if ($genreId !== '') {
-          $matchFilters[] = 'r.genre_id = :genre_id';
-          $bind[':genre_id'] = $genreId;
-          $scoreParts[] = 'CASE WHEN r.genre_id = :score_genre_id THEN 1 ELSE 0 END';
-          $bind[':score_genre_id'] = $genreId;
-        }
+            if ($extraWhere !== '') {
+                $whereParts[] = $extraWhere;
+            }
 
-        $scoreSql = implode(' + ', $scoreParts);
-        if (!empty($matchFilters)) {
-          $where[] = '(' . implode(' OR ', $matchFilters) . ')';
-        }
-        $whereSql = implode(' AND ', $where);
-
-        $sql = "
+            $sql = "
         SELECT
-        r.recording_id,
-        r.title,
-        r.recording_date,
-        g.name AS genre_name,
-        i.first_name AS informant_first,
-        i.last_name AS informant_last,
-        ({$scoreSql}) AS relation_score
+          r.recording_id,
+          r.title,
+          r.recording_date,
+          g.name AS genre_name,
+          i.first_name AS informant_first,
+          i.last_name AS informant_last
         FROM recording r
         JOIN informant i ON i.informant_id = r.informant_id
         LEFT JOIN genre g ON g.genre_id = r.genre_id
-        WHERE ({$whereSql})
-        ORDER BY relation_score DESC, r.recording_date DESC, r.recording_id DESC
-        LIMIT :limit
+        {$joins}
+        WHERE " . implode(' AND ', $whereParts) . "
+        ORDER BY RAND()
+        LIMIT :query_limit
       ";
 
-        $stmt = $pdo->prepare($sql);
-        foreach ($bind as $k => $v) {
-          $stmt->bindValue($k, $v);
+            $stmt = $pdo->prepare($sql);
+            foreach ($bind as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+            $stmt->bindValue(':query_limit', $queryLimit, PDO::PARAM_INT);
+            $stmt->execute();
+
+            return $stmt->fetchAll();
+        };
+
+        $informantPool = [];
+        $genrePool = [];
+        $subjectPool = [];
+
+        if ($informantId !== '') {
+            $informantPool = $fetchMany(
+                $pdo,
+                $recordingId,
+                '',
+                'r.informant_id = :informant_id',
+                [':informant_id' => $informantId],
+                2
+            );
         }
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
-        $stmt->execute();
-        return $stmt->fetchAll();
-      }
+
+        if ($genreId !== '') {
+            $genrePool = $fetchMany(
+                $pdo,
+                $recordingId,
+                '',
+                'r.genre_id = :genre_id',
+                [':genre_id' => $genreId],
+                2
+            );
+        }
+
+        $subjectPool = $fetchMany(
+            $pdo,
+            $recordingId,
+            'JOIN recording_subject rs_candidate ON rs_candidate.recording_id = r.recording_id
+        JOIN recording_subject rs_current ON rs_current.subject_id = rs_candidate.subject_id',
+            'rs_current.recording_id = :current_recording_id',
+            [':current_recording_id' => $recordingId],
+            2
+        );
+
+        $results = [];
+        $appendUnique = static function (array &$results, array &$seenRecordingIds, array $row, int $limit): void {
+            if (count($results) >= $limit) {
+                return;
+            }
+            $id = trim((string)($row['recording_id'] ?? ''));
+            if ($id === '' || isset($seenRecordingIds[$id])) {
+                return;
+            }
+            $results[] = $row;
+            $seenRecordingIds[$id] = true;
+        };
+
+        // First pass: try to include one from each bucket.
+        if (!empty($informantPool)) {
+            $appendUnique($results, $seenRecordingIds, $informantPool[0], $limit);
+        }
+        if (!empty($genrePool)) {
+            $appendUnique($results, $seenRecordingIds, $genrePool[0], $limit);
+        }
+        if (!empty($subjectPool)) {
+            $appendUnique($results, $seenRecordingIds, $subjectPool[0], $limit);
+        }
+
+        // Backfill pass: use second picks first, then any remaining rows from all pools.
+        $backfillPools = [
+            array_slice($informantPool, 1),
+            array_slice($genrePool, 1),
+            array_slice($subjectPool, 1),
+            $informantPool,
+            $genrePool,
+            $subjectPool,
+        ];
+
+        foreach ($backfillPools as $pool) {
+            foreach ($pool as $row) {
+                $appendUnique($results, $seenRecordingIds, $row, $limit);
+                if (count($results) >= $limit) {
+                    return $results;
+                }
+            }
+        }
+
+        return $results;
+    }
 
     public static function subgenres(string $recordingId): array {
         $pdo = DB::pdo();

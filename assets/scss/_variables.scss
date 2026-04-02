@@ -672,6 +672,7 @@ img {
     align-items: center;
     gap: var(--space-xs);
     list-style: none;
+    padding-left: 0 !important;
 }
 
 .nav-overlay-links a {

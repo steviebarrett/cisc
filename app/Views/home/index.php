@@ -14,7 +14,7 @@ $bodyClass = 'page-homepage';
     <div class="hero-gradient-overlay"></div>
     <div class="hero-content">
         <img class="hero-logo-mark" src="<?= e(base_path('/assets/images/gaelstream-shape.svg')) ?>" alt="Gaelstream">
-        <h1 class="hero-title">Ceap Breatainn &middot; Cape Breton</h1>
+        <h1 class="hero-title">Cruinneachadh Beul-aithris Ghàidhlig Cheap Breatuinn &middot; Cape Breton Gaelic Folklore Project</h1>
         <img class="hero-map" src="<?= e(base_path('/assets/images/gaelstream-map.svg')) ?>" alt="Map of Nova Scotia and Cape Breton">
         <!-- TODO this should probably be dynamic -->
         <p class="hero-stats">2,151 recordings from 161 voices across Cape Breton</p>
@@ -26,7 +26,7 @@ $bodyClass = 'page-homepage';
 </section>
 
 <section class="featured-informants">
-    <h2 class="section-heading">Luchd-fiosrachaidh | Featured Informants</h2>
+    <h2 class="section-heading">Beulaichean | Featured Informants</h2>
 
     <!-- TODO informants need to be dynamic -->
     <!-- Note: I do not see a way to fetch featured informants -->

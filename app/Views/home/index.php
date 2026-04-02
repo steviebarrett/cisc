@@ -89,17 +89,14 @@ $activeNav = 'home';
 
         <h3>Gaelic Text Here | Featured Recordings</h3>
         <ul class="featured-elements">
-            <?php foreach ($featuredRecordings as $row) :
-                $title = $row["title"] ?? $row["recording_id"];
+            <?php foreach ($featuredRecordings as $recording) :
+                $title = $recording["title"] ?? $row["recording_id"];
             ?>
-
-
-
                 <li>
-                    <a href="/recordings/<?= $row["recording_id"] ?>" title="<?= $title ?>">
+                    <a href="/recordings/<?= $recording["recording_id"] ?>" title="<?= $title ?>">
                         <h4><?= $title ?></h4>
-                        <p><?= e(trim((string)($row['informant_name'] ?? ''))) ?>
-                        <?php if (!empty($row['genre_name'])): ?> · <?= e((string)$row['genre_name']) ?><?php endif; ?></p>
+                        <p><?= e(trim((string)($recording['informant_name'] ?? ''))) ?>
+                        <?php if (!empty($recording['genre_name'])): ?> · <?= e((string)$recording['genre_name']) ?><?php endif; ?></p>
 
                     </a>
                 </li>

@@ -61,18 +61,6 @@ $subjectValue = is_array($params['subject'] ?? null)
             <?php endif; ?>
         </div>
 
-        <div class="col-12 col-lg-3">
-            <label class="form-label">Genre</label>
-            <select class="form-select" name="genre">
-                <option value="">(Any)</option>
-                <?php foreach ($genres as $g): ?>
-                    <option value="<?= e($g) ?>" <?= (($params['genre'] ?? '') === $g) ? 'selected' : '' ?>>
-                        <?= e($g) ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
-
         <div class="col-12">
             <div class="form-check">
                 <input class="form-check-input" type="checkbox" name="has_en" value="1" <?= $hasEn === 1 ? 'checked' : '' ?>>
@@ -92,6 +80,18 @@ $subjectValue = is_array($params['subject'] ?? null)
                     <i class="fa-regular fa-file"></i> Has transcription
                 </label>
             </div>
+        </div>
+
+        <div class="col-12 col-lg-3">
+            <label class="form-label">Genre</label>
+            <select class="form-select" name="genre">
+                <option value="">(Any)</option>
+                <?php foreach ($genres as $g): ?>
+                    <option value="<?= e($g) ?>" <?= (($params['genre'] ?? '') === $g) ? 'selected' : '' ?>>
+                        <?= e($g) ?>
+                    </option>
+                <?php endforeach; ?>
+            </select>
         </div>
 
         <div class="col-12 col-lg-6">

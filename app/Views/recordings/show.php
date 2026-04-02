@@ -183,6 +183,14 @@ $relatedRecords = is_array($relatedRecords ?? null) ? $relatedRecords : [];
                             class="tape-number"><?= e(trim((string)$rec['original_tape_no'] . ' ' . (string)($rec['original_tape_item_no'] ?? ''))) ?></span></div>
                 </div>
                 <?php endif; ?>
+
+                <?php if ($recId !== ''): ?>
+                <div class="metadata-row">
+                    <!-- TODO - need gaelic label -->
+                    <div class="metadata-label">GF No</div>
+                    <div class="metadata-value"><span class="tape-number"><?= e($recId) ?></span></div>
+                </div>
+                <?php endif; ?>
             </div>
 
             <?php if (!empty($rec['first_line_chorus']) || !empty($rec['first_line_verse'])): ?>

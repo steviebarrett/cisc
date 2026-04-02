@@ -39,7 +39,7 @@ $genreClassMap = [
 ?>
 
 <div class="page-container">
-    <a href="<?= e($backUrl) ?>" class="back-link"><i class="fa-solid fa-arrow-left icon-sm" aria-hidden="true"></i> Informants</a>
+    <a href="<?= e($backUrl) ?>" class="back-link"><i data-lucide="arrow-left" class="icon-sm" aria-hidden="true"></i> Informants</a>
 
     <div class="profile-header">
         <div class="profile-photo-column">

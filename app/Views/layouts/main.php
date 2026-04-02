@@ -15,8 +15,6 @@
     <link rel="stylesheet" href="/assets/css/main.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tom-select@2.4.3/dist/css/tom-select.bootstrap5.min.css">
 
-    <script src="https://kit.fontawesome.com/0b481d2098.js" crossorigin="anonymous"></script>
-
     <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
 
     <!-- leaflet JS -->

@@ -53,7 +53,7 @@ $logoPath = $isHome
     </ul>
 
     <a class="nav-search-btn" href="<?= e(base_path('/recordings')) ?>">
-        <i class="fa-solid fa-magnifying-glass icon-md" aria-hidden="true"></i>
+        <i data-lucide="search" class="icon-md" aria-hidden="true"></i>
         Search
     </a>
 </nav>
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
     </ul>
 
     <a class="nav-overlay-search" href="<?= e(base_path('/recordings')) ?>" onclick="document.body.classList.remove('nav-open')">
-        <i class="fa-solid fa-magnifying-glass icon-xl" aria-hidden="true"></i>
+        <i data-lucide="search" class="icon-xl" aria-hidden="true"></i>
         Search
     </a>
 </div>

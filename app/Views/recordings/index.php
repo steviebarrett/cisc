@@ -203,7 +203,7 @@ $genreAccentMap = [
                     <?= e(trim((string)($row['informant_name'] ?? ''))) ?>
                     <?php if ($genreLabel !== ''): ?> - <?= e($genreLabel) ?><?php endif; ?>
                     <?php if (!empty($row['includes_english_translation'])): ?> - EN<?php endif; ?>
-                    <?php if (!empty($row['transcription_html'])): ?> - <i class="fa-regular fa-file" aria-label="Has transcription"></i><?php endif; ?>
+                    <?php if (!empty($row['transcription_html'])): ?> - <i data-lucide="file-text" aria-label="Has transcription"></i><?php endif; ?>
                 </div>
 
                 <?php if ($transcriptionQ !== '' && !empty($row['transcription_text'])): ?>

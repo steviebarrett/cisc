@@ -9,6 +9,7 @@ final class HomeController extends Controller
         $this->render('home/index', [
             'fullWidth' => true,
             'featuredInformants' => Informant::randomFeatured(5),
+            'featuredRecordings' => Recording::randomFeatured(3),
         ]);
     }
 

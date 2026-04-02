@@ -2,6 +2,31 @@
 declare(strict_types=1);
 
 final class Recording {
+    public static function randomFeatured(int $limit = 3): array {
+        $pdo = DB::pdo();
+        $limit = max(1, min(12, $limit));
+
+        $sql = "
+      SELECT
+        r.recording_id,
+        r.title,
+        r.recording_date,
+        g.name AS genre_name,
+        i.first_name AS informant_first,
+        i.last_name AS informant_last
+      FROM recording r
+      JOIN informant i ON i.informant_id = r.informant_id
+      LEFT JOIN genre g ON g.genre_id = r.genre_id
+      ORDER BY RAND()
+      LIMIT :limit
+    ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
     public static function find(string $id): ?array {
         $pdo = DB::pdo();
         $sql = "

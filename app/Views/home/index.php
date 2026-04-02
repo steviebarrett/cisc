@@ -71,6 +71,54 @@ $bodyClass = 'page-homepage';
     </div>
 </section>
 
+<section class="featured-recordings related-section">
+    <h2 class="section-heading related-heading">Clàraidhean Taghte | Featured Recordings</h2>
+
+    <?php $featuredRecordings = is_array($featuredRecordings ?? null) ? $featuredRecordings : []; ?>
+    <div class="related-row">
+        <?php if (!empty($featuredRecordings)): ?>
+        <?php
+            $cardClasses = ['mini-card-story', 'mini-card-custom', 'mini-card-song'];
+            foreach ($featuredRecordings as $idx => $recording):
+                $className = $cardClasses[$idx % count($cardClasses)];
+                $recordingId = trim((string)($recording['recording_id'] ?? ''));
+                if ($recordingId === '') {
+                    continue;
+                }
+
+                $recordingTitle = trim((string)($recording['title'] ?? ''));
+                if ($recordingTitle === '') {
+                    $recordingTitle = $recordingId;
+                }
+
+                $recordingUrl = base_path('/recordings/' . rawurlencode($recordingId));
+                $metaParts = [];
+                $recordingDate = trim((string)($recording['recording_date'] ?? ''));
+                $recordingGenre = trim((string)($recording['genre_name'] ?? ''));
+                $recordingInformant = trim((string)(($recording['informant_first'] ?? '') . ' ' . ($recording['informant_last'] ?? '')));
+
+                if ($recordingDate !== '') $metaParts[] = $recordingDate;
+                if ($recordingGenre !== '') $metaParts[] = $recordingGenre;
+                if ($recordingInformant !== '') $metaParts[] = $recordingInformant;
+
+                $metaText = implode(' | ', $metaParts);
+        ?>
+        <a class="mini-card <?= e($className) ?>" href="<?= e($recordingUrl) ?>">
+            <span class="mini-card-title"><?= e($recordingTitle) ?></span>
+            <?php if ($metaText !== ''): ?>
+            <span class="mini-card-meta"><?= e($metaText) ?></span>
+            <?php endif; ?>
+        </a>
+        <?php endforeach; ?>
+        <?php else: ?>
+        <a class="mini-card mini-card-song" href="<?= e(base_path('/recordings')) ?>">
+            <span class="mini-card-title">Browse recordings</span>
+            <span class="mini-card-meta">No featured recordings available</span>
+        </a>
+        <?php endif; ?>
+    </div>
+</section>
+
 <section class="collection-intro">
     <h2 class="collection-intro-heading">About the Collection</h2>
     <p class="collection-intro-text">Sruth nan Gàidheal (Gaelstream) is a digital archive of Scottish Gaelic oral traditions from Cape Breton, Nova Scotia. The collection preserves

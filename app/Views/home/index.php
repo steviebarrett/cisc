@@ -28,43 +28,46 @@ $bodyClass = 'page-homepage';
 <section class="featured-informants">
     <h2 class="section-heading">Beulaichean | Featured Informants</h2>
 
-    <!-- TODO informants need to be dynamic -->
-    <!-- Note: I do not see a way to fetch featured informants -->
+    <?php $featuredInformants = is_array($featuredInformants ?? null) ? $featuredInformants : []; ?>
     <div class="informant-row">
-        <div class="informant-card">
-            <div class="informant-photo" style="background-image: url('src/photos/CURREB01.P1.png')"></div>
-            <div class="informant-name"><a href="informant-detail.html">Effie Bella Currie</a></div>
-            <div class="informant-community">MacAdam's Lake</div>
-            <div class="informant-count">46 recordings</div>
-        </div>
+        <?php foreach ($featuredInformants as $fi): ?>
+        <?php
+                $informantId = trim((string)($fi['informant_id'] ?? ''));
+                if ($informantId === '') {
+                    continue;
+                }
 
-        <div class="informant-card">
-            <div class="informant-photo" style="background-image: url('src/photos/MACLAL01.P1.jpg')"></div>
-            <div class="informant-name"><a href="informant-detail.html">Lauchie MacLellan</a></div>
-            <div class="informant-community">Dunvegan</div>
-            <div class="informant-count">38 recordings</div>
-        </div>
+                $firstName = trim((string)($fi['first_name'] ?? ''));
+                $lastName = trim((string)($fi['last_name'] ?? ''));
+                $name = trim($firstName . ' ' . $lastName);
 
-        <div class="informant-card">
-            <div class="informant-photo" style="background-image: url('src/photos/MACNJD01.P1.jpg')"></div>
-            <div class="informant-name"><a href="informant-detail.html">John Dan MacNeil</a></div>
-            <div class="informant-community">Christmas Island</div>
-            <div class="informant-count">29 recordings</div>
-        </div>
+                if ($name === '') {
+                    $gaelicName = trim((string)(($fi['ainm'] ?? '') . ' ' . ($fi['cinneadh'] ?? '')));
+                    $name = $gaelicName !== '' ? $gaelicName : $informantId;
+                }
 
-        <div class="informant-card">
-            <div class="informant-photo" style="background-image: url('src/photos/GILLM02.P1.jpg')"></div>
-            <div class="informant-name"><a href="informant-detail.html">Murdoch Gillis</a></div>
-            <div class="informant-community">Gillisdale</div>
-            <div class="informant-count">24 recordings</div>
-        </div>
+                $community = trim((string)($fi['community_origin_canada'] ?? ''));
+                if ($community === '') {
+                    $community = trim((string)($fi['county'] ?? ''));
+                }
 
+                $imageFilename = trim((string)($fi['image_filename'] ?? ''));
+                $photoStyle = '';
+                if ($imageFilename !== '') {
+                    $photoUrl = base_path('/media/informants/' . rawurlencode($imageFilename));
+                    $photoStyle = 'background-image: url(\'' . e($photoUrl) . '\')';
+                }
+
+                $informantUrl = base_path('/informants/' . rawurlencode($informantId));
+                $recordingCount = (int)($fi['recording_count'] ?? 0);
+                ?>
         <div class="informant-card">
-            <div class="informant-photo" style="background-image: url('src/photos/MACDA02.P1.jpg')"></div>
-            <div class="informant-name"><a href="informant-detail.html">Angus MacDonald</a></div>
-            <div class="informant-community">South West Margaree</div>
-            <div class="informant-count">18 recordings</div>
+            <div class="informant-photo" <?= $photoStyle !== '' ? ' style="' . $photoStyle . '"' : '' ?>></div>
+            <div class="informant-name"><a href="<?= e($informantUrl) ?>"><?= e($name) ?></a></div>
+            <div class="informant-community"><?= e($community) ?></div>
+            <div class="informant-count"><?= number_format($recordingCount) ?> recordings</div>
         </div>
+        <?php endforeach; ?>
 
     </div>
 </section>

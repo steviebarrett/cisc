@@ -2,6 +2,42 @@
 declare(strict_types=1);
 
 final class Informant {
+    public static function randomFeatured(int $limit = 5): array {
+        $pdo = DB::pdo();
+        $limit = max(1, min(20, $limit));
+
+        $sql = "
+        SELECT
+            i.informant_id,
+            i.first_name,
+            i.last_name,
+            i.ainm,
+            i.cinneadh,
+            i.community_origin_canada,
+            i.county,
+            (
+                SELECT ii.filename
+                FROM informant_image ii
+                WHERE ii.informant_id = i.informant_id
+                ORDER BY ii.slot ASC, ii.filename ASC
+                LIMIT 1
+            ) AS image_filename,
+            (
+                SELECT COUNT(*)
+                FROM recording r
+                WHERE r.informant_id = i.informant_id
+            ) AS recording_count
+        FROM informant i
+        ORDER BY RAND()
+        LIMIT :limit
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
     public static function find(string $id): ?array {
         $pdo = DB::pdo();
         $stmt = $pdo->prepare("SELECT * FROM informant WHERE informant_id = :id LIMIT 1");

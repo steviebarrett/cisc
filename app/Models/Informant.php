@@ -28,13 +28,13 @@ final class Informant {
         $perPage = (int)($params['per_page'] ?? 20);
         if (!in_array($perPage, [10,20,50,100], true)) $perPage = 20;
 
-        $sort = (string)($params['sort'] ?? 'name_asc');
+        $sort = (string)($params['sort'] ?? 'i.last_name ASC, i.first_name ASC');
 
         $orderBy = match ($sort) {
-            'name_desc'   => 'i.first_name DESC, i.last_name DESC',
-            'gaelic_asc'  => 'i.ainm ASC, i.cinneadh ASC',
-            'gaelic_desc' => 'i.ainm DESC, i.cinneadh DESC',
-            default       => 'i.first_name ASC, i.last_name ASC',
+            'name_desc'   => 'i.last_name DESC, i.first_name DESC',
+            'gaelic_asc'  => 'i.cinneadh ASC, i.ainm ASC',
+            'gaelic_desc' => 'i.cinneadh DESC, i.ainm DESC',
+            default       => 'i.last_name ASC, i.first_name ASC',
         };
 
         $where = [];

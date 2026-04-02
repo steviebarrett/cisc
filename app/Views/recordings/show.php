@@ -125,6 +125,10 @@ if ($qs !== '') {
                 <dd class="col-sm-9"><?= $rec['original_tape_no'] .  ' ' . $rec['original_tape_item_no'] ?></dd>
             <?php endif; ?>
 
+            <dt class="col-sm-3">GF # | GF Number:</dt>
+            <dd class="col-sm-9"><?= $rec['recording_id'] ?></dd>
+
+
         </dl>
 
         <?php if (!empty($rec['first_line_chorus']) || !empty($rec['first_line_verse'])): ?>

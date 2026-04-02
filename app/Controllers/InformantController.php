@@ -4,8 +4,6 @@ declare(strict_types=1);
 final class InformantController extends Controller {
 
     public function index(): void {
-        $searchPanel = SearchPanel::recordings();
-
         $params = [
             'q' => trim((string)($_GET['q'] ?? '')),
             'page' => (int)($_GET['page'] ?? 1),
@@ -19,10 +17,6 @@ final class InformantController extends Controller {
             'params' => $params,
             'kw' => $params['q'],
             'result' => $result,
-            'enableSearchPanel' => true,
-            'searchPanelType' => 'recordings',
-            'headerSearchOpen' => false,
-            'searchPanel' => $searchPanel,
         ]);
     }
 
@@ -46,11 +40,9 @@ final class InformantController extends Controller {
         $stmt->execute([':id' => $id]);
         $recs = $stmt->fetchAll();
 
-        $searchPanel = SearchPanel::recordings();
         $this->render('informants/show', [
             'inf' => $inf,
             'recs' => $recs,
-            'searchPanel' => $searchPanel,
         ]);
     }
 }

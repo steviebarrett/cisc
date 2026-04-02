@@ -53,10 +53,12 @@
             const tag = (document.activeElement?.tagName || '').toLowerCase();
             if (tag === 'input' || tag === 'textarea' || tag === 'select') return;
             e.preventDefault();
-            const el = document.getElementById('searchPanel');
-            if (!el) return; // page may not provide a search panel
-            bootstrap.Collapse.getOrCreateInstance(el).show();
-            setTimeout(() => el.querySelector('input[name="q"]')?.focus(), 50);
+            const searchInput = document.querySelector('input[name="q"]');
+            if (searchInput) {
+                searchInput.focus();
+                return;
+            }
+            window.location.href = '<?= e(base_path('/recordings')) ?>';
         }
     });
 

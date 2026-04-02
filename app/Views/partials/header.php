@@ -5,16 +5,10 @@
  * Variables you can pass in from a page/controller:
  * - $activeNav: 'recordings' | 'informants' | 'places' | ''
  * - $headerTitle: string (optional)
- * - $enableSearchPanel: bool (optional)
- * - $searchPanelType: string (optional), e.g. 'recordings'
- * - $headerSearchOpen: bool (optional)
  */
 
 $activeNav = $activeNav ?? '';
 $headerTitle = $headerTitle ?? '';
-$enableSearchPanel = !empty($enableSearchPanel);
-$searchPanelType = $searchPanelType ?? '';
-$headerSearchOpen = (bool)($headerSearchOpen ?? false);
 
 function nav_link(string $href, string $label, string $key, string $activeNav): string {
     $active = ($key !== '' && $activeNav === $key) ? ' class="active"' : '';
@@ -58,18 +52,10 @@ $logoPath = $isHome
         </li>
     </ul>
 
-    <?php if ($enableSearchPanel): ?>
-    <button class="nav-search-btn" type="button" data-bs-toggle="collapse" data-bs-target="#searchPanel" aria-expanded="<?= $headerSearchOpen ? 'true' : 'false' ?>"
-        aria-controls="searchPanel">
-        <i class="fa-solid fa-magnifying-glass icon-md" aria-hidden="true"></i>
-        Search
-    </button>
-    <?php else: ?>
     <a class="nav-search-btn" href="<?= e(base_path('/recordings')) ?>">
         <i class="fa-solid fa-magnifying-glass icon-md" aria-hidden="true"></i>
         Search
     </a>
-    <?php endif; ?>
 </nav>
 
 <script>
@@ -126,20 +112,3 @@ document.addEventListener('DOMContentLoaded', () => {
         Search
     </a>
 </div>
-
-<?php if ($enableSearchPanel): ?>
-<div class="collapse my-2 <?= $headerSearchOpen ? 'show' : '' ?>" id="searchPanel">
-    <?php if ($searchPanelType === 'recordings'): ?>
-    <?php
-        $searchPanel = $searchPanel ?? [];
-
-        $params = $searchPanel['params'] ?? [];
-        $places_all = $searchPanel['places_all'] ?? [];
-        $genres = $searchPanel['genres'] ?? [];
-        $subgenres_all = $searchPanel['subgenres_all'] ?? [];
-        $subjects_all = $searchPanel['subjects_all'] ?? [];
-
-        require __DIR__ . '/search/recording-search-panel.php'; ?>
-    <?php endif; ?>
-</div>
-<?php endif; ?>

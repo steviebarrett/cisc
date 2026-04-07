@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use App\Services\RecordingSearch;
+
 final class HomeController extends Controller
 {
 

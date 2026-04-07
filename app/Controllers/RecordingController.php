@@ -34,9 +34,6 @@ final class RecordingController extends Controller {
         $search = new RecordingSearch();
         $result = $search->search($params);
 
-        $searchPanel = SearchPanel::recordings();
-        $searchPanel['subgenres_by_genre'] = Taxonomy::subgenresByGenre();
-
         $this->render('recordings/index', [
             'result' => $result,
             'params' => $params,
@@ -55,7 +52,6 @@ final class RecordingController extends Controller {
             echo "Recording not found";
             return;
         }
-        $relatedRecordings = Recording::related($rec);
 
         $relatedRecords = Recording::related(
             (string)($rec['recording_id'] ?? ''),

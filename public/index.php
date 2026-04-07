@@ -14,7 +14,6 @@ require __DIR__ . '/../app/Models/Taxonomy.php';
 require __DIR__ . '/../app/Models/Recording.php';
 require __DIR__ . '/../app/Models/Informant.php';
 require __DIR__ . '/../app/Models/Composer.php';
-require __DIR__ . '/../app/Models/SearchPanel.php';
 
 require __DIR__ . '/../app/Controllers/HomeController.php';
 require __DIR__ . '/../app/Controllers/RecordingController.php';
@@ -58,6 +57,31 @@ function stream_informant_image(string $fileEnc, bool $headOnly = false): void
 
     $base = rtrim(INFORMANT_IMAGE_PATH, '/');
     $path = $base . '/' . $file;
+
+    // Fallback for legacy naming mismatches (e.g. dot vs space in basename).
+    if (!is_file($path) || !is_readable($path)) {
+        $requestedExt = strtolower((string)pathinfo($file, PATHINFO_EXTENSION));
+        $requestedStem = (string)pathinfo($file, PATHINFO_FILENAME);
+        $normalize = static fn(string $name): string => preg_replace('/[\s._-]+/', '', mb_strtolower($name)) ?? '';
+        $requestedNorm = $normalize($requestedStem);
+
+        $entries = @scandir($base) ?: [];
+        foreach ($entries as $entry) {
+            if ($entry === '.' || $entry === '..') continue;
+
+            $candidatePath = $base . '/' . $entry;
+            if (!is_file($candidatePath) || !is_readable($candidatePath)) continue;
+
+            $candidateExt = strtolower((string)pathinfo($entry, PATHINFO_EXTENSION));
+            if ($candidateExt !== $requestedExt) continue;
+
+            $candidateStem = (string)pathinfo($entry, PATHINFO_FILENAME);
+            if ($normalize($candidateStem) === $requestedNorm) {
+                $path = $candidatePath;
+                break;
+            }
+        }
+    }
 
     if (!is_file($path) || !is_readable($path)) {
         http_response_code(404);

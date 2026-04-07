@@ -5,71 +5,124 @@ $headerTitle = 'Home';
 $kw = trim((string)($params['q'] ?? ''));
 
 $activeNav = 'home';
+$bodyClass = 'page-homepage';
 
 ?>
-    <div>
-        <h1>Sruth nan Gàidheal</h1>
-        <div>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam id lacus at lacus faucibus suscipit. In et gravida sem. Mauris pellentesque finibus est, a mollis eros euismod ut. Nam sit amet tincidunt urna, eu malesuada orci. Phasellus ac sem leo. Morbi imperdiet massa ac magna porttitor finibus. Sed non tincidunt nunc, eget ultrices nulla. Donec quis mi id augue euismod feugiat et eu ante. In ligula nunc, pretium vel arcu quis, mollis porttitor odio. Phasellus non odio rhoncus, lacinia elit non, hendrerit magna. Nam faucibus, turpis sit amet rutrum ultricies, velit leo rhoncus risus, eget molestie ligula purus at metus. In consectetur purus congue massa rhoncus placerat sed vel massa. Suspendisse non laoreet nibh. Morbi luctus neque vel vulputate bibendum. Pellentesque feugiat nisi vel mi ullamcorper, eu egestas elit volutpat. Morbi iaculis ut ex aliquet vehicula.
-            </p>
+
+<section class="hero">
+    <div class="hero-mosaic-base"></div>
+    <div class="hero-gradient-overlay"></div>
+    <div class="hero-content">
+        <img class="hero-logo-mark" src="<?= e(base_path('/assets/images/gaelstream-shape.svg')) ?>" alt="Gaelstream">
+        <h1 class="hero-title">Cruinneachadh Beul-aithris Ghàidhlig Cheap Breatuinn &middot; Cape Breton Gaelic Folklore Project</h1>
+        <img class="hero-map" src="<?= e(base_path('/assets/images/gaelstream-map.svg')) ?>" alt="Map of Nova Scotia and Cape Breton">
+        <p class="hero-stats">2,151 recordings from 161 voices across Cape Breton</p>
+        <div class="hero-cta-row">
+            <a href="<?= e(base_path('/map')) ?>" class="hero-cta-primary">Explore the Map</a>
+            <a href="<?= e(base_path('/recordings')) ?>" class="hero-cta-secondary">Browse Recordings</a>
         </div>
     </div>
+</section>
 
+<section class="featured-informants">
+    <h2 class="section-heading">Beulaichean | Featured Informants</h2>
 
-    <!-- Featured Informants -->
+    <?php $featuredInformants = is_array($featuredInformants ?? null) ? $featuredInformants : []; ?>
+    <div class="informant-row">
+        <?php foreach ($featuredInformants as $fi): ?>
+        <?php
+                $informantId = trim((string)($fi['informant_id'] ?? ''));
+                if ($informantId === '') {
+                    continue;
+                }
 
-    <div>
-        <h3>Luchd-fiosrachaidh | Featured Informants</h3>
+                $firstName = trim((string)($fi['first_name'] ?? ''));
+                $lastName = trim((string)($fi['last_name'] ?? ''));
+                $name = trim($firstName . ' ' . $lastName);
 
-        <ul class="featured-elements">
-            <?php foreach ($featuredInformants as $informant) : ?>
-                <?php
-                    $fullname = $informant['first_name'] . ' ' . $informant['last_name'];
-                    $filename = $informant['filename'] ?? '';
-                    $encoded  = rawurlencode($filename);
-                    $imgUrl = base_path('/media/informants/' . $encoded);
+                if ($name === '') {
+                    $gaelicName = trim((string)(($fi['ainm'] ?? '') . ' ' . ($fi['cinneadh'] ?? '')));
+                    $name = $gaelicName !== '' ? $gaelicName : $informantId;
+                }
 
-                    // shouldn't be needed in production once all images are uploaded, but
-                    // for now add a placeholder if the image file doesn't exist
-                    //
-                    $filePath = dirname(__DIR__, 2) . '/files/images/people/informants/' . $filename;
-                    if (!file_exists($filePath)) {
-                        $imgUrl = base_path('/media/informants/BEATDA02.P1.png');
-                    }
+                $community = trim((string)($fi['community_origin_canada'] ?? ''));
+                if ($community === '') {
+                    $community = trim((string)($fi['county'] ?? ''));
+                }
+
+                $imageFilename = trim((string)($fi['image_filename'] ?? ''));
+                $photoStyle = '';
+                if ($imageFilename !== '') {
+                    $photoUrl = base_path('/media/informants/' . rawurlencode($imageFilename));
+                    $photoStyle = 'background-image: url(\'' . e($photoUrl) . '\')';
+                }
+
+                $informantUrl = base_path('/informants/' . rawurlencode($informantId));
+                $recordingCount = (int)($fi['recording_count'] ?? 0);
                 ?>
-
-                <li>
-                    <a href="<?= base_path('/informants/' . $informant['informant_id'])  ?>" title="<?= $fullname ?>">
-                        <figure>
-                            <img class="featured_element_image" src="<?= $imgUrl ?>" alt="<?= $fullname ?>">
-                            <figcaption>
-                                <p><?= $fullname ?></p>
-                                <p><?= $informant["place_name"] ?></p>
-                                <p><?= $informant["num_recs"] ?> recordings</p>
-                            </figcaption>
-                        </figure>
-                    </a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-
-
-        <h3>Gaelic Text Here | Featured Recordings</h3>
-        <ul class="featured-elements">
-            <?php foreach ($featuredRecordings as $recording) :
-                $title = $recording["title"] ?? $row["recording_id"];
-            ?>
-                <li>
-                    <a href="<?= base_path('/recordings/' . $recording["recording_id"]) ?>" title="<?= $title ?>">
-                        <h4><?= $title ?></h4>
-                        <p><?= e(trim((string)($recording['informant_name'] ?? ''))) ?>
-                        <?php if (!empty($recording['genre_name'])): ?> · <?= e((string)$recording['genre_name']) ?><?php endif; ?></p>
-
-                    </a>
-                </li>
-            <?php endforeach; ?>
-        </ul>
+        <a class="informant-card" href="<?= e($informantUrl) ?>">
+            <div class="informant-photo" <?= $photoStyle !== '' ? ' style="' . $photoStyle . '"' : '' ?>></div>
+            <div class="informant-name"><?= e($name) ?></div>
+            <div class="informant-community"><?= e($community) ?></div>
+            <div class="informant-count"><?= number_format($recordingCount) ?> recordings</div>
+        </a>
+        <?php endforeach; ?>
 
     </div>
+</section>
 
+<section class="featured-recordings related-section">
+    <h2 class="section-heading related-heading">Clàraidhean Taghte | Featured Recordings</h2>
+
+    <?php $featuredRecordings = is_array($featuredRecordings ?? null) ? $featuredRecordings : []; ?>
+    <div class="related-row">
+        <?php if (!empty($featuredRecordings)): ?>
+        <?php
+            $cardClasses = ['mini-card-story', 'mini-card-custom', 'mini-card-song'];
+            foreach ($featuredRecordings as $idx => $recording):
+                $className = $cardClasses[$idx % count($cardClasses)];
+                $recordingId = trim((string)($recording['recording_id'] ?? ''));
+                if ($recordingId === '') {
+                    continue;
+                }
+
+                $recordingTitle = trim((string)($recording['title'] ?? ''));
+                if ($recordingTitle === '') {
+                    $recordingTitle = $recordingId;
+                }
+
+                $recordingUrl = base_path('/recordings/' . rawurlencode($recordingId));
+                $metaParts = [];
+                $recordingDate = trim((string)($recording['recording_date'] ?? ''));
+                $recordingGenre = trim((string)($recording['genre_name'] ?? ''));
+                $recordingInformant = trim((string)(($recording['informant_first'] ?? '') . ' ' . ($recording['informant_last'] ?? '')));
+
+                if ($recordingDate !== '') $metaParts[] = $recordingDate;
+                if ($recordingGenre !== '') $metaParts[] = $recordingGenre;
+                if ($recordingInformant !== '') $metaParts[] = $recordingInformant;
+
+                $metaText = implode(' | ', $metaParts);
+        ?>
+        <a class="mini-card <?= e($className) ?>" href="<?= e($recordingUrl) ?>">
+            <span class="mini-card-title"><?= e($recordingTitle) ?></span>
+            <?php if ($metaText !== ''): ?>
+            <span class="mini-card-meta"><?= e($metaText) ?></span>
+            <?php endif; ?>
+        </a>
+        <?php endforeach; ?>
+        <?php else: ?>
+        <a class="mini-card mini-card-song" href="<?= e(base_path('/recordings')) ?>">
+            <span class="mini-card-title">Browse recordings</span>
+            <span class="mini-card-meta">No featured recordings available</span>
+        </a>
+        <?php endif; ?>
+    </div>
+</section>
+
+<section class="collection-intro">
+    <h2 class="collection-intro-heading">About the Collection</h2>
+    <p class="collection-intro-text">Sruth nan Gàidheal (Gaelstream) is a digital archive of Scottish Gaelic oral traditions from Cape Breton, Nova Scotia. The collection preserves
+        over 2,000 recordings of songs, stories, beliefs, proverbs, and customs from 161 tradition bearers across the island.</p>
+    <p class="collection-intro-text">These recordings, gathered between the 1930s and 1990s, capture a living tradition carried from the Scottish Highlands and Islands to Nova
+        Scotia. Each voice connects Cape Breton to communities in Uist, Barra, Mull, and the Scottish mainland - a bridge of language, music, and memory across the Atlantic.</p>
+</section>

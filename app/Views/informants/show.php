@@ -1,122 +1,169 @@
 <?php
+$activeNav = 'informants';
+$headerTitle = 'Informants';
+$bodyClass = 'page-informant-detail';
+$fullWidth = true;
 
-// pull together the informant's name
-$title = !empty($inf["ainm"]) ? e($inf['ainm'] . ' ' . $inf['cinneadh']) . ' ' : '';
-$title .= '| ' . trim(e($inf['first_name']));
-$title .= !empty($inf["nickname"]) ? ' (' . $inf["nickname"] . ')': '';
-$title .=  ' ' . $inf['last_name'];
+$nameGaelic = trim((string)(($inf['ainm'] ?? '') . ' ' . ($inf['cinneadh'] ?? '')));
+$nameEnglish = trim((string)(($inf['first_name'] ?? '') . ' ' . ($inf['last_name'] ?? '')));
+$nameDisplay = $nameEnglish !== '' ? $nameEnglish : trim((string)($inf['informant_id'] ?? ''));
 
-?>
+$title = $nameDisplay;
+if ($nameGaelic !== '') {
+    $title = $nameGaelic . ' | ' . $title;
+}
 
-<div class="mb-3">
-    <a href="<?= e(base_path('/informants')) ?>">&larr; informants</a>
-</div>
+$backUrl = base_path('/informants');
 
-<div class="card mb-3">
-    <div class="card-body">
-        <h2 class="h4 mb-1"><?= $title ?></h2>
-        <!--div class="text-muted"><?= e($inf['informant_id']) ?></div-->
+$primaryImageUrl = '';
+if (!empty($inf['images']) && is_array($inf['images'])) {
+    $firstImage = $inf['images'][0]['filename'] ?? '';
+    if ($firstImage !== '') {
+        $primaryImageUrl = base_path('/media/informants/' . rawurlencode((string)$firstImage));
+    }
+}
 
-        <?php if (!empty($inf['patronymic'])): ?>
-            <div class="mt-2">
-                <strong>Sloinneadh | Patronymic:</strong>
-                <?= e(trim(($inf['patronymic'] ?? ''))); ?>
+$q = trim((string)($_GET['q'] ?? ''));
+$biographyHtml = $q !== ''
+    ? highlight_html_ga((string)($inf['biography_html'] ?? ''), $q)
+    : (string)($inf['biography_html'] ?? '');
+// Note - I remove <br>s and empty <p> tags so display can properly be handled by p margins and line height
+$biographyHtml = preg_replace('~<br\s*/?>~i', '', $biographyHtml) ?? $biographyHtml;
+$biographyHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu', '', $biographyHtml) ?? $biographyHtml;
+
+    $recordingCount = is_array($recs ?? null) ? count($recs) : 0;
+
+    $genreClassMap = [
+    'belief' => 'genre-belief',
+    'biography' => 'genre-biography',
+    'custom' => 'genre-custom',
+    'expression' => 'genre-expression',
+    'prayer' => 'genre-prayer',
+    'rhyme' => 'genre-rhyme',
+    'song' => 'genre-song',
+    'story' => 'genre-story',
+    'proverb' => 'genre-proverb',
+    ];
+    ?>
+
+    <div class="page-container">
+        <a href="<?= e($backUrl) ?>" class="back-link"><i data-lucide="arrow-left" class="icon-sm" aria-hidden="true"></i> Informants</a>
+
+        <div class="profile-header">
+            <div class="profile-photo-column">
+                <?php if ($primaryImageUrl !== ''): ?>
+                <img src="<?= e($primaryImageUrl) ?>" alt="<?= e($nameDisplay) ?>" class="profile-photo" loading="lazy">
+                <?php else: ?>
+                <div class="profile-photo" style="background: var(--color-placeholder);"></div>
+                <?php endif; ?>
             </div>
-        <?php endif; ?>
 
-        <?php if (!empty($inf['maiden_name'])): ?>
-            <div class="mt-2">
-                <strong>Sloinneadh-breithe | Maiden Name:</strong>
-                <?= e(trim(($inf['maiden_name'] ?? ''))); ?>
-            </div>
-        <?php endif; ?>
+            <div class="profile-info-column">
+                <div class="name-block">
+                    <?php if ($nameGaelic !== ''): ?>
+                    <h1 class="name-gaelic"><?= e($nameGaelic) ?></h1>
+                    <?php endif; ?>
+                    <p class="name-english"><?= e($nameDisplay) ?></p>
+                </div>
 
-        <?php if (!empty($inf['community_origin_canada'])): ?>
-            <div class="mt-2">
-                <strong>Coimhearsnachd Thùsail | Community of Origin:</strong>
-                <?= e(trim(($inf['community_origin_canada']))) ?>
-            </div>
-        <?php endif; ?>
+                <div class="metadata-pairs">
+                    <?php if (!empty($inf['patronymic'])): ?>
+                    <div class="metadata-pair">
+                        <span class="metadata-label">Sloinneadh | Patronymic</span>
+                        <span class="metadata-value"><?= e(trim((string)$inf['patronymic'])) ?></span>
+                    </div>
+                    <?php endif; ?>
 
-        <?php if (!empty($inf['county'])): ?>
-            <div class="mt-2">
-                <strong>Siorramachd | County:</strong>
-                <?= e(trim(($inf['county']))) ?>
-            </div>
-        <?php endif; ?>
+                    <?php if (!empty($inf['maiden_name'])): ?>
+                    <div class="metadata-pair">
+                        <span class="metadata-label">Ainm-baistidh | Maiden name</span>
+                        <span class="metadata-value"><?= e(trim((string)$inf['maiden_name'])) ?></span>
+                    </div>
+                    <?php endif; ?>
 
-        <?php if (!empty($inf['tradition_scotland'])): ?>
-            <div class="mt-2">
-                <strong>Dualchas (Alba) | Tradition (Scotland):</strong>
-                <?= e(trim(($inf['tradition_scotland']))) ?? ''; ?>
-            </div>
-        <?php endif; ?>
+                    <?php if (!empty($inf['community_origin_canada'])): ?>
+                    <div class="metadata-pair">
+                        <span class="metadata-label">Coimhearsnachd | Community</span>
+                        <span class="metadata-value"><?= e(trim((string)$inf['community_origin_canada'])) ?></span>
+                    </div>
+                    <?php endif; ?>
 
-        <?php if (!empty($inf['dates_raw'])): ?>
-            <div class="mt-2"><strong>Cinn-latha | Dates:</strong> <?= e($inf['dates_raw']) ?></div>
-        <?php endif; ?>
+                    <?php if (!empty($inf['county'])): ?>
+                    <div class="metadata-pair">
+                        <span class="metadata-label">Siorrachd | County</span>
+                        <span class="metadata-value"><?= e(trim((string)$inf['county'])) ?></span>
+                    </div>
+                    <?php endif; ?>
 
-    </div>
-</div>
+                    <?php if (!empty($inf['tradition_scotland'])): ?>
+                    <div class="metadata-pair">
+                        <span class="metadata-label">Dualchas | Tradition (Scotland)</span>
+                        <span class="metadata-value"><?= e(trim((string)$inf['tradition_scotland'])) ?></span>
+                    </div>
+                    <?php endif; ?>
 
-<?php if (!empty($inf['images'])): ?>
-    <div class="mt-3">
-        <div class="row g-2">
-            <?php foreach ($inf['images'] as $img):
-                $caption = $img["caption"] ?? "";
-                ?>
-                <?php
-                    $imgUrl = base_path('/media/informants/' . rawurlencode($img["filename"]));
-                ?>
-                <figure class="col-6 col-md-4 col-lg-3">
-                    <a href="<?= e($imgUrl) ?>" target="_blank" rel="noopener">
-                        <img
-                                src="<?= e($imgUrl) ?>"
-                                class="img-fluid rounded border"
-                                loading="lazy"
-                                alt="<?= e($caption) ?>"
-                        >
-                    </a>
-                    <figcaption><?= e($caption); ?></figcaption>
-                </figure>
+                    <?php if (!empty($inf['dates_raw'])): ?>
+                    <div class="metadata-pair">
+                        <span class="metadata-label">Cinn-latha | Dates</span>
+                        <span class="metadata-value"><?= e((string)$inf['dates_raw']) ?></span>
+                    </div>
+                    <?php endif; ?>
+                </div>
 
-            <?php endforeach; ?>
-        </div>
-    </div>
-<?php endif; ?>
-
-<?php if (!empty($inf['biography_html'])): ?>
-<div class="card mb-3">
-    <div class="card-body">
-        <?php
-        $q = trim((string)e($_GET['q'] ?? ''));
-
-        $biographyHtml = $q !== ''
-                ? highlight_html_ga((string)$inf['biography_html'], $q)
-                : (string)$inf['biography_html'];
-        ?>
-        <details class="record-transcription" open>
-            <summary><strong>Biography</strong></summary>
-
-            <?= $inf['biography_html'] ?>
-        </details>
-    </div>
-</div>
-<?php endif; ?>
-
-
-<?php if (!empty($recs)): ?>
-<h3 class="h5" id="informant-recordings">Recordings</h3>
-<div class="list-group">
-    <?php foreach ($recs as $r): ?>
-        <a class="list-group-item list-group-item-action" href="<?= e(base_path('/recordings/' . $r['recording_id'])) ?>">
-            <div class="d-flex justify-content-between">
-                <div><?= e($r['title'] ?: $r['recording_id']) ?></div>
-                <div class="text-muted small">
-                    <?= e($r['recording_date'] ?? '') ?><?= !empty($r['genre_name']) ? ' · ' . e($r['genre_name']) : '' ?>
+                <div class="recording-count-badge">
+                    <span class="badge-pill"><?= number_format($recordingCount) ?> recordings</span>
                 </div>
             </div>
-        </a>
-    <?php endforeach; ?>
-</div>
-<?php endif; ?>
+        </div>
+
+        <?php if (trim($biographyHtml) !== ''): ?>
+        <div class="biography-section">
+            <h2 class="section-heading">Eachdraidh-beatha | Biography</h2>
+            <div class="biography-text">
+                <?= $biographyHtml ?>
+            </div>
+        </div>
+        <?php endif; ?>
+
+        <?php if (!empty($recs)): ?>
+        <div class="recordings-section">
+            <h2 class="section-heading">Claraidhean | Recordings (<?= number_format($recordingCount) ?>)</h2>
+            <div class="recording-list">
+                <?php foreach ($recs as $r): ?>
+                <?php
+                    $recId = trim((string)($r['recording_id'] ?? ''));
+                    $recTitle = trim((string)($r['title'] ?? ''));
+                    if ($recTitle === '') {
+                        $recTitle = $recId;
+                    }
+                    $genreName = trim((string)($r['genre_name'] ?? ''));
+                    $genreLower = mb_strtolower($genreName);
+                    $genreClass = '';
+                    foreach ($genreClassMap as $needle => $className) {
+                        if ($genreLower !== '' && str_contains($genreLower, $needle)) {
+                            $genreClass = $className;
+                            break;
+                        }
+                    }
+                    $recUrl = base_path('/recordings/' . rawurlencode($recId));
+                    $meta = trim((string)($r['recording_date'] ?? ''));
+                    if ($genreName !== '') {
+                        $meta .= ($meta !== '' ? ' · ' : '') . $genreName;
+                    }
+                    ?>
+                <div class="recording-item <?= e($genreClass) ?>">
+                    <div class="recording-content">
+                        <div class="recording-info">
+                            <a href="<?= e($recUrl) ?>" class="recording-title"><?= e($recTitle) ?></a>
+                            <?php if ($meta !== ''): ?>
+                            <span class="recording-meta"><?= e($meta) ?></span>
+                            <?php endif; ?>
+                        </div>
+                        <span class="recording-id"><?= e($recId) ?></span>
+                    </div>
+                </div>
+                <?php endforeach; ?>
+            </div>
+        </div>
+        <?php endif; ?>
+    </div>

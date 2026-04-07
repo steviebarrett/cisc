@@ -1,0 +1,141 @@
+/* === HOW TO USE === */
+
+.page-how-to-use .step-cards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-md);
+}
+
+.page-how-to-use .step-card {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-md-lg);
+    padding: var(--space-md-lg);
+    background: var(--color-surface-card);
+    border: 1px solid var(--color-border);
+    border-radius: var(--card-radius);
+}
+
+.page-how-to-use .step-number {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--gradient-brand);
+    color: #ffffff;
+    font-weight: var(--weight-bold);
+    font-size: var(--text-body-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.page-how-to-use .step-content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-xs);
+}
+
+.page-how-to-use .step-title {
+    font-size: var(--text-body-lg);
+    font-weight: var(--weight-medium);
+    color: var(--color-text-primary);
+}
+
+.page-how-to-use .step-description {
+    font-size: var(--text-meta-value);
+    line-height: var(--leading-relaxed);
+    color: var(--color-text-secondary);
+}
+
+.page-how-to-use .metadata-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm-md);
+}
+
+.page-how-to-use .metadata-item {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-sm-md);
+    padding: var(--space-sm-md) var(--space-md);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.page-how-to-use .metadata-label {
+    min-width: 200px;
+    font-size: var(--text-meta-label);
+    font-weight: var(--weight-semibold);
+    color: var(--color-text-secondary);
+    line-height: var(--leading-relaxed);
+}
+
+.page-how-to-use .metadata-description {
+    font-size: var(--text-meta-value);
+    line-height: var(--leading-relaxed);
+    color: var(--color-text-primary);
+}
+
+.page-how-to-use .tips-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-sm-md);
+}
+
+.page-how-to-use .tip-item {
+    display: flex;
+    flex-direction: row;
+    gap: var(--space-sm-md);
+    align-items: flex-start;
+}
+
+.page-how-to-use .tip-bullet {
+    width: 8px;
+    height: 8px;
+    flex-shrink: 0;
+    margin-top: 6px;
+    background: var(--gradient-brand);
+    border-radius: 50%;
+}
+
+.page-how-to-use .tip-text {
+    font-size: var(--text-meta-value);
+    line-height: var(--leading-relaxed);
+    color: var(--color-text-secondary);
+}
+
+@media (max-width: 768px) {
+    .page-how-to-use .step-card {
+        gap: var(--space-sm-md);
+        padding: var(--space-md);
+    }
+
+    .page-how-to-use .metadata-item {
+        flex-direction: column;
+        gap: var(--space-xs);
+        padding: var(--space-sm-md) 0;
+    }
+
+    .page-how-to-use .metadata-label {
+        min-width: unset;
+    }
+}
+
+@media (max-width: 480px) {
+    .page-how-to-use .step-card {
+        flex-direction: column;
+        gap: var(--space-sm-md);
+        padding: var(--space-sm-md);
+    }
+
+    .page-how-to-use .step-number {
+        width: 32px;
+        height: 32px;
+        font-size: 14px;
+    }
+
+    .page-how-to-use .metadata-item {
+        padding: var(--space-sm-md) 0;
+    }
+}
+

@@ -653,7 +653,7 @@ try {
             $structureId = getOrCreateLookup($pdo, $cache, 'song_structure', $structureName, 'structure', 'structure_id');
         }
 
-        $includesEn = $r['includes english translation'] ?? null;
+        $includesEn = $r['English translation available'] ?? null;
         $includesEn = $includesEn ? trim($includesEn) : '';
         $includesEnBool = 0;
         if ($includesEn !== '') {

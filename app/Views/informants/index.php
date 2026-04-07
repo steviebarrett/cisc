@@ -1,86 +1,139 @@
 <?php
 $title = 'Informants';
-
-$kw = trim((string)($params['q'] ?? ''));
-
 $activeNav = 'informants';
 $headerTitle = 'Informants';
+$bodyClass = 'page-informants-list';
+$fullWidth = true;
 
-/*
-$headerSearchOpen = header_filters_open($kw, $params, [
-    'sort'     => 'name_asc',
-    'per_page' => 20,
-]);
-*/
+$kw = trim((string)($params['q'] ?? ''));
+$sort = (string)($params['sort'] ?? 'english_name_asc');
+$perPage = (int)($params['per_page'] ?? 12);
 ?>
 
-<div class="container-fluid py-3">
-    <div class="text-muted mb-2"><?= (int)$result['total'] ?> results</div>
+<!-- Sorting Notes:
 
-    <form method="get" class="d-flex gap-2 align-items-end mb-3">
-        <?php if (!empty($params['q'])): ?>
-            <input type="hidden" name="q" value="<?= htmlspecialchars($params['q']) ?>">
-        <?php endif; ?>
+English Name sort:
 
-        <div>
-            <label for="sort" class="form-label">Sort</label>
-            <select name="sort" id="sort" class="form-select">
-                <option value="name_asc" <?= (($params['sort'] ?? 'name_asc') === 'name_asc') ? 'selected' : '' ?>>English name A–Z</option>
-                <option value="name_desc" <?= (($params['sort'] ?? '') === 'name_desc') ? 'selected' : '' ?>>English name Z–A</option>
-                <option value="gaelic_asc" <?= (($params['sort'] ?? '') === 'gaelic_asc') ? 'selected' : '' ?>>Gaelic name A–Z</option>
-                <option value="gaelic_desc" <?= (($params['sort'] ?? '') === 'gaelic_desc') ? 'selected' : '' ?>>Gaelic name Z–A</option>
-            </select>
-        </div>
+Primary: last_name
+Secondary: first_name
+Final tie-breaker: informant_id
 
-        <div>
-            <label for="per_page" class="form-label">Per page</label>
-            <select name="per_page" id="per_page" class="form-select">
-                <?php foreach ([10, 20, 50, 100] as $n): ?>
-                    <option value="<?= $n ?>" <?= ((int)($params['per_page'] ?? 20) === $n) ? 'selected' : '' ?>>
-                        <?= $n ?>
-                    </option>
-                <?php endforeach; ?>
-            </select>
-        </div>
+Gaelic Name sort:
+Primary: cinneadh
+Secondary: ainm
 
-        <input type="hidden" name="page" value="1">
+If Gaelic fields are blank, it falls back to English fields, then informant_id
 
-        <button type="submit" class="btn btn-primary">Apply</button>
-    </form>
+-->
 
-    <div class="list-group">
-        <?php foreach ($result['rows'] as $row): ?>
-            <?php
-            $id = (string)$row['informant_id'];
-            $name = trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''));
-            $ga = trim((string)($row['ainm'] ?? '') . ' ' . $row["cinneadh"]) ;
-            $loc = trim(implode(' · ', array_filter([
-                $row['community_origin_canada'] ?? '',
-                $row['county'] ?? '',
-                $row['tradition_scotland'] ?? '',
-            ])));
+<div class="page-container">
+    <h1 class="page-title">Beulaichean | Informants</h1>
+
+    <div class="controls-bar">
+        <span class="controls-count"><?= number_format((int)($result['total'] ?? 0)) ?> informants</span>
+
+        <form method="get" class="controls-right">
+            <?php if ($kw !== ''): ?>
+            <input type="hidden" name="q" value="<?= e($kw) ?>">
+            <?php endif; ?>
+            <input type="hidden" name="page" value="1">
+
+            <div class="control-group">
+                <span class="control-label">Sort</span>
+                <select class="control-select" name="sort" onchange="this.form.submit()">
+                    <option value="english_name_asc" <?= in_array($sort, ['english_name_asc', 'name_asc'], true) ? 'selected' : '' ?>>English Name (A–Z)</option>
+                    <option value="english_name_desc" <?= in_array($sort, ['english_name_desc', 'name_desc'], true) ? 'selected' : '' ?>>English Name (Z–A)</option>
+                    <option value="gaelic_name_asc" <?= $sort === 'gaelic_name_asc' ? 'selected' : '' ?>>Gaelic Name (A–Z)</option>
+                    <option value="gaelic_name_desc" <?= $sort === 'gaelic_name_desc' ? 'selected' : '' ?>>Gaelic Name (Z–A)</option>
+                </select>
+            </div>
+
+            <div class="control-group">
+                <span class="control-label">Per page</span>
+                <select class="control-select" name="per_page" onchange="this.form.submit()">
+                    <?php foreach ([12, 24, 48, 96] as $n): ?>
+                    <option value="<?= $n ?>" <?= $perPage === $n ? 'selected' : '' ?>><?= $n ?></option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </form>
+    </div>
+
+    <div class="informant-grid">
+        <?php foreach (($result['rows'] ?? []) as $row): ?>
+        <?php
+            $id = trim((string)($row['informant_id'] ?? ''));
+            $url = base_path('/informants/' . rawurlencode($id));
+            $name = trim((string)(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? '')));
+            if ($name === '') $name = $id;
+
+            $nameGa = trim((string)(($row['ainm'] ?? '') . ' ' . ($row['cinneadh'] ?? '')));
+            $community = trim((string)($row['community_origin_canada'] ?? ''));
+            $county = trim((string)($row['county'] ?? ''));
+            $recordingCount = (int)($row['recording_count'] ?? 0);
+
+            $imageFilename = trim((string)($row['image_filename'] ?? ''));
+            $photoStyle = '';
+            if ($imageFilename !== '') {
+                $photoStyle = 'background-image: url(\'' . e(base_path('/media/informants/' . rawurlencode($imageFilename))) . '\')';
+            }
             ?>
-            <a class="list-group-item list-group-item-action" href="<?= e(base_path('/informants/' . rawurlencode($id))) ?>">
-                <div class="d-flex justify-content-between">
-                    <div>
-                        <div class="fw-semibold">
-                            <?= $kw !== '' ? highlight_ga($name !== '' ? $name : $id, $kw) : e($name !== '' ? $name : $id) ?>
-                            <?php if ($ga !== ''): ?>
-                                <span class="text-muted fw-normal"> — <?= $kw !== '' ? highlight_ga($ga, $kw) : e($ga) ?></span>
-                            <?php endif; ?>
-                        </div>
-                        <?php if ($loc !== ''): ?>
-                            <div class="small text-muted"><?= $kw !== '' ? highlight_ga($loc, $kw) : e($loc) ?></div>
-                        <?php endif; ?>
-                    </div>
-                    <div class="text-end small text-muted">
-                        <?= (int)($row['recording_count'] ?? 0) ?> recs<br>
-                        <?= e($id) ?>
-                    </div>
+        <a class="informant-card" href="<?= e($url) ?>">
+            <div class="informant-photo" <?= $photoStyle !== '' ? ' style="' . $photoStyle . '"' : '' ?>></div>
+
+            <div class="informant-content">
+                <div class="informant-name-en">
+                    <?= $kw !== '' ? highlight_ga($name, $kw) : e($name) ?>
                 </div>
-            </a>
+
+                <?php if ($nameGa !== ''): ?>
+                <div class="informant-name-gd"><?= $kw !== '' ? highlight_ga($nameGa, $kw) : e($nameGa) ?></div>
+                <?php endif; ?>
+
+                <?php if ($community !== ''): ?>
+                <div class="informant-community"><?= $kw !== '' ? highlight_ga($community, $kw) : e($community) ?></div>
+                <?php endif; ?>
+
+                <div class="informant-bottom-row">
+                    <span class="informant-county"><?= $county !== '' ? ($kw !== '' ? highlight_ga($county, $kw) : e($county)) : '&nbsp;' ?></span>
+                    <span class="informant-rec-count"><?= number_format($recordingCount) ?> recs</span>
+                </div>
+            </div>
+        </a>
         <?php endforeach; ?>
     </div>
 
-    <?php require __DIR__ . '/../partials/pagination.php'; ?>
+    <?php
+    $pages = (int)($result['pages'] ?? 1);
+    $page = (int)($result['page'] ?? 1);
+    ?>
+    <?php if ($pages > 1): ?>
+    <div class="pagination">
+        <?php $prev = max(1, $page - 1); ?>
+        <?php if ($page <= 1): ?>
+        <span class="page-btn page-btn-disabled">Prev</span>
+        <?php else: ?>
+        <a class="page-btn page-btn-text" href="?<?= e(qs(['page' => $prev])) ?>">Prev</a>
+        <?php endif; ?>
+
+        <?php
+            $start = max(1, $page - 3);
+            $end = min($pages, $page + 3);
+            for ($p = $start; $p <= $end; $p++):
+            ?>
+        <?php if ($p === $page): ?>
+        <span class="page-btn page-btn-active"><?= $p ?></span>
+        <?php else: ?>
+        <a class="page-btn" href="?<?= e(qs(['page' => $p])) ?>"><?= $p ?></a>
+        <?php endif; ?>
+        <?php endfor; ?>
+
+        <?php $next = min($pages, $page + 1); ?>
+        <?php if ($page >= $pages): ?>
+        <span class="page-btn page-btn-disabled">Next</span>
+        <?php else: ?>
+        <a class="page-btn page-btn-text" href="?<?= e(qs(['page' => $next])) ?>">Next</a>
+        <?php endif; ?>
+    </div>
+    <?php endif; ?>
 </div>

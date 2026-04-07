@@ -2,6 +2,42 @@
 declare(strict_types=1);
 
 final class Informant {
+    public static function randomFeatured(int $limit = 5): array {
+        $pdo = DB::pdo();
+        $limit = max(1, min(20, $limit));
+
+        $sql = "
+        SELECT
+            i.informant_id,
+            i.first_name,
+            i.last_name,
+            i.ainm,
+            i.cinneadh,
+            i.community_origin_canada,
+            i.county,
+            (
+                SELECT ii.filename
+                FROM informant_image ii
+                WHERE ii.informant_id = i.informant_id
+                ORDER BY ii.slot ASC, ii.filename ASC
+                LIMIT 1
+            ) AS image_filename,
+            (
+                SELECT COUNT(*)
+                FROM recording r
+                WHERE r.informant_id = i.informant_id
+            ) AS recording_count
+        FROM informant i
+        ORDER BY RAND()
+        LIMIT :limit
+        ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
     public static function find(string $id): ?array {
         $pdo = DB::pdo();
         $stmt = $pdo->prepare("SELECT * FROM informant WHERE informant_id = :id LIMIT 1");
@@ -25,16 +61,26 @@ final class Informant {
         $q = trim((string)($params['q'] ?? ''));
         $page = max(1, (int)($params['page'] ?? 1));
 
-        $perPage = (int)($params['per_page'] ?? 20);
-        if (!in_array($perPage, [10,20,50,100], true)) $perPage = 20;
+        $perPage = (int)($params['per_page'] ?? 12);
+        if (!in_array($perPage, [12,24,48,96,10,20,50,100], true)) $perPage = 12;
 
-        $sort = (string)($params['sort'] ?? 'i.last_name ASC, i.first_name ASC');
+        $sort = (string)($params['sort'] ?? 'english_name_asc');
+
+        // Keep legacy sort values working.
+        if ($sort === 'name_asc') {
+            $sort = 'english_name_asc';
+        } elseif ($sort === 'name_desc') {
+            $sort = 'english_name_desc';
+        }
+
+        $gaelicLastExpr = "COALESCE(NULLIF(TRIM(i.cinneadh), ''), NULLIF(TRIM(i.last_name), ''), i.informant_id)";
+        $gaelicFirstExpr = "COALESCE(NULLIF(TRIM(i.ainm), ''), NULLIF(TRIM(i.first_name), ''), i.informant_id)";
 
         $orderBy = match ($sort) {
-            'name_desc'   => 'i.last_name DESC, i.first_name DESC',
-            'gaelic_asc'  => 'i.cinneadh ASC, i.ainm ASC',
-            'gaelic_desc' => 'i.cinneadh DESC, i.ainm DESC',
-            default       => 'i.last_name ASC, i.first_name ASC',
+            'english_name_desc' => 'i.last_name DESC, i.first_name DESC, i.informant_id DESC',
+            'gaelic_name_asc'   => "{$gaelicLastExpr} ASC, {$gaelicFirstExpr} ASC, i.informant_id ASC",
+            'gaelic_name_desc'  => "{$gaelicLastExpr} DESC, {$gaelicFirstExpr} DESC, i.informant_id DESC",
+            default             => 'i.last_name ASC, i.first_name ASC, i.informant_id ASC',
         };
 
         $where = [];
@@ -69,6 +115,13 @@ final class Informant {
         SELECT
             i.informant_id, i.first_name, i.last_name, i.ainm, i.cinneadh,
             i.community_origin_canada, i.county, i.province_canada, i.country, i.tradition_scotland,
+            (
+                SELECT ii.filename
+                FROM informant_image ii
+                WHERE ii.informant_id = i.informant_id
+                ORDER BY ii.slot ASC, ii.filename ASC
+                LIMIT 1
+            ) AS image_filename,
             (SELECT COUNT(*) FROM recording r WHERE r.informant_id = i.informant_id) AS recording_count
         FROM informant i
         {$whereSql}

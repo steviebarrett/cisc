@@ -2,6 +2,31 @@
 declare(strict_types=1);
 
 final class Recording {
+    public static function randomFeatured(int $limit = 3): array {
+        $pdo = DB::pdo();
+        $limit = max(1, min(12, $limit));
+
+        $sql = "
+      SELECT
+        r.recording_id,
+        r.title,
+        r.recording_date,
+        g.name AS genre_name,
+        i.first_name AS informant_first,
+        i.last_name AS informant_last
+      FROM recording r
+      JOIN informant i ON i.informant_id = r.informant_id
+      LEFT JOIN genre g ON g.genre_id = r.genre_id
+      ORDER BY RAND()
+      LIMIT :limit
+    ";
+
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll();
+    }
+
     public static function find(string $id): ?array {
         $pdo = DB::pdo();
         $sql = "
@@ -9,7 +34,22 @@ final class Recording {
         r.*,
         g.name AS genre_name,
         ss.name AS structure_name,
-        i.informant_id, i.first_name AS informant_first, i.last_name AS informant_last,
+        i.informant_id,
+        i.first_name AS informant_first,
+        i.last_name AS informant_last,
+        i.tradition_scotland AS informant_detail_light,
+        (
+          SELECT COUNT(*)
+          FROM recording rr
+          WHERE rr.informant_id = i.informant_id
+        ) AS informant_recording_count,
+        (
+          SELECT ii.filename
+          FROM informant_image ii
+          WHERE ii.informant_id = i.informant_id
+          ORDER BY ii.slot ASC, ii.filename ASC
+          LIMIT 1
+        ) AS informant_image_filename,
         c.composer_id, c.first_name AS composer_first, c.last_name AS composer_last,
         r.transcription_text AS transcription_text, r.transcription_html AS transcription_html
       FROM recording r
@@ -28,6 +68,131 @@ final class Recording {
         $row['subgenres'] = self::subgenres($id);
         $row['subjects']  = self::subjects($id);
         return $row;
+    }
+
+    public static function related(string $recordingId, string $informantId = '', string $genreId = '', int $limit = 3): array {
+        $pdo = DB::pdo();
+        $informantId = trim($informantId);
+        $genreId = trim($genreId);
+        $limit = max(1, min(3, $limit));
+
+        $seenRecordingIds = [$recordingId => true];
+
+        $fetchMany = static function (PDO $pdo, string $recordingId, string $joins, string $extraWhere, array $params, int $queryLimit): array {
+            $whereParts = ['r.recording_id <> :recording_id'];
+            $bind = array_merge([':recording_id' => $recordingId], $params);
+
+            if ($extraWhere !== '') {
+                $whereParts[] = $extraWhere;
+            }
+
+            $sql = "
+        SELECT
+          r.recording_id,
+          r.title,
+          r.recording_date,
+          g.name AS genre_name,
+          i.first_name AS informant_first,
+          i.last_name AS informant_last
+        FROM recording r
+        JOIN informant i ON i.informant_id = r.informant_id
+        LEFT JOIN genre g ON g.genre_id = r.genre_id
+        {$joins}
+        WHERE " . implode(' AND ', $whereParts) . "
+        ORDER BY RAND()
+        LIMIT :query_limit
+      ";
+
+            $stmt = $pdo->prepare($sql);
+            foreach ($bind as $key => $value) {
+                $stmt->bindValue($key, $value);
+            }
+            $stmt->bindValue(':query_limit', $queryLimit, PDO::PARAM_INT);
+            $stmt->execute();
+
+            return $stmt->fetchAll();
+        };
+
+        $informantPool = [];
+        $genrePool = [];
+        $subjectPool = [];
+
+        if ($informantId !== '') {
+            $informantPool = $fetchMany(
+                $pdo,
+                $recordingId,
+                '',
+                'r.informant_id = :informant_id',
+                [':informant_id' => $informantId],
+                2
+            );
+        }
+
+        if ($genreId !== '') {
+            $genrePool = $fetchMany(
+                $pdo,
+                $recordingId,
+                '',
+                'r.genre_id = :genre_id',
+                [':genre_id' => $genreId],
+                2
+            );
+        }
+
+        $subjectPool = $fetchMany(
+            $pdo,
+            $recordingId,
+            'JOIN recording_subject rs_candidate ON rs_candidate.recording_id = r.recording_id
+        JOIN recording_subject rs_current ON rs_current.subject_id = rs_candidate.subject_id',
+            'rs_current.recording_id = :current_recording_id',
+            [':current_recording_id' => $recordingId],
+            2
+        );
+
+        $results = [];
+        $appendUnique = static function (array &$results, array &$seenRecordingIds, array $row, int $limit): void {
+            if (count($results) >= $limit) {
+                return;
+            }
+            $id = trim((string)($row['recording_id'] ?? ''));
+            if ($id === '' || isset($seenRecordingIds[$id])) {
+                return;
+            }
+            $results[] = $row;
+            $seenRecordingIds[$id] = true;
+        };
+
+        // First pass: try to include one from each bucket.
+        if (!empty($informantPool)) {
+            $appendUnique($results, $seenRecordingIds, $informantPool[0], $limit);
+        }
+        if (!empty($genrePool)) {
+            $appendUnique($results, $seenRecordingIds, $genrePool[0], $limit);
+        }
+        if (!empty($subjectPool)) {
+            $appendUnique($results, $seenRecordingIds, $subjectPool[0], $limit);
+        }
+
+        // Backfill pass: use second picks first, then any remaining rows from all pools.
+        $backfillPools = [
+            array_slice($informantPool, 1),
+            array_slice($genrePool, 1),
+            array_slice($subjectPool, 1),
+            $informantPool,
+            $genrePool,
+            $subjectPool,
+        ];
+
+        foreach ($backfillPools as $pool) {
+            foreach ($pool as $row) {
+                $appendUnique($results, $seenRecordingIds, $row, $limit);
+                if (count($results) >= $limit) {
+                    return $results;
+                }
+            }
+        }
+
+        return $results;
     }
 
     public static function subgenres(string $recordingId): array {

@@ -5,24 +5,139 @@ $headerTitle = 'Thanks';
 $kw = trim((string)($params['q'] ?? ''));
 
 $activeNav = 'thanks';
+$bodyClass = 'page-thanks';
+$fullWidth = true;
 
 ?>
 
-<div>
-    <h1>Thanks</h1>
-    <div>
-        <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam id lacus at lacus faucibus suscipit. In et gravida sem. Mauris pellentesque finibus est, a mollis eros euismod ut. Nam sit amet tincidunt urna, eu malesuada orci. Phasellus ac sem leo. Morbi imperdiet massa ac magna porttitor finibus. Sed non tincidunt nunc, eget ultrices nulla. Donec quis mi id augue euismod feugiat et eu ante. In ligula nunc, pretium vel arcu quis, mollis porttitor odio. Phasellus non odio rhoncus, lacinia elit non, hendrerit magna. Nam faucibus, turpis sit amet rutrum ultricies, velit leo rhoncus risus, eget molestie ligula purus at metus. In consectetur purus congue massa rhoncus placerat sed vel massa. Suspendisse non laoreet nibh. Morbi luctus neque vel vulputate bibendum. Pellentesque feugiat nisi vel mi ullamcorper, eu egestas elit volutpat. Morbi iaculis ut ex aliquet vehicula.
-        </p>
-        <p>
-            Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Donec aliquet mi consectetur ipsum vestibulum finibus. Fusce ultrices gravida lectus, at consequat lectus. Sed a ante sed purus facilisis feugiat quis vitae nisi. Quisque ac cursus nisl. Phasellus eu imperdiet dui, suscipit suscipit ante. Aliquam felis magna, imperdiet vitae urna hendrerit, hendrerit interdum mi. Maecenas pulvinar arcu a magna tincidunt iaculis. Aliquam imperdiet quam auctor posuere aliquet. Aliquam vulputate lectus nisi, non vehicula libero hendrerit accumsan. Vivamus cursus dictum risus, eu bibendum orci pellentesque quis. Quisque semper lorem a dapibus ultricies. Vivamus pulvinar ornare quam, id semper justo. Praesent eleifend egestas rutrum.
-        </p>
-        <p>
-            Suspendisse potenti. Aenean nec nisl at orci condimentum fringilla. Proin sem justo, pretium ut nisl at, iaculis consectetur leo. Integer eget pharetra ante. Suspendisse ac gravida dolor. Suspendisse id eros consectetur, ullamcorper eros in, luctus urna. Aliquam at ligula purus. Suspendisse imperdiet ultricies pharetra. Nunc commodo placerat arcu, in lobortis odio viverra ac. Aliquam tincidunt, ante quis tempor tristique, eros nulla dictum mauris, quis mattis libero purus ut dolor. Pellentesque vitae ultrices dui. Donec scelerisque mi ac turpis condimentum ultricies. Ut lobortis consequat finibus. Maecenas et semper ipsum. Morbi ultricies felis ante, vel tincidunt orci sodales vitae.
-        </p>
-        <p>
-            Morbi facilisis sapien eget pretium aliquet. Etiam congue bibendum cursus. Phasellus fringilla nibh dolor, ac sollicitudin nulla aliquet sed. Donec consectetur, sapien nec porttitor pulvinar, leo lectus bibendum quam, id varius ex velit sit amet risus. Etiam accumsan fermentum sollicitudin. Cras non facilisis metus. Donec lacinia iaculis tortor vitae egestas. Suspendisse pellentesque imperdiet tristique. Duis bibendum sapien vitae faucibus gravida. Donec interdum justo quis mauris consectetur, ut cursus risus congue. Vestibulum efficitur efficitur velit, eu maximus erat consectetur ac. Nulla facilisi. Phasellus scelerisque malesuada velit, quis ultricies libero bibendum at. Maecenas lacus augue, consequat sit amet vestibulum quis, rutrum et dolor. In eget neque sollicitudin, rutrum ante eget, mattis ligula. Nam pharetra augue sit amet elit rhoncus, malesuada sagittis mauris aliquam.
-        </p>
-    </div>
-</div>
+<section class="page-hero">
+    <h1 class="page-hero-title">Taing | Thanks</h1>
+    <p class="page-hero-subtitle">Acknowledging those who preserved these traditions</p>
+</section>
 
+<main class="content-container">
+    <div class="opening-statement">
+        <p class="opening-text">Gaelstream exists because of the generosity of tradition bearers who shared their songs, stories, and knowledge, and the dedication of collectors
+            and institutions who preserved them. We honour their contributions and the communities that sustained these traditions across generations and oceans.</p>
+    </div>
+
+    <section class="content-section">
+        <h2 class="content-section-heading">Luchd-glèidhidh an dualchais | The Tradition Bearers</h2>
+        <p class="content-section-body">Our deepest gratitude goes to the 161 tradition bearers whose voices form this collection. They opened their homes and their memories to
+            preserve a living heritage for future generations. Their names, stories, and recordings are the heart of Gaelstream.</p>
+        <div class="quote-callout">
+            <span class="quote-gaelic">'S ann anns na guthan a tha an dualchas beò.</span>
+            <span class="quote-translation">It is in the voices that the heritage lives.</span>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <h2 class="content-section-heading">Luchd-cruinneachaidh | Collectors &amp; Researchers</h2>
+        <p class="content-section-body">The recordings in this collection were gathered by dedicated fieldworkers and researchers who travelled to communities across Cape Breton to
+            document Gaelic traditions before they were lost.</p>
+        <div class="name-chips">
+            <span class="name-chip">John Shaw</span>
+            <span class="name-chip">Hector Campbell</span>
+            <span class="name-chip">Joe Neil MacNeil</span>
+            <span class="name-chip">Fr. John Angus Rankin</span>
+            <span class="name-chip">Kenneth Nilsen</span>
+            <span class="name-chip">Margaret MacDonell</span>
+            <span class="name-chip">Catriona Parsons</span>
+            <span class="name-chip">Effie Rankin</span>
+            <span class="name-chip">Jim Watson</span>
+            <span class="name-chip">Sr. Margaret MacDonell</span>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <h2 class="content-section-heading">Buidhnean | Institutions</h2>
+        <div class="institution-list">
+            <div class="institution-item">
+                <div class="institution-icon">
+                    <i data-lucide="landmark" class="icon-lg"></i>
+                </div>
+                <div class="institution-info">
+                    <span class="institution-name">Cape Breton University</span>
+                    <span class="institution-role">Home of the Cape Breton Gaelic Folklore Collection</span>
+                </div>
+            </div>
+
+            <div class="institution-item">
+                <div class="institution-icon">
+                    <i data-lucide="landmark" class="icon-lg"></i>
+                </div>
+                <div class="institution-info">
+                    <span class="institution-name">DASG - University of Glasgow</span>
+                    <span class="institution-role">Digital archive hosting and technical infrastructure</span>
+                </div>
+            </div>
+
+            <div class="institution-item">
+                <div class="institution-icon">
+                    <i data-lucide="landmark" class="icon-lg"></i>
+                </div>
+                <div class="institution-info">
+                    <span class="institution-name">Tobar an Dualchais</span>
+                    <span class="institution-role">Scotland's premier oral tradition archive and collaborative partner</span>
+                </div>
+            </div>
+
+            <div class="institution-item">
+                <div class="institution-icon">
+                    <i data-lucide="landmark" class="icon-lg"></i>
+                </div>
+                <div class="institution-info">
+                    <span class="institution-name">St. Francis Xavier University</span>
+                    <span class="institution-role">Previous host of the digital collection</span>
+                </div>
+            </div>
+
+            <div class="institution-item">
+                <div class="institution-icon">
+                    <i data-lucide="landmark" class="icon-lg"></i>
+                </div>
+                <div class="institution-info">
+                    <span class="institution-name">Nova Scotia Highland Village</span>
+                    <span class="institution-role">Community partner and cultural preservation</span>
+                </div>
+            </div>
+
+            <div class="institution-item">
+                <div class="institution-icon">
+                    <i data-lucide="landmark" class="icon-lg"></i>
+                </div>
+                <div class="institution-info">
+                    <span class="institution-name">Comhairle na Gàidhlig</span>
+                    <span class="institution-role">Gaelic language and cultural advisory</span>
+                </div>
+            </div>
+
+            <div class="institution-item">
+                <div class="institution-icon">
+                    <i data-lucide="landmark" class="icon-lg"></i>
+                </div>
+                <div class="institution-info">
+                    <span class="institution-name">Cape Breton Centre for Heritage and Science</span>
+                    <span class="institution-role">Regional heritage support</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <h2 class="content-section-heading">Luchd-maoineachaidh | Funders</h2>
+        <p class="content-section-body">This project has been made possible through the generous support of the following organizations.</p>
+        <div class="funder-logos">
+            <div class="funder-placeholder">Funder Logo 1</div>
+            <div class="funder-placeholder">Funder Logo 2</div>
+            <div class="funder-placeholder">Funder Logo 3</div>
+            <div class="funder-placeholder">Funder Logo 4</div>
+        </div>
+    </section>
+
+    <div class="closing-section">
+        <p class="closing-text">Gaelstream is an ongoing project. If you have information about the tradition bearers or recordings in this collection, we welcome your
+            contributions.</p>
+        <a href="mailto:gaelstream@cbu.ca" class="closing-email">gaelstream@cbu.ca</a>
+    </div>
+</main>

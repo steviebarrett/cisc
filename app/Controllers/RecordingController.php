@@ -5,16 +5,14 @@ use App\Services\RecordingSearch;
 
 final class RecordingController extends Controller {
     public function index(): void {
-
         $subjectRaw = $_GET['subject'] ?? [];
-
         if (is_array($subjectRaw)) {
-            $subjects = array_values(array_filter(array_map('trim', $subjectRaw), fn($s) => $s !== ''));
+            $subjects = get_array('subject');
         } else {
             $subjectInput = trim((string)$subjectRaw);
             $subjects = $subjectInput === ''
                 ? []
-                : array_values(array_filter(array_map('trim', explode(',', $subjectInput)), fn($s) => $s !== ''));
+                : array_values(array_filter(array_map('trim', explode(',', $subjectInput)), fn($x) => $x !== ''));
         }
 
         $params = [
@@ -43,12 +41,10 @@ final class RecordingController extends Controller {
             'result' => $result,
             'params' => $params,
             'genres' => Taxonomy::genres(),
+            'subgenres_all' => Taxonomy::subgenres(),
+            'subgenres_by_genre' => Taxonomy::subgenresByGenre(),
             'subjects_all'  => Taxonomy::subjects(),
             'places_all' => Taxonomy::places(1500),
-            'enableSearchPanel' => true,
-            'searchPanelType' => 'recordings',
-            'headerSearchOpen' => false,
-            'searchPanel' => $searchPanel,
         ]);
     }
 
@@ -61,9 +57,17 @@ final class RecordingController extends Controller {
         }
         $relatedRecordings = Recording::related($rec);
 
+        $relatedRecords = Recording::related(
+            (string)($rec['recording_id'] ?? ''),
+            (string)($rec['informant_id'] ?? ''),
+            (string)($rec['genre_id'] ?? ''),
+            3
+        );
+
         $this->render('recordings/show', [
             'rec' => $rec,
-            'relatedRecordings' => $relatedRecordings,]);
+            'relatedRecords' => $relatedRecords,
+        ]);
     }
 
     public function downloadTranscription(string $id): void {

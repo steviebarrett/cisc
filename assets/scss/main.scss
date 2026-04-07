@@ -1,0 +1,13 @@
+// Main SCSS entry point
+@use 'variables';
+@use 'components/header';
+@use 'pages/home';
+@use 'pages/recordings-list';
+@use 'pages/recording-detail';
+@use 'pages/informants-list';
+@use 'pages/informant-detail';
+@use 'pages/map';
+@use 'pages/search-filters';
+@use 'pages/about';
+@use 'pages/how-to-use';
+@use 'pages/thanks';

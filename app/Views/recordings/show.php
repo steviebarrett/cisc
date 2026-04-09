@@ -189,8 +189,7 @@ $transcriptionHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu'
 
                     <?php if ($recId !== ''): ?>
                     <div class="metadata-row">
-                        <!-- TODO - need gaelic label -->
-                        <div class="metadata-label">GF No</div>
+                        <div class="metadata-label">Àireamh folklore gàidhlig | Gaelic Folklore No</div>
                         <div class="metadata-value"><span class="tape-number"><?= e($recId) ?></span></div>
                     </div>
                     <?php endif; ?>
@@ -199,11 +198,11 @@ $transcriptionHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu'
                 <?php if (!empty($rec['first_line_chorus']) || !empty($rec['first_line_verse'])): ?>
                 <div class="transcription-section first-lines">
                     <div class="transcription-divider"></div>
-                    <h2 class="transcription-heading">A 'chiad sreathan | First lines</h2>
+                    <h2 class="transcription-heading">A’ chiad sreath | First Line</h2>
                     <div class="metadata-section">
                         <?php if (!empty($rec['first_line_chorus'])): ?>
                         <div class="metadata-row">
-                            <div class="metadata-label">Sèist | Chorus</div>
+                            <div class="metadata-label">Séist | Chorus</div>
                             <div class="metadata-value"><?= e((string)$rec['first_line_chorus']) ?></div>
                         </div>
                         <?php endif; ?>

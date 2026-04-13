@@ -1,5 +1,5 @@
 <script src="/assets/js/vendor/plotly-3.4.0.min.js"></script>
-<link rel="stylesheet" href="/assets/css/map.css">
+<link rel="stylesheet" href="<?= base_path('/assets/css/map.css') ?>">
 </head>
 
 <body>

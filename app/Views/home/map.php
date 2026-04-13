@@ -305,4 +305,4 @@
         </div>
     </div>
 
-    <script src="/assets/js/map-page.js"></script>
+    <script src="<?= base_path('/assets/js/map-page.js') ?>"></script>

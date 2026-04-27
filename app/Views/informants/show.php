@@ -15,13 +15,40 @@ if ($nameGaelic !== '') {
 
 $backUrl = base_path('/informants');
 
-$primaryImageUrl = '';
+$isValidImageFilename = static function (string $filename): bool {
+    if ($filename === '' || strlen($filename) > 255) {
+        return false;
+    }
+
+    if ($filename !== basename($filename)) {
+        return false;
+    }
+
+    if (preg_match('/[\\\/\x00]/', $filename)) {
+        return false;
+    }
+
+    return (bool)preg_match('/\.(?:jpe?g|png|gif|webp)$/i', $filename);
+};
+
+$galleryImages = [];
 if (!empty($inf['images']) && is_array($inf['images'])) {
-    $firstImage = $inf['images'][0]['filename'] ?? '';
-    if ($firstImage !== '') {
-        $primaryImageUrl = base_path('/media/informants/' . rawurlencode((string)$firstImage));
+    foreach ($inf['images'] as $img) {
+        $filename = trim((string)($img['filename'] ?? ''));
+        if (!$isValidImageFilename($filename)) {
+            continue;
+        }
+
+        $galleryImages[] = [
+            'url' => base_path('/media/informants/' . rawurlencode($filename)),
+            'caption' => trim((string)($img['caption'] ?? '')),
+        ];
     }
 }
+
+$imageCount = count($galleryImages);
+$hasImageGallery = $imageCount > 1;
+$primaryImageUrl = $imageCount > 0 ? (string)$galleryImages[0]['url'] : '';
 
 $q = trim((string)($_GET['q'] ?? ''));
 $biographyHtml = $q !== ''
@@ -52,7 +79,19 @@ $biographyHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu', ''
         <div class="profile-header">
             <div class="profile-photo-column">
                 <?php if ($primaryImageUrl !== ''): ?>
-                <img src="<?= e($primaryImageUrl) ?>" alt="<?= e($nameDisplay) ?>" class="profile-photo" loading="lazy">
+                <div class="profile-photo-wrap">
+                    <?php if ($hasImageGallery): ?>
+                    <button type="button" class="profile-photo-button js-gallery-open" aria-label="Open photo gallery (<?= e((string)$imageCount) ?> photos)">
+                        <img src="<?= e($primaryImageUrl) ?>" alt="<?= e($nameDisplay) ?>" class="profile-photo" loading="lazy">
+                        <span class="photo-count-badge">
+                            <i data-lucide="camera" class="icon-s" aria-hidden="true"></i>
+                            <?= number_format($imageCount) ?> Photos
+                        </span>
+                    </button>
+                    <?php else: ?>
+                    <img src="<?= e($primaryImageUrl) ?>" alt="<?= e($nameDisplay) ?>" class="profile-photo" loading="lazy">
+                    <?php endif; ?>
+                </div>
                 <?php else: ?>
                 <div class="profile-photo" style="background: var(--color-placeholder);"></div>
                 <?php endif; ?>
@@ -167,3 +206,147 @@ $biographyHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu', ''
         </div>
         <?php endif; ?>
     </div>
+
+    <?php if ($hasImageGallery): ?>
+    <script id="informant-gallery-images" type="application/json">
+    <?= json_encode($galleryImages, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) ?>
+    </script>
+
+    <div class="informant-lightbox" id="informant-lightbox" hidden>
+        <button type="button" class="lightbox-backdrop js-gallery-close" aria-label="Close gallery"></button>
+        <div class="lightbox-dialog" role="dialog" aria-modal="true" aria-label="Informant photo gallery">
+            <div class="lightbox-header">
+                <span class="lightbox-counter js-gallery-counter"></span>
+
+                <button type="button" class="lightbox-close js-gallery-close" aria-label="Close gallery">
+                    <i data-lucide="x" class="icon-xl" aria-hidden="true"></i>
+                </button>
+            </div>
+
+            <button type="button" class="lightbox-nav lightbox-prev js-gallery-prev" aria-label="Previous photo">
+                <i data-lucide="chevron-left" class="icon-xl" aria-hidden="true"></i>
+            </button>
+
+            <figure class="lightbox-figure">
+                <img src="" alt="" class="lightbox-image js-gallery-image" loading="eager">
+                <figcaption class="lightbox-meta">
+                    <span class="lightbox-caption js-gallery-caption"></span>
+                </figcaption>
+            </figure>
+
+            <button type="button" class="lightbox-nav lightbox-next js-gallery-next" aria-label="Next photo">
+                <i data-lucide="chevron-right" class="icon-xl" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+
+    <script>
+    (() => {
+        const dataEl = document.getElementById('informant-gallery-images');
+        const openBtn = document.querySelector('.js-gallery-open');
+        const lightbox = document.getElementById('informant-lightbox');
+        if (!dataEl || !openBtn || !lightbox) {
+            return;
+        }
+
+        let images;
+        try {
+            images = JSON.parse(dataEl.textContent || '[]');
+        } catch (err) {
+            console.error('Could not parse informant gallery data', err);
+            return;
+        }
+
+        if (!Array.isArray(images) || images.length < 2) {
+            return;
+        }
+
+        const imageEl = lightbox.querySelector('.js-gallery-image');
+        const counterEl = lightbox.querySelector('.js-gallery-counter');
+        const captionEl = lightbox.querySelector('.js-gallery-caption');
+        const prevBtn = lightbox.querySelector('.js-gallery-prev');
+        const nextBtn = lightbox.querySelector('.js-gallery-next');
+        const closeBtns = lightbox.querySelectorAll('.js-gallery-close');
+
+        if (!imageEl || !counterEl || !captionEl || !prevBtn || !nextBtn || closeBtns.length === 0) {
+            return;
+        }
+
+        let index = 0;
+
+        const render = () => {
+            const img = images[index] || {};
+            imageEl.src = String(img.url || '');
+            imageEl.alt = <?= json_encode($nameDisplay, JSON_UNESCAPED_UNICODE) ?> + ' photo ' + (index + 1);
+            counterEl.innerHTML = 'Photos <span class="badge rounded-pill text-bg-light">' + (index + 1) + '/' + images.length + '</span>';
+
+            const caption = String(img.caption || '').trim();
+            captionEl.textContent = caption;
+            captionEl.hidden = caption === '';
+        };
+
+        const open = (startIndex = 0) => {
+            index = Number.isInteger(startIndex) ? startIndex : 0;
+            if (index < 0 || index >= images.length) {
+                index = 0;
+            }
+
+            render();
+            lightbox.hidden = false;
+            document.body.classList.add('lightbox-open');
+            if (window.lucide && typeof window.lucide.createIcons === 'function') {
+                window.lucide.createIcons();
+            }
+        };
+
+        const close = () => {
+            lightbox.hidden = true;
+            document.body.classList.remove('lightbox-open');
+        };
+
+        const showNext = () => {
+            index = (index + 1) % images.length;
+            render();
+        };
+
+        const showPrev = () => {
+            index = (index - 1 + images.length) % images.length;
+            render();
+        };
+
+        openBtn.addEventListener('click', () => open(0));
+        nextBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            showNext();
+        });
+        prevBtn.addEventListener('click', (event) => {
+            event.stopPropagation();
+            showPrev();
+        });
+
+        closeBtns.forEach((btn) => {
+            btn.addEventListener('click', () => close());
+        });
+
+        document.addEventListener('keydown', (event) => {
+            if (lightbox.hidden) {
+                return;
+            }
+
+            if (event.key === 'Escape') {
+                close();
+                return;
+            }
+
+            if (event.key === 'ArrowRight') {
+                showNext();
+                return;
+            }
+
+            if (event.key === 'ArrowLeft') {
+                showPrev();
+            }
+        });
+    })();
+    </script>
+    <?php endif; ?>

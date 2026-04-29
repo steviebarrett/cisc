@@ -59,7 +59,7 @@ $transcriptionHtml = $transcriptionQ !== ''
     ? highlight_html_ga((string)($rec['transcription_html'] ?? ''), $transcriptionQ)
     : (string)($rec['transcription_html'] ?? '');
 // Note - I remove <br>s and empty <p> tags so display can properly be handled by p margins and line height
-$transcriptionHtml = preg_replace('~<br\s*/?>~i', '', $transcriptionHtml) ?? $transcriptionHtml;
+$transcriptionHtml = preg_replace('~<br\s*/?>~i', '<br>', $transcriptionHtml) ?? $transcriptionHtml;
 $transcriptionHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu', '', $transcriptionHtml) ?? $transcriptionHtml;
     $transcriptionText = (string)($rec['transcription_text'] ?? '');
     $hasTranscription = (trim($transcriptionHtml) !== '') || (trim($transcriptionText) !== '');
@@ -218,6 +218,11 @@ $transcriptionHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu'
 
                 <?php if ($hasTranscription || $usePublicationNote): ?>
                 <div class="transcription-section">
+                    <style>
+                        .transcription-section p {
+                            margin-bottom:-1em;
+                        }
+                    </style>
                     <div class="transcription-divider"></div>
                     <h2 class="transcription-heading">Tar-sgriobhadh | Transcription</h2>
                     <div class="d-flex gap-3">

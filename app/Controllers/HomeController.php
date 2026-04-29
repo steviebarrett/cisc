@@ -15,6 +15,11 @@ final class HomeController extends Controller
         ]);
     }
 
+    public function holding(): void
+    {
+        $this->render('home/holding', [], 'layouts/holding');
+    }
+
     public function show_map(): void
     {
         $this->render('home/map', [

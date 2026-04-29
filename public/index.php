@@ -210,7 +210,13 @@ function stream_mp3(string $id, bool $headOnly = false): void
 }
 
 $routes = [
-    ['GET', '#^/$#', fn() => (new HomeController())->index()],
+    ['GET', '#^/$#', function () {
+        if (!empty($_GET['preview'])) {
+            return (new HomeController())->index();
+        }
+
+        return (new HomeController())->holding();                   // holding page currently LIVE
+    }],
     ['GET', '#^/about$#', fn() => (new HomeController())->about()],
     ['GET', '#^/how_to_use#', fn() => (new HomeController())->how_to_use()],
     ['GET', '#^/thanks$#', fn() => (new HomeController())->thanks()],

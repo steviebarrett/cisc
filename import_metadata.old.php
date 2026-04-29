@@ -158,13 +158,6 @@ function readSheetRows(\PhpOffice\PhpSpreadsheet\Worksheet\Worksheet $ws): array
     $headers = []; // col => normalized header
     foreach ($headerRow as $col => $h) {
         $hs = cellStr($h);
-
-        // In the current Collection sheet, column P contains song-structure values
-        // but its header cell is blank.
-        if ($hs === null && normToken($ws->getTitle()) === 'collection' && $col === 'P') {
-            $hs = 'Song Structure';
-        }
-
         if ($hs !== null) $headers[$col] = normHeader($hs);
     }
 
@@ -410,7 +403,7 @@ SQL;
 function upsertRecording(PDO $pdo, array $r): void {
     $sql = <<<SQL
 INSERT INTO recording (
-  recording_id, other_identifier, informant_id, composer_id,
+  recording_id, informant_id, composer_id,
   title, alt_title, transcription_label,
   place_of_origin,
   genre_id, song_structure_id,
@@ -419,7 +412,7 @@ INSERT INTO recording (
   recording_date, includes_english_translation,
   notes1_additional_info, notes2_reference_sources, notes3_publications, notes4_team_notes
 ) VALUES (
-  :recording_id, :other_identifier, :informant_id, :composer_id,
+  :recording_id, :informant_id, :composer_id,
   :title, :alt_title, :transcription_label,
   :place_of_origin,
   :genre_id, :song_structure_id,
@@ -429,7 +422,6 @@ INSERT INTO recording (
   :notes1, :notes2, :notes3, :notes4
 )
 ON DUPLICATE KEY UPDATE
-  other_identifier = COALESCE(VALUES(other_identifier), other_identifier),
   informant_id = VALUES(informant_id),
   composer_id = VALUES(composer_id),
   title = CASE WHEN title IS NULL OR title = '' THEN VALUES(title) ELSE title END,
@@ -454,7 +446,6 @@ SQL;
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
         ':recording_id' => $r['recording_id'],
-        ':other_identifier' => $r['other_identifier'] ?? null,
         ':informant_id' => $r['informant_id'],
         ':composer_id' => $r['composer_id'] ?? null,
         ':title' => $r['title'] ?? null,
@@ -649,12 +640,6 @@ try {
         if ($composerId !== null) $composerId = trim($composerId);
         if ($composerId === '') $composerId = null;
 
-        // Avoid FK failures where the Collection sheet references a Bard ID that
-        // is not present in Composer_Bios. A later fuller import/update can fill details.
-        if (!$dryRun && $composerId !== null) {
-            upsertComposer($pdo, ['composer_id' => $composerId]);
-        }
-
         $genreName = $r['genre'] ?? null;
         $structureName = firstNonEmpty($r, ['song structure (choose an option from the drop-down menu)', 'song structure']);
 
@@ -668,7 +653,7 @@ try {
             $structureId = getOrCreateLookup($pdo, $cache, 'song_structure', $structureName, 'structure', 'structure_id');
         }
 
-        $includesEn = firstNonEmpty($r, ['includes english translation', 'english translation available']);
+        $includesEn = $r['English translation available'] ?? null;
         $includesEn = $includesEn ? trim($includesEn) : '';
         $includesEnBool = 0;
         if ($includesEn !== '') {
@@ -676,17 +661,16 @@ try {
         }
 
         // TITLE column in spreadsheet is the recording title; TRANSCRIPTION is a separate field/label
-        $transcription = firstNonEmpty($r, ['transcription', 'completed_transcription']);
+        $transcription = $r['transcription'] ?? null;
         $altTitle = $r['alternative title'] ?? null;
 
-        // The current sheet header is "Tiotal | TITLE", not simply "TITLE".
-        $title = firstNonEmpty($r, ['title', 'tiotal | title']);
+        // Use TITLE as primary title (always populated in the sheet)
+        $title = $r['title'] ?? null;
 
         $recordingDate = parseDateToYmd($r['recording date'] ?? null);
 
         $payload = [
             'recording_id' => $recordingId,
-            'other_identifier' => firstNonEmpty($r, ['other identifier', 'other_identifier']),
             'informant_id' => $informantId,
             'composer_id' => $composerId,
             'title' => $title,
@@ -698,7 +682,7 @@ try {
             'song_air' => $r['song air'] ?? null,
             'first_line_chorus' => $r['song first line (chorus)'] ?? null,
             'first_line_verse' => $r['song first line (verse)'] ?? null,
-            'original_tape_no' => $r['original tape no.'] ?? null,
+            'original_tape_no' => $r['original tape no.'] !== null ? (int)$r['original tape no.'] : null,
             'original_tape_item_no' => $r['original tape item no.'] ?? null,
             'recording_date' => $recordingDate,
             'includes_english_translation' => $includesEnBool,

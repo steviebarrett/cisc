@@ -1,4 +1,4 @@
-<script src="<?= base_path('/assets/js/vendor/plotly-3.4.0.min.js') ?>"></script>
+<script src="<?= base_path('/assets/js/vendor/plotly-3.5.0.min.js') ?>"></script>
 <link rel="stylesheet" href="<?= base_path('/assets/css/map.css') ?>">
 </head>
 
@@ -7,21 +7,21 @@
         <div class="content">
             <aside class="map-sidebar">
                 <div class="map-tab-bar">
-                    <button id="mode-location-btn" class="map-tab active" type="button">
+                    <button id="mode-location-btn" class="mode-btn active" type="button">
                         <span class="tab-label-gd">Àiteachan</span>
                         <span class="tab-label-en">Places</span>
                     </button>
-                    <button id="mode-all-people-btn" class="map-tab" type="button">
+                    <button id="mode-all-people-btn" class="mode-btn" type="button">
                         <span class="tab-label-gd">Daoine</span>
                         <span class="tab-label-en">People</span>
                     </button>
-                    <button id="mode-traditions-btn" class="map-tab" type="button">
+                    <button id="mode-traditions-btn" class="mode-btn" type="button">
                         <span class="tab-label-gd">Dualchasan</span>
                         <span class="tab-label-en">Traditions</span>
                     </button>
                 </div>
 
-                <div id="location-panel-view" class="active">
+                <div id="location-panel-view" class="panel-view active">
                     <div class="sidebar-controls index-controls-row">
                         <div class="controls-left">
                             <button class="sort-btn" title="Sort" type="button" aria-label="Sort"><i data-lucide="arrow-up-down" class="icon-sm"></i></button>
@@ -45,7 +45,7 @@
                     <div id="places-index-list" class="place-list"></div>
                 </div>
 
-                <div id="all-people-panel-view" hidden>
+                <div id="all-people-panel-view" class="panel-view">
                     <div class="sidebar-controls index-controls-row">
                         <div class="controls-left">
                             <button class="sort-btn" title="Sort" type="button" aria-label="Sort"><i data-lucide="arrow-up-down" class="icon-sm"></i></button>
@@ -69,7 +69,7 @@
                     <div id="all-people-list" class="place-list"></div>
                 </div>
 
-                <div id="traditions-panel-view" hidden>
+                <div id="traditions-panel-view" class="panel-view">
                     <div class="sidebar-controls index-controls-row">
                         <div class="controls-left">
                             <button class="sort-btn" title="Sort" type="button" aria-label="Sort"><i data-lucide="arrow-up-down" class="icon-sm"></i></button>

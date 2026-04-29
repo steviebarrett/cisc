@@ -24,7 +24,7 @@ $isValidImageFilename = static function (string $filename): bool {
         return false;
     }
 
-    if (preg_match('/[\\\/\x00]/', $filename)) {
+    if (preg_match('#[\\\/\x00]#', $filename)) {
         return false;
     }
 
@@ -55,7 +55,7 @@ $biographyHtml = $q !== ''
     ? highlight_html_ga((string)($inf['biography_html'] ?? ''), $q)
     : (string)($inf['biography_html'] ?? '');
 // Note - I remove <br>s and empty <p> tags so display can properly be handled by p margins and line height
-$biographyHtml = preg_replace('~<br\s*/?>~i', '', $biographyHtml) ?? $biographyHtml;
+$biographyHtml = preg_replace('~<br\s*/?>~i', '&nbsp;&nbsp;', $biographyHtml) ?? $biographyHtml;
 $biographyHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu', '', $biographyHtml) ?? $biographyHtml;
 
     $recordingCount = is_array($recs ?? null) ? count($recs) : 0;

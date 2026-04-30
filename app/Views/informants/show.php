@@ -54,9 +54,13 @@ $q = trim((string)($_GET['q'] ?? ''));
 $biographyHtml = $q !== ''
     ? highlight_html_ga((string)($inf['biography_html'] ?? ''), $q)
     : (string)($inf['biography_html'] ?? '');
-// Note - I remove <br>s and empty <p> tags so display can properly be handled by p margins and line height
-$biographyHtml = preg_replace('~<br\s*/?>~i', '&nbsp;&nbsp;', $biographyHtml) ?? $biographyHtml;
+
+// trim the first three lines from biography
+$biographyHtml = preg_replace('#^<p>\s*(<strong>.*?</strong>\s*<br\s*/?>\s*){2}<strong>.*?</strong>\s*</p>#si', '', $biographyHtml);
+// Note from Dylan - I remove <br>s and empty <p> tags so display can properly be handled by p margins and line height
+$biographyHtml = preg_replace('~<br\s*/?>~i', '', $biographyHtml) ?? $biographyHtml;
 $biographyHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu', '', $biographyHtml) ?? $biographyHtml;
+
 
     $recordingCount = is_array($recs ?? null) ? count($recs) : 0;
 
@@ -92,6 +96,8 @@ $biographyHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu', ''
                     <img src="<?= e($primaryImageUrl) ?>" alt="<?= e($nameDisplay) ?>" class="profile-photo" loading="lazy">
                     <?php endif; ?>
                 </div>
+                <figCaption class="profile-photo-wrap metadata-label"><?= $inf["images"][0]["caption"]; ?> </figCaption>
+
                 <?php else: ?>
                 <div class="profile-photo" style="background: var(--color-placeholder);"></div>
                 <?php endif; ?>
@@ -157,7 +163,7 @@ $biographyHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu', ''
 
         <?php if (trim($biographyHtml) !== ''): ?>
         <div class="biography-section">
-            <h2 class="section-heading">Eachdraidh-beatha | Biography</h2>
+            <h2 class="section-heading">Eachdraidh-bheatha | Biography</h2>
             <div class="biography-text">
                 <?= $biographyHtml ?>
             </div>

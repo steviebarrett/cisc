@@ -5,6 +5,8 @@ $bodyClass = 'page-informant-detail';
 $fullWidth = true;
 
 $nameGaelic = trim((string)(($inf['ainm'] ?? '') . ' ' . ($inf['cinneadh'] ?? '')));
+
+$patronymic = $inf['patronymic'] ?? $nameGaelic;
 $nameEnglish = trim((string)(($inf['first_name'] ?? '') . ' ' . ($inf['last_name'] ?? '')));
 $nameDisplay = $nameEnglish !== '' ? $nameEnglish : trim((string)($inf['informant_id'] ?? ''));
 
@@ -105,17 +107,17 @@ $biographyHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu', ''
 
             <div class="profile-info-column">
                 <div class="name-block">
-                    <?php if ($nameGaelic !== ''): ?>
-                    <h1 class="name-gaelic"><?= e($nameGaelic) ?></h1>
+                    <?php if ($patronymic !== ''): ?>
+                    <h1 class="name-gaelic"><?= e($patronymic) ?></h1>
                     <?php endif; ?>
                     <p class="name-english"><?= e($nameDisplay) ?></p>
                 </div>
 
                 <div class="metadata-pairs">
-                    <?php if (!empty($inf['patronymic'])): ?>
+                    <?php if (!empty($nameGaelic)): ?>
                     <div class="metadata-pair">
-                        <span class="metadata-label">Sloinneadh | Patronymic</span>
-                        <span class="metadata-value"><?= e(trim((string)$inf['patronymic'])) ?></span>
+                        <span class="metadata-label">Ainm Gàidhlig | Gaelic Name</span>
+                        <span class="metadata-value"><?= e(trim((string)$nameGaelic)) ?></span>
                     </div>
                     <?php endif; ?>
 

@@ -122,12 +122,6 @@ $transcriptionHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu'
         <div class="content-columns">
             <div class="column-left">
                 <div class="metadata-section">
-                    <?php if ($informantName !== '' && $informantUrl !== ''): ?>
-                    <div class="metadata-row">
-                        <div class="metadata-label">Beulaiche | Informant</div>
-                        <div class="metadata-value"><a href="<?= e($informantUrl) ?>"><?= e($informantName) ?></a></div>
-                    </div>
-                    <?php endif; ?>
 
                     <?php if ($composerName !== '' && $composerUrl !== ''): ?>
                     <div class="metadata-row">
@@ -138,21 +132,21 @@ $transcriptionHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu'
 
                     <?php if ($origin !== ''): ?>
                     <div class="metadata-row">
-                        <div class="metadata-label">Aite tusail | Place of origin</div>
+                        <div class="metadata-label">Àite tùsail | Place of origin</div>
                         <div class="metadata-value"><?= e($origin) ?></div>
                     </div>
                     <?php endif; ?>
 
                     <?php if ($genreName !== ''): ?>
                     <div class="metadata-row">
-                        <div class="metadata-label">Seorsa | Genre</div>
+                        <div class="metadata-label">Seòrsa | Genre</div>
                         <div class="metadata-value"><a class="tag <?= e($genreTagClass) ?>" href="<?= e($genreFilterUrl) ?>"><?= e($genreName) ?></a></div>
                     </div>
                     <?php endif; ?>
 
                     <?php if (!empty($rec['subgenres'])): ?>
                     <div class="metadata-row">
-                        <div class="metadata-label">Fo-sheorsachan | Sub-genres</div>
+                        <div class="metadata-label">Fo-sheòrsachan | Sub-genres</div>
                         <div class="metadata-value">
                             <?php foreach ($rec['subgenres'] as $sg): ?>
                             <a class="tag <?= e($genreTagClass) ?>" href="<?= e(base_path('/recordings?' . http_build_query(['subgenre' => [$sg]]))) ?>"><?= e($sg) ?></a>
@@ -181,7 +175,7 @@ $transcriptionHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu'
 
                     <?php if (!empty($rec['original_tape_no'])): ?>
                     <div class="metadata-row">
-                        <div class="metadata-label">Aireamh an teip | Tape No</div>
+                        <div class="metadata-label">Àireamh an teip | Tape No</div>
                         <div class="metadata-value"><span
                                 class="tape-number"><?= e(trim((string)$rec['original_tape_no'] . ' ' . (string)($rec['original_tape_item_no'] ?? ''))) ?></span></div>
                     </div>
@@ -189,7 +183,7 @@ $transcriptionHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu'
 
                     <?php if ($recId !== ''): ?>
                     <div class="metadata-row">
-                        <div class="metadata-label">Àireamh folklore gàidhlig | Gaelic Folklore No</div>
+                        <div class="metadata-label">Àireamh aithneachaidh | Reference number</div>
                         <div class="metadata-value"><span class="tape-number"><?= e($recId) ?></span></div>
                     </div>
                     <?php endif; ?>
@@ -274,11 +268,11 @@ $transcriptionHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu'
                         <?= e($informantName) ?>
                         <?php endif; ?>
                     </div>
-                    <?php if ($origin !== ''): ?><span class="informant-detail"><?= e($origin) ?></span><?php endif; ?>
+
                     <?php if ($informantDetailLight !== ''): ?><span class="informant-detail-light"><?= e($informantDetailLight) ?></span><?php endif; ?>
                     <?php if ($informantRecordingCount > 0): ?><span class="informant-count"><?= e((string)$informantRecordingCount) ?> recordings</span><?php endif; ?>
                     <?php if ($informantUrl !== ''): ?>
-                    <a href="<?= e($informantUrl) ?>" class="informant-link">View profile <i data-lucide="arrow-right" class="icon-sm" aria-hidden="true"></i></a>
+                    <a href="<?= e($informantUrl) ?>" class="informant-link">Faic pròifil | view profile <i data-lucide="arrow-right" class="icon-sm" aria-hidden="true"></i></a>
                     <?php endif; ?>
                 </div>
                 <?php endif; ?>

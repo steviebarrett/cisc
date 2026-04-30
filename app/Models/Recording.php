@@ -37,7 +37,7 @@ final class Recording {
         i.informant_id,
         i.first_name AS informant_first,
         i.last_name AS informant_last,
-        i.tradition_scotland AS informant_detail_light,
+        i.community_origin_canada AS informant_detail_light,
         (
           SELECT COUNT(*)
           FROM recording rr

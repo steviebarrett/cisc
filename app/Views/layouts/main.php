@@ -40,6 +40,7 @@
             <a href="<?= e(base_path('/how_to_use')) ?>">Terms of Use</a>
         </div>
         <div class="footer-logos">
+            <img src="<?= e(base_path('/assets/images/logos/stfx.png')) ?>" alt="St. Francis Xavier University">
             <img src="<?= e(base_path('/assets/images/logos/cape-breton-university--logo--mono.svg')) ?>" alt="Cape Breton University">
             <img src="<?= e(base_path('/assets/images/logos/dasg--logo--mono.svg')) ?>" alt="DASG">
         </div>

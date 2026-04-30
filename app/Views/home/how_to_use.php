@@ -18,23 +18,22 @@ $fullWidth = true;
 <main class="content-container">
     <section class="content-section">
         <h2 class="content-section-heading">A' rannsachadh | Searching</h2>
-        <p class="content-section-intro">Gaelstream offers several ways to find recordings in the collection.</p>
+        <p class="content-section-intro">Using the search option, Gaelstream offers several options for finding recordings in the collection.</p>
 
         <div class="step-cards">
             <div class="step-card">
                 <div class="step-number">1</div>
                 <div class="step-content">
-                    <div class="step-title">Browse by title</div>
-                    <p class="step-description">Visit the Recordings page to see all 2,151 items. Sort by newest, oldest, or alphabetically. Use the per-page control to see more
-                        results at once.</p>
+                    <div class="step-title">Search the collection</div>
+                    <p class="step-description">Use this keyword search to find titles, names, places, first lines, and other information.</p>
                 </div>
             </div>
 
             <div class="step-card">
                 <div class="step-number">2</div>
                 <div class="step-content">
-                    <div class="step-title">Search by keyword</div>
-                    <p class="step-description">Use the keyword search to find recordings by title. For example, search 'Ailein Duinn' to find recordings of this well-known song.
+                    <div class="step-title">Search transcriptions</div>
+                    <p class="step-description">Many recordings have Gaelic transcriptions. Use the transcription search to find specific words or phrases within the recorded text - a powerful tool for linguistic research.
                     </p>
                 </div>
             </div>
@@ -42,9 +41,8 @@ $fullWidth = true;
             <div class="step-card">
                 <div class="step-number">3</div>
                 <div class="step-content">
-                    <div class="step-title">Search transcriptions</div>
-                    <p class="step-description">Many recordings have Gaelic transcriptions. Use the transcription search to find specific words or phrases within the recorded text
-                        - a powerful tool for linguistic research.</p>
+                    <div class="step-title">Filter by place</div>
+                    <p class="step-description">Begin typing a place name (in Gaelic or English). Matching Scottish and Nova Scotia place names will appear if they are represented in the collection.</p>
                 </div>
             </div>
 
@@ -52,7 +50,23 @@ $fullWidth = true;
                 <div class="step-number">4</div>
                 <div class="step-content">
                     <div class="step-title">Filter by genre</div>
-                    <p class="step-description">Narrow results by genre: Song, Story, Belief, Custom, Biography, or Proverb. Combine with other filters for precise results.</p>
+                    <p class="step-description">Narrow results by genre: Song, Story, Belief, Custom, Biography, or Proverb. Combine with other filters, such as sub-genre, for more precise results.</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">5</div>
+                <div class="step-content">
+                    <div class="step-title">Filter by subject</div>
+                    <p class="step-description">Type or select a subject keyword; matching topics will appear if they are represented in the collection.</p>
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">6</div>
+                <div class="step-content">
+                    <div class="step-title">Browse titles</div>
+                    <p class="step-description"> Browse all 2,151 recordings listed under the search options. The “paper” icon indicates that a transcription is included.<i data-lucide="file-text" aria-label="Has transcription"></i></p>
                 </div>
             </div>
         </div>
@@ -91,7 +105,7 @@ $fullWidth = true;
 
             <div class="metadata-item">
                 <span class="metadata-label">Àireamh an teip | Tape No</span>
-                <span class="metadata-description">The original tape reference number from the Cape Breton Gaelic Folklore Collection.</span>
+                <span class="metadata-description">The original tape reference number from the Cape Breton Gaelic Folklore Collection held at the Angus L. Macdonald Library at St. Francis Xavier University.</span>
             </div>
         </div>
     </section>

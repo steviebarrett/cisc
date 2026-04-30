@@ -1,8 +1,8 @@
 <?php
-$title = 'Recordings';
+$title = 'Rannsaich | Search';
 
 $activeNav = 'recordings';
-$headerTitle = 'Recordings';
+$headerTitle = 'Rannsaich | Search';
 $bodyClass = 'page-recordings-list';
 $fullWidth = true;
 
@@ -63,7 +63,7 @@ $subgenresByGenreJson = json_encode($subgenresByGenreForFilter, JSON_HEX_TAG | J
 ?>
 
 <div class="page-container">
-    <h1 class="page-title">Claraidhean | Recordings</h1>
+    <h1 class="page-title">Rannsaich | Search</h1>
 
     <form method="get" class="card filter-panel">
         <input type="hidden" name="sort" value="<?= e($sort) ?>">
@@ -71,17 +71,20 @@ $subgenresByGenreJson = json_encode($subgenresByGenreForFilter, JSON_HEX_TAG | J
         <input type="hidden" name="page" value="1">
 
         <div class="filter-row">
+
             <div class="filter-field filter-field-grow">
-                <input type="text" class="filter-input" name="q" value="<?= e($kw) ?>" placeholder="Search titles...">
+                <span class="filter-label">Rannsaich | Search</span>
+                <input type="text" class="filter-input" name="q" value="<?= e($kw) ?>" placeholder="Search the collection… | Rannsaich a’ chruinneachadh…">
             </div>
             <div class="filter-field filter-field-grow">
+                <span class="filter-label">Rannsaich na tàr-sgrìobhaidhean | Search the transcriptions</span>
                 <input type="text" class="filter-input" name="transcription_q" value="<?= e($transcriptionQ) ?>" placeholder="Search transcription content...">
             </div>
         </div>
 
         <div class="filter-row filter-row-selects">
             <div class="filter-field">
-                <span class="filter-label">Aite | Place</span>
+                <span class="filter-label">Àite | Place</span>
                 <select class="filter-select filter-select-place js-searchable-select" name="place" data-placeholder="All places">
                     <option value="">All places</option>
                     <?php foreach (($places_all ?? []) as $p): ?>
@@ -92,7 +95,7 @@ $subgenresByGenreJson = json_encode($subgenresByGenreForFilter, JSON_HEX_TAG | J
             </div>
 
             <div class="filter-field">
-                <span class="filter-label">Seorsa | Genre</span>
+                <span class="filter-label">Seòrsa | Genre</span>
                 <select class="filter-select js-searchable-select" name="genre" data-placeholder="All genres">
                     <option value="">All</option>
                     <?php foreach (($genres ?? []) as $g): ?>
@@ -103,7 +106,7 @@ $subgenresByGenreJson = json_encode($subgenresByGenreForFilter, JSON_HEX_TAG | J
             </div>
 
             <div class="filter-field">
-                <span class="filter-label">Fo-sheorsa | Sub-genre</span>
+                <span class="filter-label">Fo-sheòrsa | Sub-genre</span>
                 <select class="filter-select js-searchable-select" name="subgenre[]" data-placeholder="All sub-genres">
                     <option value="">All</option>
                     <?php foreach (($subgenres_all ?? []) as $sg): ?>
@@ -128,20 +131,20 @@ $subgenresByGenreJson = json_encode($subgenresByGenreForFilter, JSON_HEX_TAG | J
         <div class="filter-row-options">
             <div class="checkbox-group">
                 <input type="checkbox" id="has-translation" name="has_en" value="1" <?= $hasEn ? 'checked' : '' ?>>
-                <label for="has-translation">Has translation</label>
+                <label for="has-translation">Eadar-theagachadh ann | Has translation</label>
             </div>
             <div class="checkbox-group">
                 <input type="checkbox" id="has-transcription" name="has_transcription" value="1" <?= $hasTranscription ? 'checked' : '' ?>>
-                <label for="has-transcription">Has transcription</label>
+                <label for="has-transcription">Tàr-sgrìobhadh ann | Has transcription</label>
             </div>
             <div class="filter-spacer"></div>
-            <button type="submit" class="btn-apply">Apply</button>
-            <a class="btn-reset" href="<?= e(base_path('/recordings')) ?>">Reset</a>
+            <button type="submit" class="btn-apply">Cuir air | Apply</button>
+            <a class="btn-reset" href="<?= e(base_path('/recordings')) ?>">Ath-shuidhich | Reset</a>
         </div>
     </form>
 
     <div class="results-bar">
-        <span class="results-count"><?= number_format((int)($result['total'] ?? 0)) ?> results</span>
+        <span class="results-count"><?= number_format((int)($result['total'] ?? 0)) ?> toraidhean | results</span>
 
         <form method="get" class="results-controls">
             <input type="hidden" name="q" value="<?= e($kw) ?>">

@@ -19,13 +19,16 @@ $bodyClass = 'page-homepage';
         <p class="hero-stats">2,151 recordings from 161 voices across Cape Breton</p>
         <div class="hero-cta-row">
             <a href="<?= e(base_path('/map')) ?>" class="hero-cta-primary">Explore the Map</a>
-            <a href="<?= e(base_path('/recordings')) ?>" class="hero-cta-secondary">Browse Recordings</a>
+            <a class="hero-cta-primary" href="<?= e(base_path('/recordings')) ?>">
+                <i data-lucide="search" class="icon-md" aria-hidden="true"></i>
+                Search the Recordings
+            </a>
         </div>
     </div>
 </section>
 
 <section class="featured-informants">
-    <h2 class="section-heading">Beulaichean | Featured Informants</h2>
+    <h2 class="section-heading">Bhon a’ chruinneachadh | From the collection</h2>
 
     <?php $featuredInformants = is_array($featuredInformants ?? null) ? $featuredInformants : []; ?>
     <div class="informant-row">
@@ -72,7 +75,7 @@ $bodyClass = 'page-homepage';
 </section>
 
 <section class="featured-recordings related-section">
-    <h2 class="section-heading related-heading">Clàraidhean Taghte | Featured Recordings</h2>
+    <h2 class="section-heading related-heading">Bhon a’ chruinneachadh | From the collection</h2>
 
     <?php $featuredRecordings = is_array($featuredRecordings ?? null) ? $featuredRecordings : []; ?>
     <div class="related-row">
@@ -97,7 +100,6 @@ $bodyClass = 'page-homepage';
                 $recordingGenre = trim((string)($recording['genre_name'] ?? ''));
                 $recordingInformant = trim((string)(($recording['informant_first'] ?? '') . ' ' . ($recording['informant_last'] ?? '')));
 
-                if ($recordingDate !== '') $metaParts[] = $recordingDate;
                 if ($recordingGenre !== '') $metaParts[] = $recordingGenre;
                 if ($recordingInformant !== '') $metaParts[] = $recordingInformant;
 
@@ -121,8 +123,9 @@ $bodyClass = 'page-homepage';
 
 <section class="collection-intro">
     <h2 class="collection-intro-heading">About the Collection</h2>
-    <p class="collection-intro-text">Sruth nan Gàidheal (Gaelstream) is a digital archive of Scottish Gaelic oral traditions from Cape Breton, Nova Scotia. The collection preserves
-        over 2,000 recordings of songs, stories, beliefs, proverbs, and customs from 161 tradition bearers across the island.</p>
-    <p class="collection-intro-text">These recordings, gathered between the 1930s and 1990s, capture a living tradition carried from the Scottish Highlands and Islands to Nova
-        Scotia. Each voice connects Cape Breton to communities in Uist, Barra, Mull, and the Scottish mainland - a bridge of language, music, and memory across the Atlantic.</p>
+
+    <p class="collection-intro-text">Sruth nan Gàidheal (Gaelstream) is a digital archive of Scottish Gaelic oral traditions from Cape Breton, Nova Scotia. The collection preserves over 2,000 recordings of songs, stories, beliefs, proverbs, and customs from 161 tradition bearers across the island.</p>
+
+    <p class="collection-intro-text">These recordings, gathered mostly between the late 1970s and early 1980s, capture a living tradition carried from the Scottish Highlands and Islands to Nova Scotia. Each voice connects Cape Breton to communities in the Scottish Gàidhealtachd – a bridge of language, music, and memory across the Atlantic.</p>
+
 </section>

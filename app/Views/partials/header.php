@@ -35,13 +35,12 @@ $logoPath = $isHome
     </button>
 
     <ul class="nav-links">
-        <li><?= nav_link(base_path('/'), 'Home', 'home', $activeNav) ?></li>
-        <li><?= nav_link(base_path('/recordings'), 'Recordings', 'recordings', $activeNav) ?></li>
-        <li><?= nav_link(base_path('/informants'), 'Informants', 'informants', $activeNav) ?></li>
-        <li><?= nav_link(base_path('/map'), 'Map', 'map', $activeNav) ?></li>
+        <li><?= nav_link(base_path('/'), 'Dachaigh | Home', 'home', $activeNav) ?></li>
+        <li><?= nav_link(base_path('/informants'), 'Beulaichean | Informants', 'informants', $activeNav) ?></li>
+        <li><?= nav_link(base_path('/map'), 'Mapa | Map', 'map', $activeNav) ?></li>
         <li class="nav-item-dropdown<?= $aboutGroupActive ? ' is-active' : '' ?>">
             <a class="nav-dropdown-toggle<?= $aboutGroupActive ? ' active' : '' ?>" aria-haspopup="true" aria-expanded="false">
-                About
+                Mu dheidhinn | About
                 <i data-lucide="chevron-down" class="icon-sm" aria-hidden="true"></i>
             </a>
             <ul class="nav-dropdown-menu" aria-label="About pages">
@@ -54,7 +53,7 @@ $logoPath = $isHome
 
     <a class="nav-search-btn" href="<?= e(base_path('/recordings')) ?>">
         <i data-lucide="search" class="icon-md" aria-hidden="true"></i>
-        Search
+        Rannsaich | Search
     </a>
 </nav>
 

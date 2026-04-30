@@ -313,7 +313,7 @@ SQL;
         ':sloinneadh_breithe' => $r['sloinneadh_breithe'] ?? null,
         ':ainm' => $r['ainm'] ?? null,
         ':tiotal_ga' => $r['tiotal_ga'] ?? null,
-        ':patronymic' => $r['patronymic'] ?? null,
+        ':patronymic' => $r['sloinneadh / patronymic'] ?? null,
         ':gender' => $r['gender'] ?? null,
         ':years_recorded' => $r['years_recorded'] ?? null,
         ':community_origin_canada' => $r['community_origin_canada'] ?? null,

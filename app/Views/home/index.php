@@ -18,10 +18,10 @@ $bodyClass = 'page-homepage';
         <img class="hero-map" src="<?= e(base_path('/assets/images/gaelstream-map.svg')) ?>" alt="Map of Nova Scotia and Cape Breton">
         <p class="hero-stats">2,151 recordings from 161 voices across Cape Breton</p>
         <div class="hero-cta-row">
-            <a href="<?= e(base_path('/map')) ?>" class="hero-cta-primary">Explore the Map</a>
+            <a href="<?= e(base_path('/map')) ?>" class="hero-cta-primary">Rannsaich am mapa | Explore the Map</a>
             <a class="hero-cta-primary" href="<?= e(base_path('/recordings')) ?>">
                 <i data-lucide="search" class="icon-md" aria-hidden="true"></i>
-                Search the Recordings
+                Rannsaich | Search the Recordings
             </a>
         </div>
     </div>
@@ -122,7 +122,7 @@ $bodyClass = 'page-homepage';
 </section>
 
 <section class="collection-intro">
-    <h2 class="collection-intro-heading">About the Collection</h2>
+    <h2 class="collection-intro-heading">Mun a’ Chruinneachadh | About the Collection</h2>
 
     <p class="collection-intro-text">Sruth nan Gàidheal (Gaelstream) is a digital archive of Scottish Gaelic oral traditions from Cape Breton, Nova Scotia. The collection preserves over 2,000 recordings of songs, stories, beliefs, proverbs, and customs from 161 tradition bearers across the island.</p>
 

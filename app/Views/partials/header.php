@@ -36,7 +36,7 @@ $logoPath = $isHome
 
     <ul class="nav-links">
         <li><?= nav_link(base_path('/'), 'Dachaigh | Home', 'home', $activeNav) ?></li>
-        <li><?= nav_link(base_path('/informants'), 'Beulaichean | Informants', 'informants', $activeNav) ?></li>
+        <li><?= nav_link(base_path('/informants'), 'Beulaichean | Contributors', 'informants', $activeNav) ?></li>
         <li><?= nav_link(base_path('/map'), 'Mapa | Map', 'map', $activeNav) ?></li>
         <li class="nav-item-dropdown<?= $aboutGroupActive ? ' is-active' : '' ?>">
             <a class="nav-dropdown-toggle<?= $aboutGroupActive ? ' active' : '' ?>" aria-haspopup="true" aria-expanded="false">

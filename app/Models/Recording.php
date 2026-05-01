@@ -50,7 +50,9 @@ final class Recording {
           ORDER BY ii.slot ASC, ii.filename ASC
           LIMIT 1
         ) AS informant_image_filename,
-        c.composer_id, c.first_name AS composer_first, c.last_name AS composer_last,
+        c.composer_id, c.first_name AS composer_first, c.last_name AS composer_last, c.patronymic AS composer_patronymic,
+        c.dates_raw AS composer_dates, c.location_community AS composer_community, c.location_county AS composer_county,
+        c.tradition_scotland AS composer_tradition,
         r.transcription_text AS transcription_text, r.transcription_html AS transcription_html
       FROM recording r
       JOIN informant i ON i.informant_id = r.informant_id

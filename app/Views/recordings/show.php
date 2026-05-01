@@ -84,9 +84,6 @@ $transcriptionHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu'
 
         <div class="recording-header">
             <h1 class="recording-title"><?= e($recordingTitle) ?></h1>
-            <?php if ($genreName !== ''): ?>
-            <a class="tag <?= e($genreTagClass) ?>" href="<?= e($genreFilterUrl) ?>"><?= e($genreName) ?></a>
-            <?php endif; ?>
         </div>
 
         <?php if ($hasAudio): ?>
@@ -123,13 +120,6 @@ $transcriptionHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu'
             <div class="column-left">
                 <div class="metadata-section">
 
-                    <?php if ($composerName !== '' && $composerUrl !== ''): ?>
-                    <div class="metadata-row">
-                        <div class="metadata-label">Bard | Composer</div>
-                        <div class="metadata-value"><a href="<?= e($composerUrl) ?>"><?= e($composerName) ?></a></div>
-                    </div>
-                    <?php endif; ?>
-
                     <?php if ($origin !== ''): ?>
                     <div class="metadata-row">
                         <div class="metadata-label">Àite tùsail | Place of origin</div>
@@ -165,6 +155,56 @@ $transcriptionHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu'
                         </div>
                     </div>
                     <?php endif; ?>
+
+
+                    <!-- song only metadata -->
+                    <?php if ($genreName == 'Òran | Song'): ?>
+
+                    <hr>
+
+                        <?php if ($composerName !== '' && $composerUrl !== ''): ?>
+                            <div class="metadata-row">
+                                <div class="metadata-label">Bard | Composer</div>
+                                <div class="metadata-value"><a href="<?= e($composerUrl) ?>"><?= e($composerName) ?></a></div>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($rec['composer_patronymic'])): ?>
+                            <div class="metadata-row">
+                                <div class="metadata-label">Sloinneadh a’ Bhàird | Composer Patronymic</div>
+                                <div class="metadata-value"><?= trim($rec["composer_patronymic"]) ?></div>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($rec['composer_dates'])): ?>
+                            <div class="metadata-row">
+                                <div class="metadata-label">Cinn-Latha a’ Bhàird | Composer Dates</div>
+                                <div class="metadata-value"><?= trim($rec["composer_dates"]) ?></div>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($rec['composer_community'])): ?>
+                            <div class="metadata-row">
+                                <div class="metadata-label">Àite Thusail a’ Bhàird | Composer’s Place of Origin</div>
+                                <div class="metadata-value">
+                                    <?= trim($rec["composer_community"]) ?>
+                                    <?= empty($rec["composer_county"]) ? '' : ' (' . trim($rec["composer_county"]) . ')' ?>
+                                </div>
+                            </div>
+                        <?php endif; ?>
+
+                        <?php if (!empty($rec['composer_tradition'])): ?>
+                            <div class="metadata-row">
+                                <div class="metadata-label">Dualchas a' Bhàird | Composer's Tradition</div>
+                                <div class="metadata-value"><?= trim($rec["composer_tradition"]) ?></div>
+                            </div>
+                        <?php endif; ?>
+
+                    <hr>
+
+                    <?php endif; ?>
+
+                    <!-- end of song only metadata -->
 
                     <?php if (!empty($rec['recording_date'])): ?>
                     <div class="metadata-row">
@@ -210,7 +250,7 @@ $transcriptionHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu'
                 </div>
                 <?php endif; ?>
 
-                <?php if ($hasTranscription || $usePublicationNote): ?>
+                <?php if ($hasTranscription): ?>
                 <div class="transcription-section">
                     <style>
                         .transcription-section p {
@@ -221,9 +261,7 @@ $transcriptionHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu'
                     <h2 class="transcription-heading">Tar-sgriobhadh | Transcription</h2>
                     <div class="d-flex gap-3">
                         <button class="toggle-btn" type="button" id="toggle-transcription">Hide transcription</button>
-                        <?php if (!$usePublicationNote): ?>
                         <a class="toggle-btn" href="<?= e(base_path('/recordings/' . rawurlencode($recId) . '/download-transcription')) ?>">Download transcription</a>
-                        <?php endif; ?>
                     </div>
                     <div class="transcription-text" id="transcription-content">
                         <?php if (trim($transcriptionHtml) !== ''): ?>
@@ -235,6 +273,14 @@ $transcriptionHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu'
 
 
                 </div>
+                <?php elseif ($usePublicationNote): ?>
+                    <div class="transcription-section notes-section">
+                        <div class="transcription-divider"></div>
+                        <div class="transcription-text">
+                            <p><strong>Published transcription:</strong><br><?= e($transcriptionHtml) ?></p>
+                        </div>
+                    </div>
+
                 <?php endif; ?>
 
                 <?php if ($hasNotes): ?>
@@ -280,7 +326,7 @@ $transcriptionHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu'
         </div>
 
         <div class="related-section">
-            <h2 class="related-heading">Is dòcha gum bu toil leat na leanas | You might like the following</h2>
+            <h2 class="related-heading">Ma dh’fhaoidte gum bu toil leibh na leanas | You might like the following</h2>
             <div class="related-row">
                 <?php if (!empty($relatedRecords)): ?>
                 <?php

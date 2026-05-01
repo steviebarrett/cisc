@@ -21,7 +21,7 @@ $bodyClass = 'page-homepage';
             <a href="<?= e(base_path('/map')) ?>" class="hero-cta-primary">Rannsaich am mapa | Explore the Map</a>
             <a class="hero-cta-primary" href="<?= e(base_path('/recordings')) ?>">
                 <i data-lucide="search" class="icon-md" aria-hidden="true"></i>
-                Rannsaich | Search the Recordings
+                Rannsaich a’ chruinneachadh | Search the Recordings
             </a>
         </div>
     </div>

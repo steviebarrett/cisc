@@ -74,11 +74,11 @@ $subgenresByGenreJson = json_encode($subgenresByGenreForFilter, JSON_HEX_TAG | J
 
             <div class="filter-field filter-field-grow">
                 <span class="filter-label">Rannsaich | Search</span>
-                <input type="text" class="filter-input" name="q" value="<?= e($kw) ?>" placeholder="Search the collection… | Rannsaich a’ chruinneachadh…">
+                <input type="text" class="filter-input" name="q" value="<?= e($kw) ?>" placeholder="Rannsaich a’ chruinneachadh… | Search the collection… ">
             </div>
             <div class="filter-field filter-field-grow">
                 <span class="filter-label">Rannsaich na tar-sgrìobhaidhean | Search the transcriptions</span>
-                <input type="text" class="filter-input" name="transcription_q" value="<?= e($transcriptionQ) ?>" placeholder="Search transcription content...">
+                <input type="text" class="filter-input" name="transcription_q" value="<?= e($transcriptionQ) ?>" placeholder="Rannsaich na tar-sgrìobhaidhean … | Search the transcriptions…">
             </div>
         </div>
 

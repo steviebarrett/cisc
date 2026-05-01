@@ -2640,6 +2640,7 @@ body.page-homepage #searchPanel {
   display: flex;
   flex-direction: row;
   align-items: baseline;
+  gap: 2rem;
 }
 
 .page-informant-detail .metadata-label {

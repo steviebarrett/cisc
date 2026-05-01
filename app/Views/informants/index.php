@@ -27,10 +27,10 @@ If Gaelic fields are blank, it falls back to English fields, then informant_id
 -->
 
 <div class="page-container">
-    <h1 class="page-title">Beulaichean | Informants</h1>
+    <h1 class="page-title">Beulaichean | Contributors</h1>
 
     <div class="controls-bar">
-        <span class="controls-count"><?= number_format((int)($result['total'] ?? 0)) ?> informants</span>
+        <span class="controls-count"><?= number_format((int)($result['total'] ?? 0)) ?> contributors</span>
 
         <form method="get" class="controls-right">
             <?php if ($kw !== ''): ?>
@@ -83,11 +83,11 @@ If Gaelic fields are blank, it falls back to English fields, then informant_id
 
             <div class="informant-content">
                 <div class="informant-name-en">
-                    <?= $kw !== '' ? highlight_ga($name, $kw) : e($name) ?>
+                    <?= $kw !== '' ? highlight_ga($nameGa, $kw) : e($nameGa) ?>
                 </div>
 
                 <?php if ($nameGa !== ''): ?>
-                <div class="informant-name-gd"><?= $kw !== '' ? highlight_ga($nameGa, $kw) : e($nameGa) ?></div>
+                <div class="informant-name-gd"><?= $kw !== '' ? highlight_ga($name, $kw) : e($name) ?></div>
                 <?php endif; ?>
 
                 <?php if ($community !== ''): ?>

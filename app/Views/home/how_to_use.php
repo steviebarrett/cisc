@@ -66,7 +66,7 @@ $fullWidth = true;
                 <div class="step-number">6</div>
                 <div class="step-content">
                     <div class="step-title">Browse titles</div>
-                    <p class="step-description"> Browse all 2,151 recordings listed under the search options. The “paper” icon indicates that a transcription is included.<i data-lucide="file-text" aria-label="Has transcription"></i></p>
+                    <p class="step-description"> Browse all 2,151 recordings listed under the search options. The “paper” icon indicates that a transcription is included.<i data-lucide="file-text" aria-label="Has transcription"></i> Items available with an English translation are marked with “EN.” Published transcriptions are referenced.</p>
                 </div>
             </div>
         </div>
@@ -78,7 +78,7 @@ $fullWidth = true;
 
         <div class="metadata-list">
             <div class="metadata-item">
-                <span class="metadata-label">Beulaiche | Informant</span>
+                <span class="metadata-label">Beulaiche | Contributor</span>
                 <span class="metadata-description">The tradition bearer who performed the recording. Click their name to see their full profile and other recordings.</span>
             </div>
 

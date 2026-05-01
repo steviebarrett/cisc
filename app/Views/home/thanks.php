@@ -28,7 +28,7 @@ $fullWidth = true;
             <span class="quote-translation">It is in the voices that the heritage lives.</span>
         </div>
 
-        <p class="content-section-body">We also extend heartfelt thanks to the many family members, friends, and community historians who shared memories, genealogical knowledge, photographs, and local context to inform the biographies newly written for each tradition bearer. Their care, accuracy, and generosity helped ensure that these lives and contributions are represented with respect, depth, and connection to place.</p>
+        <p class="content-section-body">We also extend heartfelt thanks to the many family members, friends, and community historians who shared memories, genealogical knowledge, photographs, and local context to inform the biographies newly written for each tradition bearer. They are listed in the drop-down box, below. Their care, accuracy, and generosity helped ensure that these lives and contributions are represented with respect, depth, and connection to place.</p>
 
         <div class="container my-0">
             <div class="accordion" id="namesAccordion">
@@ -36,13 +36,13 @@ $fullWidth = true;
                 <!-- Group -->
                 <div class="accordion-item border-0">
                     <h2 class="accordion-header" id="headingNames">
-                        <button class="accordion-button collapsed fw-semibold bg-light"
+                        <button class="accordion-button collapsed fw-semibold"
                                 type="button"
                                 data-bs-toggle="collapse"
                                 data-bs-target="#collapseNames"
                                 aria-expanded="false"
                                 aria-controls="collapseNames">
-                            Contributions
+                            Le taing do | With thanks to…
                         </button>
                     </h2>
 
@@ -298,7 +298,7 @@ $fullWidth = true;
                     <i data-lucide="landmark" class="icon-lg"></i>
                 </div>
                 <div class="institution-info">
-                    <span class="institution-name">Social Sciences and Humanities Research Council of Canada (SSHRC)</span>
+                    <span class="institution-name"><a href="https://sshrc-crsh.canada.ca/en.aspx" title="SSHRC" target="_blank">Social Sciences and Humanities Research Council of Canada</a> (SSHRC)</span>
                     <span class="institution-role">Funds postsecondary research, research training, and knowledge mobilization in the social sciences and humanities</span>
                 </div>
             </div>
@@ -308,8 +308,8 @@ $fullWidth = true;
                     <i data-lucide="landmark" class="icon-lg"></i>
                 </div>
                 <div class="institution-info">
-                    <span class="institution-name">Cape Breton University</span>
-                    <span class="institution-role">A university committed to teaching, learning, and the future of Cape Breton Island, and home of the Cainnt is Ceathramhan | Language and Lyrics project</span>
+                    <span class="institution-name"><a href="https://www.cbu.ca/" title="Cape Breton University" target="_blank">Cape Breton University</a></span>
+                    <span class="institution-role">A university committed to teaching, learning, and the future of Cape Breton Island, and home of the <a href="https://languageinlyrics.com/" title="Cainnt is Ceathramhan | Language and Lyrics project" target="_blank">Cainnt is Ceathramhan | Language and Lyrics project</a></span>
                 </div>
             </div>
 
@@ -318,7 +318,7 @@ $fullWidth = true;
                     <i data-lucide="landmark" class="icon-lg"></i>
                 </div>
                 <div class="institution-info">
-                    <span class="institution-name">St. Francis Xavier University</span>
+                    <span class="institution-name"><a href="https://www.stfx.ca/" title="St. Francis Xavier University" target="_blank">St. Francis Xavier University</a></span>
                     <span class="institution-role">A top-ranked Atlantic Canadian university offering Celtic Studies and home of the Fr. Brewer Celtic Collection at the Angus L. Macdonald Library, where the original Cape Breton Gaelic Folklore Collection is maintained</span>
                 </div>
             </div>
@@ -328,7 +328,7 @@ $fullWidth = true;
                     <i data-lucide="landmark" class="icon-lg"></i>
                 </div>
                 <div class="institution-info">
-                    <span class="institution-name">DASG, University of Glasgow</span>
+                    <span class="institution-name"><a href="https://dasg.ac.uk/" title="DASG" target="_blank">DASG</a>, <a href="https://gla.ac.uk" title="University of Glasgow" target="_blank">University of Glasgow</a></span>
                     <span class="institution-role">Online repository of digitised texts and lexical resources for Scottish Gaelic, providing archive hosting and technical infrastructure</span>
                 </div>
             </div>
@@ -338,7 +338,7 @@ $fullWidth = true;
                     <i data-lucide="landmark" class="icon-lg"></i>
                 </div>
                 <div class="institution-info">
-                    <span class="institution-name">Iomairtean na Gàidhlig | Office of Gaelic Affairs</span>
+                    <span class="institution-name"><a href="https://www.novascotia.ca/government/gaelic-affairs" title="Iomairtean na Gàidhlig | Office of Gaelic Affairs" target="_blank">Iomairtean na Gàidhlig | Office of Gaelic Affairs</a></span>
                     <span class="institution-role">Works with partners to protect and promote the Gaelic language and culture</span>
                 </div>
             </div>
@@ -348,7 +348,7 @@ $fullWidth = true;
                     <i data-lucide="landmark" class="icon-lg"></i>
                 </div>
                 <div class="institution-info">
-                    <span class="institution-name">Baile nan Gàidheal | Highland Village Museum</span>
+                    <span class="institution-name"><a href="https://highlandvillage.novascotia.ca/" title="Baile nan Gàidheal | Highland Village Museum" target="_blank">Baile nan Gàidheal | Highland Village Museum</a></span>
                     <span class="institution-role">Community partner and folklife centre celebrating the story, language and living culture of Nova Scotia Gaels</span>
                 </div>
             </div>
@@ -358,7 +358,7 @@ $fullWidth = true;
                     <i data-lucide="landmark" class="icon-lg"></i>
                 </div>
                 <div class="institution-info">
-                    <span class="institution-name">Colaisde na Gàidhlig | The Gaelic College</span>
+                    <span class="institution-name"><a href="https://gaeliccollege.edu/" title="Colaisde na Gàidhlig | The Gaelic College" target="_blank">Colaisde na Gàidhlig | The Gaelic College</a></span>
                     <span class="institution-role">Community partner promoting, preserving, and teaching Gaelic culture and its expressions</span>
                 </div>
             </div>
@@ -368,7 +368,7 @@ $fullWidth = true;
                     <i data-lucide="landmark" class="icon-lg"></i>
                 </div>
                 <div class="institution-info">
-                    <span class="institution-name">Tobar an Dualchais</span>
+                    <span class="institution-name"><a href="https://www.tobarandualchais.co.uk/" title="Tobar an Dualchais" target="_blank">Tobar an Dualchais</a></span>
                     <span class="institution-role">Dedicated to the presentation and promotion of audio recordings of Scotland’s cultural heritage and to create a broader and deeper understanding of their content</span>
                 </div>
             </div>
@@ -380,9 +380,14 @@ $fullWidth = true;
         <!--h2 class="content-section-heading">Luchd-maoineachaidh | Funders</h2>
         <p class="content-section-body">This project has been made possible through the generous support of the following organizations.</p-->
         <div class="funder-logos">
-            <div class="funder-placeholder"><img src="<?= e(base_path('/assets/images/logos/stfx.png')) ?>" alt="St. Francis Xavier University"></div>
-            <div class="funder-placeholder"><img src="<?= e(base_path('/assets/images/logos/cape-breton-university--logo--mono.svg')) ?>" alt="Cape Breton University"></div>
-            <div class="funder-placeholder"><img height="60px;" src="<?= e(base_path('/assets/images/logos/dasg--logo--mono.svg')) ?>" alt="DASG"></div>
+            <div class="funder-placeholder"><img src="<?= e(base_path('/assets/images/logos/thanks/sshrc.png')) ?>" alt="SSHRC"></div>
+            <div class="funder-placeholder"><img src="<?= e(base_path('/assets/images/logos/thanks/cbu.png')) ?>" alt="Cape Breton University"></div>
+            <div class="funder-placeholder"><img src="<?= e(base_path('/assets/images/logos/thanks/stfx.png')) ?>" alt="St. Francis Xavier University"></div>
+            <div class="funder-placeholder"><img src="<?= e(base_path('/assets/images/logos/thanks/dasg.png')) ?>" alt="DASG"></div>
+            <div class="funder-placeholder"><img src="<?= e(base_path('/assets/images/logos/thanks/gaelic_affairs.png')) ?>" alt="Gaelic Affairs"></div>
+            <div class="funder-placeholder"><img src="<?= e(base_path('/assets/images/logos/thanks/highland_village.png')) ?>" alt="Highland Village"></div>
+            <div class="funder-placeholder"><img src="<?= e(base_path('/assets/images/logos/thanks/gaelic_college.png')) ?>" alt="Gaelic College"></div>
+            <div class="funder-placeholder"><img src="<?= e(base_path('/assets/images/logos/tobar-an-dualchais.jpg')) ?>" alt="Tobar an Dualchais"></div>
         </div>
     </section>
 

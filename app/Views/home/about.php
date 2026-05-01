@@ -43,7 +43,8 @@ $fullWidth = true;
 
         <p>Community-based partners played a central role in transcription, research, and knowledge sharing. Staff at the Gaelic College, Highland Village Museum, and Office of Gaelic Affairs contributed linguistic and cultural expertise, while Gaelic speakers and learners participated in transcription activities that doubled as professional development and community engagement. This work built local capacity, valued Gaelic fluency as skilled labour, and ensured that cultural knowledge remained central to decision-making.</p>
 
-        <p>The project also builds directly on earlier work from the SSHRC-funded <strong>Language in Lyrics</strong> initiative, which created a province-wide index of more than 6,000 Gaelic songs known in Nova Scotia. That work highlighted the cultural significance of the Nova Scotia Gaelic Folklore Collection and provided an intellectual and technical foundation for Gaelstream.</p>
+        <p>The project also builds directly on earlier work from the SSHRC-funded <strong>Language in Lyrics</strong> initiative, which created
+            <a href="https://dasg.ac.uk/LIL/" title="Language in Lyrics" target="_blank">an index of more than 6,000 Gaelic songs known in Nova Scotia</a>. That work highlighted the cultural significance of the Nova Scotia Gaelic Folklore Collection and provided an intellectual and technical foundation for Gaelstream.</p>
 
         <h3>Why Gaelstream matters</h3>
 
@@ -52,18 +53,6 @@ $fullWidth = true;
         <p>At the same time, Gaelstream demonstrates how digital humanities approaches can be aligned with community priorities. Rather than treating the archive as a static repository, the project emphasizes use, engagement, and relationship-building. It strengthens transatlantic connections among Gaelic communities, enhances opportunities for teaching and research, and ensures that a vital cultural resource remains accessible and meaningful well into the future.</p>
 
         <p>In doing so, Gaelstream has been transformed into a renewed, collaborative, and sustainable platform—one that honours the voices of the past while supporting the needs of today’s Gaelic speakers and learners.</p>
-
-        <h2>Am Proiseact | The Project</h2>
-
-        <p>Gaelstream is a collaborative project directed by Dr. Heather Sparling (<a href="https://www.cbu.ca/">Cape Breton University</a>) with Susan Cameron (<a href="https://www.stfx.ca/">St. Francis Xavier University</a> librarian, retired) and Dr. Michael Linkletter (<a href="https://www.stfx.ca/">St. Francis Xavier University</a> Celtic Studies).</p>
-
-        <p>Institutional partners include <a href="https://www.stfx.ca/">St. Francis Xavier University</a> (StFX) and the <a href="https://dasg.ac.uk/">Digital Archive of Scottish Gaelic</a> (DASG) at the University of Glasgow, with support from the <a href="https://www.novascotia.ca/government/gaelic-affairs">Nova Scotia Office of Gaelic Affairs</a> (OGA), <a href="https://highlandvillage.novascotia.ca/">Baile nan Gàidheal</a> | the Highland Village Museum, and <a href="https://gaeliccollege.edu/">Colaisde na Gàidhlig</a> | the Gaelic College. We are also grateful for the generous assistance of <a href="https://www.tobarandualchais.co.uk/">Tobar an Dualchais</a>.</p>
-
-        <p>StFX launched Sruth nan Gàidheal, the digital version of the Cape Breton Gaelic Folklore Collection, in the mid-2000s. It quickly became a beloved resource for the Nova Scotia Gaelic community, used by Gaelic teachers, learners, singers, and storytellers wanting to deepen their knowledge and understanding of Cape Breton Gaelic language and culture.</p>
-
-        <p>The project complements earlier work by the <a href="https://dasg.ac.uk/LIL/">Nova Scotia Gaelic Song Index</a>, which indexes the songs in Gaelstream.</p>
-
-        <p>The interactive map feature connects Cape Breton communities to their Scottish origins, making visible the geographic bridge that these traditions crossed. By linking recordings to informants, places, and traditions, Gaelstream reveals the web of connections that sustained Gaelic culture in Nova Scotia for over two centuries.</p>
 
         <h3>Fios thugainn | Contact</h3>
 

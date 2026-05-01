@@ -58,7 +58,11 @@ $biographyHtml = $q !== ''
     : (string)($inf['biography_html'] ?? '');
 
 // trim the first three lines from biography
-$biographyHtml = preg_replace('#^<p>\s*(<strong>.*?</strong>\s*<br\s*/?>\s*){2}<strong>.*?</strong>\s*</p>#si', '', $biographyHtml);
+$biographyHtml = preg_replace(
+        '#^\s*(?:<p>\s*(?:<br\s*/?>)?\s*</p>\s*)*<p>\s*<strong>.*?</p>\s*(?:<p>\s*(?:<br\s*/?>)?\s*</p>\s*)*#si',
+        '',
+        $biographyHtml
+);
 // Note from Dylan - I remove <br>s and empty <p> tags so display can properly be handled by p margins and line height
 $biographyHtml = preg_replace('~<br\s*/?>~i', '', $biographyHtml) ?? $biographyHtml;
 $biographyHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu', '', $biographyHtml) ?? $biographyHtml;

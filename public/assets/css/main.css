@@ -2548,7 +2548,7 @@ body.page-homepage #searchPanel {
 
 .page-informant-detail .profile-photo-wrap {
   position: relative;
-  width: 280px;
+  width: 500px;
 }
 
 .page-informant-detail .profile-photo-button {
@@ -2575,7 +2575,7 @@ body.page-homepage #searchPanel {
 }
 
 .page-informant-detail .profile-photo {
-  width: 280px;
+  width: 500px;
   height: 350px;
   border-radius: var(--photo-radius);
   border: var(--photo-border);

@@ -77,7 +77,7 @@ $subgenresByGenreJson = json_encode($subgenresByGenreForFilter, JSON_HEX_TAG | J
                 <input type="text" class="filter-input" name="q" value="<?= e($kw) ?>" placeholder="Search the collection… | Rannsaich a’ chruinneachadh…">
             </div>
             <div class="filter-field filter-field-grow">
-                <span class="filter-label">Rannsaich na tàr-sgrìobhaidhean | Search the transcriptions</span>
+                <span class="filter-label">Rannsaich na tar-sgrìobhaidhean | Search the transcriptions</span>
                 <input type="text" class="filter-input" name="transcription_q" value="<?= e($transcriptionQ) ?>" placeholder="Search transcription content...">
             </div>
         </div>
@@ -135,7 +135,7 @@ $subgenresByGenreJson = json_encode($subgenresByGenreForFilter, JSON_HEX_TAG | J
             </div>
             <div class="checkbox-group">
                 <input type="checkbox" id="has-transcription" name="has_transcription" value="1" <?= $hasTranscription ? 'checked' : '' ?>>
-                <label for="has-transcription">Tàr-sgrìobhadh ann | Has transcription</label>
+                <label for="has-transcription">Tar-sgrìobhadh ann | Has transcription</label>
             </div>
             <div class="filter-spacer"></div>
             <button type="submit" class="btn-apply">Cuir air | Apply</button>

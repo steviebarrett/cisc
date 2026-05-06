@@ -84,7 +84,7 @@ $biographyHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu', ''
     ?>
 
     <div class="page-container">
-        <a href="<?= e($backUrl) ?>" class="back-link"><i data-lucide="arrow-left" class="icon-sm" aria-hidden="true"></i> Informants</a>
+        <a href="<?= e($backUrl) ?>" class="back-link"><i data-lucide="arrow-left" class="icon-sm" aria-hidden="true"></i> Beulaichean | Contributors</a>
 
         <div class="profile-header">
             <div class="profile-photo-column">

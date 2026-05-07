@@ -36,8 +36,6 @@
     <footer class="footer">
         <div class="footer-links">
             <span>&copy;<?= date('Y') ?> Gaelstream</span>
-            <a href="<?= e(base_path('/about')) ?>">Privacy Policy</a>
-            <a href="<?= e(base_path('/how_to_use')) ?>">Terms of Use</a>
         </div>
         <div class="footer-logos">
             <img src="<?= e(base_path('/assets/images/logos/stfx.png')) ?>" alt="St. Francis Xavier University">

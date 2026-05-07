@@ -4013,6 +4013,37 @@ body.lightbox-open {
   background: var(--color-primary-dark);
 }
 
+/*
+    Extra CSS for radio-select to handle huge subjects list
+ */
+.subject-select-field {
+  position: relative;
+}
+
+.subject-select-toggle {
+  width: 100%;
+  text-align: left;
+}
+
+.subject-select-menu {
+  position: absolute;
+  z-index: 1000;
+  left: 0;
+  right: 0;
+  max-height: 320px;
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: var(--tag-radius);
+  padding: 0.5rem;
+}
+
+.subject-select-option {
+  display: block;
+  padding: 0.3rem 0.45rem;
+  cursor: pointer;
+}
+
 .page-search-filters .btn-reset {
   display: flex;
   align-items: center;

@@ -116,15 +116,32 @@ $subgenresByGenreJson = json_encode($subgenresByGenreForFilter, JSON_HEX_TAG | J
                 </select>
             </div>
 
-            <div class="filter-field">
+            <div class="filter-field subject-select-field">
                 <span class="filter-label">Cuspair | Subject</span>
-                <select class="filter-select js-searchable-select" name="subject" data-placeholder="All subjects">
-                    <option value="">All</option>
+
+                <button type="button" class="filter-select subject-select-toggle">
+                    <?= e($selectedSubject ?: 'All') ?>
+                </button>
+
+                <div class="subject-select-menu" hidden>
+                    <label class="subject-select-option">
+                        <input type="radio" name="subject" value="" <?= empty($selectedSubject) ? 'checked' : '' ?>>
+                        All
+                    </label>
+
                     <?php foreach (($subjects_all ?? []) as $s): ?>
-                    <?php $subjectValue = trim((string)$s); ?>
-                    <option value="<?= e($subjectValue) ?>" <?= $subjectValue === $selectedSubject ? 'selected' : '' ?>><?= e($subjectValue) ?></option>
+                        <?php $subjectValue = trim((string)$s); ?>
+                        <label class="subject-select-option">
+                            <input
+                                    type="radio"
+                                    name="subject"
+                                    value="<?= e($subjectValue) ?>"
+                                    <?= $subjectValue === $selectedSubject ? 'checked' : '' ?>
+                            >
+                            <?= e($subjectValue) ?>
+                        </label>
                     <?php endforeach; ?>
-                </select>
+                </div>
             </div>
         </div>
 
@@ -282,6 +299,36 @@ $subgenresByGenreJson = json_encode($subgenresByGenreForFilter, JSON_HEX_TAG | J
 </div>
 
 <script>
+//code to handle huge subjects list dropdown
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.subject-select-field').forEach((field) => {
+        const toggle = field.querySelector('.subject-select-toggle');
+        const menu = field.querySelector('.subject-select-menu');
+
+        if (!toggle || !menu) return;
+
+        toggle.addEventListener('click', (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+
+            menu.hidden = !menu.hidden;
+        });
+
+        field.querySelectorAll('input[name="subject"]').forEach((input) => {
+            input.addEventListener('change', () => {
+                toggle.textContent = input.value || 'All';
+                menu.hidden = true;
+            });
+        });
+
+        document.addEventListener('click', (event) => {
+            if (!field.contains(event.target)) {
+                menu.hidden = true;
+            }
+        });
+    });
+});
+
 document.addEventListener('DOMContentLoaded', () => {
     const genreSelect = document.querySelector('select[name="genre"]');
     const subgenreSelect = document.querySelector('select[name="subgenre[]"]');

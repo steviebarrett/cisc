@@ -1210,6 +1210,7 @@ body.page-homepage #searchPanel {
   display: flex;
   flex-direction: row;
   gap: var(--space-md);
+  flex-wrap: wrap;
 }
 
 .page-homepage .hero-cta-primary {
@@ -1224,6 +1225,15 @@ body.page-homepage #searchPanel {
   border: none;
   cursor: pointer;
   transition: opacity var(--transition-fast);
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  width: 460px;
+  max-width: 100%;
+  text-align: center;
+  white-space: nowrap;
 }
 
 .page-homepage .hero-cta-primary:hover {

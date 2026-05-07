@@ -7,7 +7,7 @@ import_transcriptions.py
 (import_informants.php)
 (import_places)
 
-The Python scripts are needed as they use python-docx and pymysql to convert from Word files and populate the DB.
+The Python scripts are needed as they use python-docx and pymysql to convert from Word files and populate the DB. The production server does NOT have the required libraries, so these need to be run locally and imported in MySQL using the commands below.
 
 Each of the importers has a "usage" line near the top of the file to demonstrate how it is to be implemented. 
 
@@ -19,3 +19,23 @@ All the import scripts require correct database credentials.
 2. Run import_biographies.py. Note there are 2 source folders, one for informants and one for composers.
 3. Run import_transcriptions.py
 4. (import_informants.php) and (import_places.php) should only be needed for a dynamic map, the development of which is currently on hold.
+5. Run MySQL commands to copy the biography and transcription data from the local DB to the production DB.
+
+##List of Export and Import commands in suggested order
+
+###Metadata
+php -d memory_limit=1024M import_metadata.php --file="docs/metadata.xlsx" --dsn="mysql:host=localhost;dbname=cisc;charset=utf8mb4" --user="USER" --pass="PASS"
+
+###Biographies
+Local:
+python3 import_biographies.py \
+--composer-root "docs/Bios/composers" \
+--informant-root "docs/Bios/informants" \
+--db "cisc" \
+--user "USER" \
+--password "PASS"
+
+
+
+
+

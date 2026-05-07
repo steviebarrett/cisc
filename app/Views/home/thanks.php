@@ -254,8 +254,10 @@ $fullWidth = true;
             <li class="list-group-item">Brittany Rankin-MacDonald</li>
             <li class="list-group-item">Angus MacLeod</li>
             <li class="list-group-item">Dùghall MacPhee</li>
+            <li class="list-group-item">Shannon MacMullin</li>
             <li class="list-group-item">Stacey MacLean</li>
             <li class="list-group-item">Carmen MacArthur</li>
+            <li class="list-group-item">Effie Rankin</li>
         </ul>
 
         <h5>Student Researchers:</h5>
@@ -263,32 +265,17 @@ $fullWidth = true;
             <li class="list-group-item">Kaleb Deleskie</li>
             <li class="list-group-item">Erin MacKinnon</li>
             <li class="list-group-item">Vincent McDonald</li>
+            <li class="list-group-item">Robert Pringle</li>
             <li class="list-group-item">Sarah Turnbull</li>
         </ul>
     </section>
 
-    <!--section class="content-section">
-        <h2 class="content-section-heading">Luchd-cruinneachaidh | Collectors &amp; Researchers</h2>
-        <p class="content-section-body">The recordings in this collection were gathered by dedicated fieldworkers and researchers who travelled to communities across Cape Breton to
-            document Gaelic traditions before they were lost.</p>
-        <div class="name-chips">
-            <span class="name-chip">John Shaw</span>
-            <span class="name-chip">Hector Campbell</span>
-            <span class="name-chip">Joe Neil MacNeil</span>
-            <span class="name-chip">Fr. John Angus Rankin</span>
-            <span class="name-chip">Kenneth Nilsen</span>
-            <span class="name-chip">Margaret MacDonell</span>
-            <span class="name-chip">Catriona Parsons</span>
-            <span class="name-chip">Effie Rankin</span>
-            <span class="name-chip">Jim Watson</span>
-            <span class="name-chip">Sr. Margaret MacDonell</span>
-        </div>
-    </section-->
-
     <section class="content-section">
         <h2 class="content-section-heading">Taic bho Bhuidhnean | Institutional Support</h2>
         <p class="content-section-body">We gratefully acknowledge the institutions whose sustained support—both financial and in‑kind—made this project possible. These organizations contributed far more than resources: they shared expertise, time, infrastructure, and deep cultural knowledge at every stage of the work. Collectively, they provided fluent Gaelic‑speaking staff and staff with extensive Gaelic cultural expertise; assisted with and advised on transcriptions; consulted thoughtfully on project development; and offered guidance shaped by long experience working with Gaelic collections and communities.</p>
-        <p class="content-section-body">Our thanks extend in particular to colleagues at Tobar an Dualchais, where Chris Wright developed, at very short notice, the interactive map that illustrates connections between Cape Breton settlements and their original Scottish origins—the first map of its kind for this material. At DASG (University of Glasgow), Stevie Barrett designed and implemented the database functionality that enables detailed, flexible, and nuanced searching across the collection. We are also deeply grateful to Susan Cameron, now retired librarian at St. Francis Xavier University, whose early and enthusiastic support for this project included facilitating access to the original recordings held in the Cape Breton Gaelic Folklore Collection.</p>
+        <p class="content-section-body">Our thanks extend in particular to colleagues at Tobar an Dualchais, where Chris Wright developed, at very short notice, the interactive map that illustrates connections between Cape Breton settlements and their original Scottish origins—the first map of its kind for this material.</p>
+        <p class="content-section-body">At DASG (University of Glasgow), Stevie Barrett designed and implemented the database functionality that enables detailed, flexible, and nuanced searching across the collection.</p>
+        <p class="content-section-body">We are also deeply grateful to Susan Cameron, now retired librarian at St. Francis Xavier University, whose early and enthusiastic support for this project included facilitating access to the original recordings held in the Cape Breton Gaelic Folklore Collection. Dr. Michael Linkletter, professor of Celtic Studies at StFX, also supported the project throughout its development.</p>
         <p class="content-section-body">The generosity, trust, and collaborative spirit of these institutions shaped not only what could be built, but also how it was built, and we acknowledge their contributions with sincere appreciation.</p>
         <div class="institution-list">
 
@@ -387,7 +374,7 @@ $fullWidth = true;
             <div class="funder-placeholder"><img src="<?= e(base_path('/assets/images/logos/thanks/gaelic_affairs.png')) ?>" alt="Gaelic Affairs"></div>
             <div class="funder-placeholder"><img src="<?= e(base_path('/assets/images/logos/thanks/highland_village.png')) ?>" alt="Highland Village"></div>
             <div class="funder-placeholder"><img src="<?= e(base_path('/assets/images/logos/thanks/gaelic_college.png')) ?>" alt="Gaelic College"></div>
-            <div class="funder-placeholder"><img src="<?= e(base_path('/assets/images/logos/tobar-an-dualchais.jpg')) ?>" alt="Tobar an Dualchais"></div>
+            <div class="funder-placeholder"><img src="<?= e(base_path('/assets/images/logos/thanks/tobar.png')) ?>" alt="Tobar an Dualchais"></div>
         </div>
     </section>
 

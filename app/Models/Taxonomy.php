@@ -3,7 +3,10 @@ declare(strict_types=1);
 
 final class Taxonomy {
     public static function genres(): array {
-        return DB::pdo()->query("SELECT name FROM genre ORDER BY name")->fetchAll(PDO::FETCH_COLUMN);
+        return DB::pdo()->query("SELECT DISTINCT g.name
+            FROM genre g
+            JOIN recording r ON r.genre_id = g.genre_id
+            ORDER BY g.name;")->fetchAll(PDO::FETCH_COLUMN);
     }
 
     public static function subgenres(): array {

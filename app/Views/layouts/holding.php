@@ -36,8 +36,8 @@
         </div>
         <div class="footer-logos">
             <img src="<?= e(base_path('/assets/images/logos/stfx.png')) ?>" alt="St. Francis Xavier University">
-            <img src="<?= e(base_path('/assets/images/logos/cape-breton-university--logo--mono.svg')) ?>" alt="Cape Breton University">
-            <img src="<?= e(base_path('/assets/images/logos/dasg--logo--mono.svg')) ?>" alt="DASG">
+            <img src="<?= e(base_path('/assets/images/logos/thanks/cbu.png')) ?>" alt="Cape Breton University">
+            <img src="<?= e(base_path('/assets/images/logos/thanks/dasg.png')) ?>" alt="DASG">
         </div>
     </footer>
 

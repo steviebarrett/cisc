@@ -46,8 +46,15 @@ $informantImageUrl = $informantImageFilename !== ''
 $informantDetailLight = trim((string)($rec['informant_detail_light'] ?? ''));
 $informantRecordingCount = (int)($rec['informant_recording_count'] ?? 0);
 $composerId = trim((string)($rec['composer_id'] ?? ''));
-$composerName = trim((string)(($rec['composer_first'] ?? '') . ' ' . ($rec['composer_last'] ?? '')));
+$composerName = trim((string)(($rec['composer_ainm'] ?? '') . ' ' . ($rec['composer_cinneadh'] ?? '')));    //Gaelic composer names
+if ($composerName != '') {
+    $composerName .= " | ";
+}
+$composerName .= trim((string)(($rec['composer_first'] ?? '') . ' ' . ($rec['composer_last'] ?? '')));  //English composer names
 $composerUrl = $composerId !== '' ? base_path('/composers/' . rawurlencode($composerId)) : '';
+
+$displayComposerData = $composerName !== '' || !empty($rec['composer_patronymic']) || !empty($rec['composer_dates'])
+        || !empty($rec['composer_community']) ||  !empty($rec['composer_tradition']) ? true : false;
 
 $origin = trim((string)($rec['place_of_origin'] ?? ''));
 if ($origin === 'Scotland') {
@@ -157,14 +164,14 @@ $transcriptionHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu'
                     <?php endif; ?>
 
 
-                    <!-- song only metadata -->
-                    <?php if ($genreName == 'Òran | Song'): ?>
+                    <!-- song only composer metadata -->
+                    <?php if ($displayComposerData): ?>
 
                     <hr>
 
                         <?php if ($composerName !== '' && $composerUrl !== ''): ?>
                             <div class="metadata-row">
-                                <div class="metadata-label">Bard | Composer</div>
+                                <div class="metadata-label">Bàrd | Composer</div>
                                 <div class="metadata-value"><a href="<?= e($composerUrl) ?>"><?= e($composerName) ?></a></div>
                             </div>
                         <?php endif; ?>

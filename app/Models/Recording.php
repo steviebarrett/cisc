@@ -51,6 +51,7 @@ final class Recording {
           LIMIT 1
         ) AS informant_image_filename,
         c.composer_id, c.first_name AS composer_first, c.last_name AS composer_last, c.patronymic AS composer_patronymic,
+        c.ainm AS composer_ainm, c.cinneadh AS composer_cinneadh,
         c.dates_raw AS composer_dates, c.location_community AS composer_community, c.location_county AS composer_county,
         c.tradition_scotland AS composer_tradition,
         r.transcription_text AS transcription_text, r.transcription_html AS transcription_html

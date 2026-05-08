@@ -141,7 +141,7 @@ $biographyHtml = preg_replace('~<p\b[^>]*>\s*(?:&nbsp;|\x{00A0}|\s)*</p>~iu', ''
 
                     <?php if (!empty($inf['county'])): ?>
                     <div class="metadata-pair">
-                        <span class="metadata-label">Siorrachd | County</span>
+                        <span class="metadata-label">Siorramachd | County</span>
                         <span class="metadata-value"><?= e(trim((string)$inf['county'])) ?></span>
                     </div>
                     <?php endif; ?>

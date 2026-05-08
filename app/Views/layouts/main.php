@@ -38,6 +38,11 @@
             <span>&copy;<?= date('Y') ?> Gaelstream</span>
         </div>
         <div class="footer-logos">
+
+            <img src="<?= e(base_path('/assets/images/logos/thanks/sshrc.png')) ?>" alt="SSHRC">
+            <img src="<?= e(base_path('/assets/images/logos/thanks/gaelic_affairs.png')) ?>" alt="Gaelic Affairs">
+            <img src="<?= e(base_path('/assets/images/logos/thanks/highland_village.png')) ?>" alt="Highland Village">
+            <img src="<?= e(base_path('/assets/images/logos/thanks/gaelic_college.png')) ?>" alt="Gaelic College">
             <img src="<?= e(base_path('/assets/images/logos/stfx.png')) ?>" alt="St. Francis Xavier University">
             <img src="<?= e(base_path('/assets/images/logos/thanks/cbu.png')) ?>" alt="Cape Breton University">
             <img src="<?= e(base_path('/assets/images/logos/thanks/dasg.png')) ?>" alt="DASG">

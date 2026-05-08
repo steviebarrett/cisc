@@ -35,7 +35,8 @@ python3 import_biographies.py \
 --user "USER" \
 --password "PASS"
 
-
+###Transcriptions
+python3 import_transcriptions.py --root "docs/Transcriptions" --db "cisc" --user "USER" --password "PASS"
 
 
 

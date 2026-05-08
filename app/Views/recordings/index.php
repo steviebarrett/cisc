@@ -58,8 +58,8 @@ $allSubgenresForFilter = array_values(array_filter(array_map(
 
 $subgenresByGenreForFilter = is_array($subgenres_by_genre ?? null) ? $subgenres_by_genre : [];
 
-$allSubgenresJson = json_encode($allSubgenresForFilter, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
-$subgenresByGenreJson = json_encode($subgenresByGenreForFilter, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+$allSubgenresJson = json_encode($allSubgenresForFilter, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+$subgenresByGenreJson = json_encode($subgenresByGenreForFilter, JSON_UNESCAPED_UNICODE | JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 ?>
 
 <div class="page-container">
@@ -96,22 +96,26 @@ $subgenresByGenreJson = json_encode($subgenresByGenreForFilter, JSON_HEX_TAG | J
 
             <div class="filter-field">
                 <span class="filter-label">Seòrsa | Genre</span>
-                <select class="filter-select js-searchable-select" name="genre" data-placeholder="All genres">
+                <select class="filter-select js-searchable-select js-genre-select" name="genre" data-placeholder="All genres">
                     <option value="">All</option>
                     <?php foreach (($genres ?? []) as $g): ?>
-                    <?php $genreValue = trim((string)$g); ?>
-                    <option value="<?= e($genreValue) ?>" <?= $genreValue === (string)($params['genre'] ?? '') ? 'selected' : '' ?>><?= e($genreValue) ?></option>
+                        <?php $genreValue = trim((string)$g); ?>
+                        <option value="<?= e($genreValue) ?>" <?= $genreValue === (string)($params['genre'] ?? '') ? 'selected' : '' ?>>
+                            <?= e($genreValue) ?>
+                        </option>
                     <?php endforeach; ?>
                 </select>
             </div>
 
             <div class="filter-field">
                 <span class="filter-label">Fo-sheòrsa | Sub-genre</span>
-                <select class="filter-select js-searchable-select" name="subgenre[]" data-placeholder="All sub-genres">
+                <select class="filter-select js-searchable-select js-subgenre-select" name="subgenre[]" data-placeholder="All sub-genres">
                     <option value="">All</option>
                     <?php foreach (($subgenres_all ?? []) as $sg): ?>
-                    <?php $subgenreValue = trim((string)$sg); ?>
-                    <option value="<?= e($subgenreValue) ?>" <?= $subgenreValue === $selectedSubgenre ? 'selected' : '' ?>><?= e($subgenreValue) ?></option>
+                        <?php $subgenreValue = trim((string)$sg); ?>
+                        <option value="<?= e($subgenreValue) ?>" <?= $subgenreValue === $selectedSubgenre ? 'selected' : '' ?>>
+                            <?= e($subgenreValue) ?>
+                        </option>
                     <?php endforeach; ?>
                 </select>
             </div>
@@ -331,7 +335,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
 document.addEventListener('DOMContentLoaded', () => {
     const genreSelect = document.querySelector('select[name="genre"]');
-    const subgenreSelect = document.querySelector('select[name="subgenre[]"]');
+    //const subgenreSelect = document.querySelector('select[name="subgenre[]"]');
+    const subgenreSelect = document.querySelector('select[name="subgenre\\[\\]"]');
     if (!genreSelect || !subgenreSelect) return;
 
     const allSubgenres = <?= $allSubgenresJson ?: '[]' ?>;

@@ -50,7 +50,7 @@ from docx.oxml.ns import qn
 #   GF014i08N
 #   GF108i05_109i01
 #   GF108i05N_109i01N
-DEFAULT_ID_REGEX = r"(GF\d{3}i\d{2}[A-Z]?(?:_\d{3}i\d{2}[A-Z]?)*)"
+DEFAULT_ID_REGEX = r"^([^ ]+)"
 
 
 @dataclass

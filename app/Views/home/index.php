@@ -16,6 +16,8 @@ $bodyClass = 'page-homepage';
         <img class="hero-logo-mark" src="<?= e(base_path('/assets/images/gaelstream-shape.svg')) ?>" alt="Gaelstream">
         <h1 class="hero-title">Cruinneachadh Beul-aithris Ghàidhlig Cheap Breatuinn &middot; Cape Breton Gaelic Folklore Project</h1>
         <img class="hero-map" src="<?= e(base_path('/assets/images/gaelstream-map.svg')) ?>" alt="Map of Nova Scotia and Cape Breton">
+        <h4 style="color: white">Tha sinn mothachail air mearachdan dàta 's a' ghoireas seo agus tha sinn ag obair gus an ceartachadh</h4>
+        <h4 style="color:white;">We are aware of some data errors in this resource and are actively working to correct them</h4>
         <p class="hero-stats">2,151 recordings from 161 voices across Cape Breton</p>
         <div class="hero-cta-row">
             <a href="<?= e(base_path('/map')) ?>" class="hero-cta-primary">Rannsaich am mapa | Explore the Map</a>
